@@ -1,0 +1,29 @@
+NO ./texture/minecraft(1).xpm
+SO ./texture/nicpimp.xpm
+WE ./texture/eagle.xpm
+EA ./texture/nounours(1).xpm
+
+G ./bonus/weapon_sprites/fist.xpm ./bonus/weapon_sprites/fist2.xpm ./bonus/weapon_sprites/fist3.xpm
+G ./bonus/weapon_sprites/gun.xpm ./bonus/weapon_sprites/gun2.xpm ./bonus/weapon_sprites/gun3.xpm ./bonus/weapon_sprites/gun4.xpm ./bonus/weapon_sprites/gun5.xpm ./bonus/weapon_sprites/handgun.xpm
+G ./bonus/weapon_sprites/shotgun.xpm ./bonus/weapon_sprites/shotgun2.xpm ./bonus/weapon_sprites/shotgun3.xpm ./bonus/weapon_sprites/shotgun4.xpm ./bonus/weapon_sprites/gun5.xpm
+G ./bonus/weapon_sprites/machinegun.xpm ./bonus/weapon_sprites/machinegun2.xpm ./bonus/weapon_sprites/chaingun.xpm
+
+F 80,10,10
+C 40,40,40
+
+        1111111111111111111111111
+        100000000011G000000000001
+        1001000001110000000000001
+        1001000000000000000000001
+111111111011000001110000000000001
+100000000011000001110111111101111
+11110111111111011100000010001
+11110111111111011101010010001
+11000000110101011100000010001
+10000000000000001100000000001
+100000000000S0001101010010001
+1100000111010101111101111000011
+1111G111 111D101 101111000001
+11110222222222222222222011111
+   2000000000000000000002
+   2222222222222222222222
