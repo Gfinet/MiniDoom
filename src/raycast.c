@@ -6,7 +6,7 @@
 /*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/10/28 21:51:42 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/10/28 21:59:52 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,15 +183,6 @@ void raycasting(t_cube *cube)
 			data.perp_wall_dist = (data.side_dist.y - data.var.y);
 		else
 			data.perp_wall_dist = (data.side_dist.x - data.var.x);
-		/*
-		BUG TO FIX
-		le joueur ne peut voir que le mur de cote vers lequel il se dirige
-		et ce mur est repliqué symetriquement de l'autre coté.
-		ou
-		le joueur ne voit que le cote de l'image qui est dans sa direction
-		qui est repliquee de facon symetrique
-		*/
-
 
 
 		//Calculate height of line to draw on screen
