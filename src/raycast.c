@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/10/07 18:03:54 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/10/28 21:51:42 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,8 +145,9 @@ void raycasting(t_cube *cube)
 		
 		data.dest.x = (int)play_pos->x;
 		data.dest.y = (int)play_pos->y;
-		data.step.x = !(cube->player->dir.x < 0) - (cube->player->dir.x < 0);
-		data.step.y = !(cube->player->dir.y < 0) - (cube->player->dir.y < 0);
+		
+		data.step.x = !(data.rays.x < 0) - (data.rays.x < 0);
+		data.step.y = !(data.rays.y < 0) - (data.rays.y < 0);
 		if (data.step.x == -1)
 			data.side_dist.x = (play_pos->x - data.dest.x) * data.var.x;
 		else
@@ -156,6 +157,7 @@ void raycasting(t_cube *cube)
 		else
 			data.side_dist.y = (1.0 + data.dest.y - play_pos->y) * data.var.y;
 
+		
 		data.hit = '0';
 		while (data.hit == '0')
 		{
@@ -205,7 +207,7 @@ void raycasting(t_cube *cube)
 
 
 		get_base_info_draw(&draw, data, *cube->player, cube);
-		draw.tex_num = data.side;
+		//draw.tex_num = data.side;
 		draw_xwall(&cube->screen, &draw, cube, x);
 	}
 	mlx_put_image_to_window(cube->mlx, cube->win, cube->screen.img, 0, 0);
