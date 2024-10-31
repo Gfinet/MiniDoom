@@ -3,27 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/10/28 21:59:52 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/10/31 16:02:45 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
-// static double dist_a_b(t_point a, t_point b)
-// {
-// 	double	c;
-// 	double	x;
-// 	double	y;
-
-// 	x = b.x - a.x;
-// 	y = b.y - a.y;
-// 	c = sqrt(pow(x,2) + pow(y,2));
-
-// 	return (c);
-// }
 
 static double set_delta(double ray)
 {
@@ -124,7 +112,6 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 void raycasting(t_cube *cube)
 {
 	int			x;
-	//double		fix_x;
 	t_rcdata	data;
 	t_drawdata	draw;
 	t_point *play_pos;
@@ -159,7 +146,7 @@ void raycasting(t_cube *cube)
 
 		
 		data.hit = '0';
-		while (data.hit == '0')
+		while (in_char_lst(data.hit, INVIS_WALL))
 		{
 			if (data.side_dist.x < data.side_dist.y)
     	    {
@@ -184,21 +171,8 @@ void raycasting(t_cube *cube)
 		else
 			data.perp_wall_dist = (data.side_dist.x - data.var.x);
 
-
-		//Calculate height of line to draw on screen
-      	// draw.line_height = (int)(WIN_HEIGHT / data.perp_wall_dist);
-
-      //calculate lowest and highest pixel to fill in current stripe
-     	// draw.draw_start = (-draw.line_height / 2) + (WIN_HEIGHT / 2);
-     	// if(draw.draw_start < 0) 
-		// 	draw.draw_start = 0;
-     	// draw.draw_end = (draw.line_height / 2) + (WIN_HEIGHT / 2);
-   	    // if(draw.draw_end >= WIN_HEIGHT)
-		// 	draw.draw_end = WIN_HEIGHT - 1;
-
-
 		get_base_info_draw(&draw, data, *cube->player, cube);
-		//draw.tex_num = data.side;
+		draw.tex_num = data.side;
 		draw_xwall(&cube->screen, &draw, cube, x);
 	}
 	mlx_put_image_to_window(cube->mlx, cube->win, cube->screen.img, 0, 0);

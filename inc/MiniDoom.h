@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/10/07 17:06:24 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/10/31 16:03:03 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # define MLX_SYNC_WIN_FLUSH_CMD		1
 # define MLX_SYNC_WIN_CMD_COMPLETED	3
 # define MAX_LIFE 100
+# define INVIS_WALL "0NSEW"
 
 # ifndef WIN_HEIGHT
 #  define WIN_HEIGHT 640 //1280
@@ -281,6 +282,7 @@ void	free_and_gnl(char **str, int fd);
 int		new_img(t_cube *cube, t_data *new_img, int width, int height);
 void	free_maps(char **maps, int ind);
 void	free_cube(t_cube *cube);
+int		out_of_maps(t_maps *maps, int x, int y);
 
 //parse_weapon
 int		get_weapon(t_cube *cube);

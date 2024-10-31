@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2024/09/12 11:42:23 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/10/31 15:41:56 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,9 @@ void	free_cube(t_cube *cube)
 	free_text(cube);
 	if (cube->lvl->weap)
 		draw_weapons(cube, 1);
+}
+
+int out_of_maps(t_maps *maps, int x, int y)
+{
+	return (x > maps->max_len || y > maps->m_height);
 }
