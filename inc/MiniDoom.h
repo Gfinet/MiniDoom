@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MiniDoom.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/10/31 16:03:03 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/04 18:49:06 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,16 @@ typedef struct s_mini_maps
 	int		height;
 }	t_mini_maps;
 
+typedef struct s_part
+{
+	t_data	sprite;
+	t_point	prev_pos;
+	t_point	pos;
+	t_point	dir;
+	float	speed;
+	int		dmg;
+}	t_part;
+
 typedef struct s_weapon
 {
 	t_data	*sprites;
@@ -78,6 +88,20 @@ typedef struct s_weapon
 	int		dmg;
 	char	**path;
 }	t_weapon;
+
+typedef struct s_enemy
+{
+	t_data	*spr_fr;
+	t_data	*spr_bk;
+	t_data	*spr_sd;
+	t_point	prev_pos;
+	t_point	pos;
+	t_point	dir;
+	int		hp;
+	int		dmg;
+	char	**path;
+	float	freq_atk;
+}	t_enemy;
 
 typedef struct s_maps
 {
@@ -92,6 +116,7 @@ typedef struct s_maps
 	int			nb_weap;
 	int			nb_mirr;
 	t_weapon	*weap;
+	t_enemy		*enemy;
 }	t_maps;
 
 typedef struct s_player

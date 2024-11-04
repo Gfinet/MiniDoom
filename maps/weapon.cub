@@ -1,9 +1,9 @@
-NO ./texture/minecraft(1).xpm
+NO ./texture/minecraft.xpm
 SO ./texture/nicpimp.xpm
 WE ./texture/eagle.xpm
-EA ./texture/nounours(1).xpm
+EA ./texture/nounours.xpm
 
-G ./bonus/weapon_sprites/machinegun.xpm ./bonus/weapon_sprites/machinegun2.xpm ./bonus/weapon_sprites/chaingun.xpm
+G ./weapon_sprites/machinegun.xpm ./weapon_sprites/machinegun2.xpm ./weapon_sprites/chaingun.xpm
 
 F 80,10,10
 C 40,40,40

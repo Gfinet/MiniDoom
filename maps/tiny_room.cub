@@ -1,7 +1,7 @@
-NO ./texture/minecraft(1).xpm
+NO ./texture/minecraft.xpm
 SO ./texture/nicpimp.xpm
 WE ./texture/eagle.xpm
-EA ./texture/nounours(1).xpm
+EA ./texture/nounours.xpm
 
 F 220,100,0
 C 225,30,0
