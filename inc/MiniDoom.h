@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MiniDoom.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/04 18:49:06 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/05 03:53:08 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,6 +308,7 @@ int		new_img(t_cube *cube, t_data *new_img, int width, int height);
 void	free_maps(char **maps, int ind);
 void	free_cube(t_cube *cube);
 int		out_of_maps(t_maps *maps, int x, int y);
+void	free_weapons(t_cube *cube);
 
 //parse_weapon
 int		get_weapon(t_cube *cube);

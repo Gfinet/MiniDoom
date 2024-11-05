@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 15:40:39 by gfinet            #+#    #+#             */
-/*   Updated: 2024/09/12 11:50:28 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/03 18:05:27 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static int	check_all_text(t_cube *cube, char *file)
 				|| (!ft_strncmp(str, "EA", 2))))
 		{
 			if (!check_texture(cube, str))
-				return (close(fd), 0);
+				return (close(fd), printf("texture error\n"), 0);
 			dir[get_dir(str)]++;
 		}
 		free(str);

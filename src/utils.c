@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2024/10/31 15:41:56 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/03 18:44:32 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,6 @@ void	free_and_gnl(char **str, int fd)
 	*str = get_next_line(fd);
 }
 
-int	new_img(t_cube *cube, t_data *new_img, int width, int height)
-{
-	new_img->img = mlx_new_image(cube->mlx, width, height);
-	if (!new_img->img)
-		return (0);
-	new_img->addr = mlx_get_data_addr(new_img->img, &new_img->bits_per_pixel,
-			&new_img->line_length, &new_img->endian);
-	return (1);
-}
-
 void	free_maps(char **maps, int ind)
 {
 	int	i;
@@ -46,6 +36,26 @@ void	free_maps(char **maps, int ind)
 	free(maps);
 }
 
+void free_weapons(t_cube *cube)
+{
+	int			i;
+	int 		j;
+	t_weapon	*weap;
+
+	weap = cube->lvl->weap;
+	i = -1;
+	while (++i < cube->lvl->nb_weap)
+	{
+		j = 0;
+		while (weap[i].path[j])
+		{
+			mlx_destroy_image(cube->mlx, weap[i].sprites[j].img);
+			free(weap[i].path[j]);
+			j++;
+		}
+		free(weap[i].path);
+	}
+}
 void	free_cube(t_cube *cube)
 {
 	t_door	*cur;
@@ -56,6 +66,7 @@ void	free_cube(t_cube *cube)
 		free_maps(cube->lvl->c_maps, cube->lvl->m_height - 1);
 		if (cube->lvl->c_text)
 			free_maps(cube->lvl->c_text, 3);
+		printf("maps freed\n");
 	}
 	cur = cube->doors;
 	while (cur)
@@ -65,8 +76,13 @@ void	free_cube(t_cube *cube)
 		cur = next;
 	}
 	free_text(cube);
+	printf("textures freed\n");
 	if (cube->lvl->weap)
+	{
 		draw_weapons(cube, 1);
+		free_weapons(cube);
+		printf("guns freed\n");
+	}
 }
 
 int out_of_maps(t_maps *maps, int x, int y)

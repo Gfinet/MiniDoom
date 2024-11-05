@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 19:05:21 by gfinet            #+#    #+#             */
-/*   Updated: 2024/09/12 11:50:28 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/03 18:20:08 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,28 @@ int	*get_ind(int i[2], int w_h[2], t_maps *lvl)
 	return (w_h);
 }
 
+void	draw_player(t_cube *cube)
+{
+	int	x;
+	int	y;
+	int	pos[2];
+	int	sum[2];
+
+	pos[0] = cube->player->pos.x + 1;
+	pos[1] = cube->player->pos.y + 1;
+	sum[0] = WIN_WIDTH / 5 / (cube->lvl->mini.witdh);
+	sum[1] = WIN_HEIGHT / 5 / (cube->lvl->mini.height);
+	y = -1;
+	while (++y < WIN_HEIGHT / 5)
+	{
+		x = -1;
+		while (++x < WIN_WIDTH / 5)
+			if (x / sum[0] >= pos[0] && x / sum[0] < pos[0] + 1
+				&& y / sum[1] >= pos[1] && y / sum[1] < pos[1] + 1)
+				my_mlx_pixel_put(&cube->lvl->mini.maps, x, y, RED);
+	}
+}
+
 void	draw_maps(t_cube *cube)
 {
 	int		i[2];
@@ -97,6 +119,35 @@ void	draw_maps(t_cube *cube)
 	draw_player(cube);
 	mlx_put_image_to_window(cube->mlx, cube->win,
 		cube->lvl->mini.maps.img, 4 * WIN_WIDTH / 5, 0);
+}
+
+void	get_player_pos(t_cube *cube)
+{
+	int		i[2];
+	char	c;
+	char	**m;
+
+	m = cube->lvl->c_maps;
+	i[0] = -1;
+	c = 0;
+	while (++i[0] < cube->lvl->m_height && !c)
+	{
+		i[1] = -1;
+		while (i[1]++ < cube->lvl->max_len)
+		{
+			if (m[i[0]][i[1]] == 'N' || m[i[0]][i[1]] == 'S'
+			|| m[i[0]][i[1]] == 'E' || m[i[0]][i[1]] == 'W')
+			{
+				c = m[i[0]][i[1]];
+				cube->player->pos = (t_point){i[1] + 0.1, i[0] + 0.1};
+				break ;
+			}
+		}
+	}
+	cube->player->dir = (t_point){(c == 'E') - (c == 'W'),
+		(c == 'S') - (c == 'N')};
+	cube->player->prev_pos = (t_point){cube->player->pos.x,
+		cube->player->pos.y};
 }
 
 int	make_mini(t_cube *cube, t_maps *lvl)

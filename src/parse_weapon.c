@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 21:10:01 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/09/12 11:50:28 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/03 18:15:33 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ int	get_weapon(t_cube *cube)
 		while (weap[i].path[len])
 			len++;
 		weap[i].sprites = malloc(sizeof(t_data) * len);
+		if (!weap[i].sprites)
+			return (printf("gun sprites malloc error\n"), 0);
 		weap[i].sprites[0].width = 10;
 		weap[i].sprites[0].height = 17;
 		j = -1;
@@ -34,7 +36,7 @@ int	get_weapon(t_cube *cube)
 		{
 			xpm_to_img(cube, &weap[i].sprites[j], weap[i].path[j]);
 			if (!weap[i].sprites[j].img)
-				return (0);
+				return (printf("gun sprites loading error\n"), 0);
 		}
 		weap->dmg = 50;
 	}
@@ -68,29 +70,30 @@ void	set_weapon(t_maps *lvl, char *str)
 
 int	check_weapon(t_cube *cube, char *str)
 {
-	int		i_len[2];
+	int		i;
+	int		len;
 	char	*tmp;
 	char	**lst;
 	t_data	data;
 
-	i_len[1] = 0;
+	len = 0;
 	lst = ft_split(&str[1], ' ');
-	while (lst[i_len[1]] != 0)
-		i_len[1]++;
-	if (i_len[1] == 1)
-		return (free_maps(lst, i_len[1]), 0);
-	tmp = ft_substr(lst[i_len[1] - 1], 0, ft_strlen(lst[i_len[1] - 1]) - 1);
-	free(lst[i_len[1] - 1]);
-	lst[i_len[1] - 1] = tmp;
-	i_len[0] = -1;
-	while (++i_len[0] < i_len[1])
+	while (lst[len] != 0)
+		len++;
+	if (len == 1)
+		return (free_maps(lst, len), printf("gun %s lack sprite\n", lst[0]), 0);
+	tmp = ft_substr(lst[len - 1], 0, ft_strlen(lst[len - 1]) - 1);
+	free(lst[len - 1]);
+	lst[len - 1] = tmp;
+	i = -1;
+	while (++i < len)
 	{
 		data.width = 100;
 		data.height = 170;
-		data.img = mlx_xpm_file_to_image(cube->mlx, lst[i_len[0]],
+		data.img = mlx_xpm_file_to_image(cube->mlx, lst[i],
 				&data.width, &data.height);
 		if (!data.img)
-			return (0);
+			return (printf("Gun texture error\n"), 0);
 	}
-	return (free_maps(lst, i_len[1]), cube->lvl->nb_weap++, 1);
+	return (free_maps(lst, len), cube->lvl->nb_weap++, 1);
 }

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 19:05:21 by gfinet            #+#    #+#             */
-/*   Updated: 2024/09/12 12:19:17 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/03 18:20:54 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,30 @@ static int	cpy_line(t_maps *lvl, char *str, int ind)
 	len -= str[len - 1] == '\n';
 	ft_strlcpy(lvl->c_maps[ind], str, len + 2);
 	return (1);
+}
+
+void	fill_map_char(t_maps *lvl, char c)
+{
+	int		i;
+	int		j;
+	char	ch;
+	size_t	len;
+
+	i = -1;
+	while (++i < lvl->m_height)
+	{
+		j = -1;
+		len = ft_strlen(lvl->c_maps[i]);
+		while (++j < lvl->max_len)
+		{
+			ch = lvl->c_maps[i][j];
+			if (!in_char_lst(ch, LST_CHAR)
+				|| (j > (int)len && j < lvl->max_len - 1))
+				lvl->c_maps[i][j] = c;
+			if (j == lvl->max_len - 1)
+				lvl->c_maps[i][j] = 0;
+		}
+	}
 }
 
 void	set_map(t_maps *lvl, char *str, int fd[2])
