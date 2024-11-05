@@ -6,7 +6,7 @@
 /*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 20:53:40 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/05 21:45:39 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # define MLX_SYNC_WIN_FLUSH_CMD		1
 # define MLX_SYNC_WIN_CMD_COMPLETED	3
 # define MAX_LIFE 100
-# define INVIS_WALL "0NSEW"
+# define INVIS_WALL "0NSEWA"
 
 # ifndef WIN_HEIGHT
 #  define WIN_HEIGHT 640 //1280
@@ -84,6 +84,7 @@ typedef struct s_part
 typedef struct s_weapon
 {
 	t_data	*sprites;
+	double	freq_atk;
 	char	*name;
 	int		dmg;
 	char	**path;
@@ -97,10 +98,12 @@ typedef struct s_enemy
 	t_point	prev_pos;
 	t_point	pos;
 	t_point	dir;
+	t_point	hitbox;
+	int		id;
 	int		hp;
 	int		dmg;
 	char	**path;
-	float	freq_atk;
+	double	freq_atk;
 }	t_enemy;
 
 typedef struct s_maps

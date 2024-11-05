@@ -6,7 +6,7 @@
 /*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 20:46:56 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/05 22:02:37 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,9 +58,11 @@ static void	get_base_info_draw(t_drawdata *dr, t_rcdata dt, t_player player,
 	fix_x = fix_texture_pos(dt, player);
 	(*dr).line_height = (int)(WIN_HEIGHT / dt.perp_wall_dist);
 	(*dr).pitch = 100;
+
 	(*dr).draw_start = -dr->line_height / 2 + WIN_HEIGHT / 2 + dr->pitch;
 	if (dr->draw_start < 0)
 		(*dr).draw_start = 0;
+
 	(*dr).draw_end = dr->line_height / 2 + WIN_HEIGHT / 2 + dr->pitch;
 	if (dr->draw_end >= WIN_HEIGHT)
 		(*dr).draw_end = WIN_HEIGHT - 1;
@@ -68,8 +70,10 @@ static void	get_base_info_draw(t_drawdata *dr, t_rcdata dt, t_player player,
 	(*dr).tex_num = dt.side;
 	if (dt.side == 0 || dt.side == 2)
 		(*dr).wall_x = (int)player.pos.x + dt.perp_wall_dist * dt.rays.y;
+
 	else if (dt.side == 1 || dt.side == 3)
 		(*dr).wall_x = (int)player.pos.y + dt.perp_wall_dist * dt.rays.x;
+
 	(*dr).wall_x += fix_x;
 	(*dr).wall_x -= floor((dr->wall_x));
 	(*dr).tex_x = (int)((dr->wall_x) * (double)(cube->texture[dt.side].width));
@@ -112,6 +116,7 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 void raycasting(t_cube *cube)
 {
 	int			x;
+	int			en_id;
 	t_rcdata	data;
 	t_drawdata	draw;
 	t_point *play_pos;
@@ -148,8 +153,12 @@ void raycasting(t_cube *cube)
 		data.hit = '0';
 		while (in_char_lst(data.hit, INVIS_WALL))
 		{
-			if (enemy_in_sight(cube, &data))
-				data.hit = 'A';
+			en_id = enemy_in_sight(cube, &data);
+			if (en_id)
+			{
+				data.hit = '!';
+				break;
+			}
 			if (data.side_dist.x < data.side_dist.y)
     	    {
         		data.side_dist.x += data.var.x;
@@ -170,9 +179,10 @@ void raycasting(t_cube *cube)
 		}
 		if (data.side % 2)
 			data.perp_wall_dist = (data.side_dist.y - data.var.y);
-		else
+		else if (data.side == 3 || data.side == 1)
 			data.perp_wall_dist = (data.side_dist.x - data.var.x);
-
+		// if (data.hit == '!')
+		// 	show_ennemi(en_id);
 		get_base_info_draw(&draw, data, *cube->player, cube);
 		draw.tex_num = data.side;
 		draw_xwall(&cube->screen, &draw, cube, x);

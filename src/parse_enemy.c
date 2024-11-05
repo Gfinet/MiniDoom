@@ -6,7 +6,7 @@
 /*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 20:57:45 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/05 22:07:18 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,18 @@ int enemy_in_sight(t_cube *cube, t_rcdata *data)
 {
 	int		i;
 	t_enemy	*adv;
+	t_point	posi;
+	t_point hit;
 
 	adv = cube->lvl->enemy;
 	i = 0;
 	while (i < cube->lvl->nb_enemy)
 	{
-		if (adv[i].pos.x > (int)data->dest.x && adv[i].pos.x < (int)data->dest.x + 1 \
-		&& adv[i].pos.y > (int)data->dest.y && adv[i].pos.x < (int)data->dest.x + 1)
-			return (1);
+		posi = adv[i].pos;
+		hit = adv[i].hitbox;
+		if (posi.x - hit.x / 2 > (int)data->dest.x && posi.x + hit.x / 2 < (int)data->dest.x + 1 \
+		&& posi.y - hit.y / 2 > (int)data->dest.y && posi.y + hit.y / 2 < (int)data->dest.x + 1)
+			return (adv[i].id);
 		i++;
 	}
 	return (0);
@@ -59,6 +63,9 @@ void set_enemy_pos(t_maps *lvl, t_enemy *adv, int nb)
 	}
 	adv->pos.x = (double)j + 0.5;
 	adv->pos.y = (double)i + 0.5;
+	adv->hitbox.x = 0.4;
+	adv->hitbox.y = 1;
+	adv->id = nb;
 }
 
 void set_enemy(t_maps *lvl, char *str)
