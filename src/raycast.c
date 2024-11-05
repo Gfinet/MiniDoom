@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/03 18:16:39 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/05 20:46:56 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,8 @@ void raycasting(t_cube *cube)
 		data.hit = '0';
 		while (in_char_lst(data.hit, INVIS_WALL))
 		{
+			if (enemy_in_sight(cube, &data))
+				data.hit = 'A';
 			if (data.side_dist.x < data.side_dist.y)
     	    {
         		data.side_dist.x += data.var.x;

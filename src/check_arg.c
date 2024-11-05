@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_arg.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 15:40:39 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/03 18:05:27 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/05 19:33:03 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ static int	check_texture(t_cube *cube, char *str)
 	size[2] = 0;
 	if (str[0] == 'G')
 		return (check_weapon(cube, &str[1]));
+	if (str[0] == 'A')
+		return (check_enemy_inf(cube, &str[1]));
 	while (str[size[2] + 2] == ' ')
 		size[2]++;
 	len = ft_strlen(&str[2]) - (size[2] + 1);
@@ -50,18 +52,19 @@ static int	check_all_text(t_cube *cube, char *file)
 		if (str && ((!ft_strncmp(str, "NO", 2))
 				|| (!ft_strncmp(str, "SO", 2))
 				|| (!ft_strncmp(str, "WE", 2))
+				|| (!ft_strncmp(str, "EA", 2))
 				|| (!ft_strncmp(str, "G ", 2))
-				|| (!ft_strncmp(str, "EA", 2))))
+				|| (!ft_strncmp(str, "A ", 2))))
 		{
 			if (!check_texture(cube, str))
-				return (close(fd), printf("texture error\n"), 0);
+				return (close(fd), free(str), printf("texture error\n"), 0);
 			dir[get_dir(str)]++;
 		}
 		free(str);
 		str = get_next_line(fd);
 	}
 	if (!dir[0] || !dir[1] || !dir[2] || !dir[3])
-		return (close(fd), 0);
+		return (close(fd), free(str), 0);
 	return (close(fd), (dir[0] + dir[1] + dir[2] + dir[3]) == 4);
 }
 

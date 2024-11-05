@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MiniDoom.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2024/09/12 12:18:26 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/05 19:58:17 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ static int	get_textures(t_cube *cube)
 		if (!xpm_to_img(cube, &txt[i], cube->lvl->c_text[i]))
 			return (-i);
 	if (!get_weapon(cube))
+		return (0);
+	if (!get_enemy_inf(cube))
 		return (0);
 	if (!new_img(cube, &cube->screen, WIN_WIDTH, WIN_HEIGHT))
 		return (0);

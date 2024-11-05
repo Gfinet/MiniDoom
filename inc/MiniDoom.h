@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MiniDoom.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 03:53:08 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/05 20:53:40 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@
 
 # define FRAME 4 //12
 # define JUMP_HEIGHT 80
-# define LST_CHAR "012NSEWDGT"
+# define LST_CHAR "012NSEWDGTA"
 
 typedef struct s_point
 {
@@ -114,6 +114,7 @@ typedef struct s_maps
 	int			ceil[3];
 	int			m_height;
 	int			nb_weap;
+	int			nb_enemy;
 	int			nb_mirr;
 	t_weapon	*weap;
 	t_enemy		*enemy;
@@ -309,6 +310,7 @@ void	free_maps(char **maps, int ind);
 void	free_cube(t_cube *cube);
 int		out_of_maps(t_maps *maps, int x, int y);
 void	free_weapons(t_cube *cube);
+void	free_enemy(t_cube *cube);
 
 //parse_weapon
 int		get_weapon(t_cube *cube);
@@ -334,4 +336,10 @@ void	set_mirr(t_maps *lvl);
 int		count_mirr(char *line);
 t_mirr	*find_mirr(t_cube *cube, int x, int y);
 int		get_mirr_state(t_mirr *mirr);
+
+//parse_enemy
+int		enemy_in_sight(t_cube *cube, t_rcdata *data);
+int		check_enemy_inf(t_cube *cube, char *str);
+void	set_enemy(t_maps *lvl, char *str);
+int		get_enemy_inf(t_cube *cube);
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_maps.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 19:05:21 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/03 18:20:54 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/05 19:57:02 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,13 +106,13 @@ void	fill_maps(t_maps *lvl, char *str, int fd[2])
 {
 	if (!str)
 		return ;
-	if (!ft_strncmp("NO", str, 2))
+	if (!ft_strncmp("WE", str, 2))
 		lvl->c_text[0] = get_text_dir(&str[2]);
-	else if (!ft_strncmp("SO", str, 2))
+	else if (!ft_strncmp("NO", str, 2))
 		lvl->c_text[1] = get_text_dir(&str[2]);
-	else if (!ft_strncmp("WE", str, 2))
-		lvl->c_text[2] = get_text_dir(&str[2]);
 	else if (!ft_strncmp("EA", str, 2))
+		lvl->c_text[2] = get_text_dir(&str[2]);
+	else if (!ft_strncmp("SO", str, 2))
 		lvl->c_text[3] = get_text_dir(&str[2]);
 	else if (str[0] == 'F')
 		set_floor_ceiling(lvl->floor, &str[1]);
@@ -122,6 +122,8 @@ void	fill_maps(t_maps *lvl, char *str, int fd[2])
 		return ;
 	else if (str[0] == 'G')
 		set_weapon(lvl, &str[1]);
+	else if (str[0] == 'A')
+		set_enemy(lvl, &str[1]);
 	else
 		set_map(lvl, str, fd);
 }
@@ -146,7 +148,6 @@ int	get_maps(t_cube *cube, char *file)
 		free_and_gnl(&str, fd[0]);
 		free_and_gnl(&str2, fd[1]);
 	}
-	//get_all_doors(cube->lvl->c_maps, cube);
 	if (!check_map(cube))
 		return (0);
 	close(fd[0]);

@@ -3,22 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/03 18:44:32 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/05 20:12:21 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
-
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
-{
-	char	*dst;
-
-	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-	*(unsigned int *)dst = color;
-}
 
 void	free_and_gnl(char **str, int fd)
 {
@@ -56,6 +48,17 @@ void free_weapons(t_cube *cube)
 		free(weap[i].path);
 	}
 }
+
+void free_enemy(t_cube *cube)
+{
+	t_enemy *adv;
+
+	adv = cube->lvl->enemy;
+	mlx_destroy_image(cube->mlx, adv[0].spr_fr[0].img);
+	free(adv[0].spr_fr);
+	free(adv[0].path);
+}
+
 void	free_cube(t_cube *cube)
 {
 	t_door	*cur;
@@ -81,8 +84,16 @@ void	free_cube(t_cube *cube)
 	{
 		draw_weapons(cube, 1);
 		free_weapons(cube);
+		free(cube->lvl->weap);
 		printf("guns freed\n");
 	}
+	if (cube->lvl->enemy)
+	{	
+		free_enemy(cube);
+		free(cube->lvl->enemy);
+		printf("enemies freed\n");
+	}
+		
 }
 
 int out_of_maps(t_maps *maps, int x, int y)
