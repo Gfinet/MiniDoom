@@ -3,39 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   parse_enemy.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 22:07:18 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/06 15:36:04 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
-// void enemy_routine(t_cube *cube)
-// {
-
-// }
-
-int enemy_in_sight(t_cube *cube, t_rcdata *data)
+void set_draw_enemy(t_cube *cube, int val)
 {
-	int		i;
-	t_enemy	*adv;
-	t_point	posi;
-	t_point hit;
+	int		i = -1;
 
-	adv = cube->lvl->enemy;
-	i = 0;
-	while (i < cube->lvl->nb_enemy)
-	{
-		posi = adv[i].pos;
-		hit = adv[i].hitbox;
-		if (posi.x - hit.x / 2 > (int)data->dest.x && posi.x + hit.x / 2 < (int)data->dest.x + 1 \
-		&& posi.y - hit.y / 2 > (int)data->dest.y && posi.y + hit.y / 2 < (int)data->dest.x + 1)
-			return (adv[i].id);
-		i++;
-	}
-	return (0);
+	while (++i < cube->lvl->nb_enemy)
+		cube->lvl->enemy[i].draw = val;
 }
 
 void set_enemy_pos(t_maps *lvl, t_enemy *adv, int nb)

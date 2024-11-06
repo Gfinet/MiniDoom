@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MiniDoom.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 21:45:39 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/06 15:31:54 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ typedef struct s_enemy
 	t_point	pos;
 	t_point	dir;
 	t_point	hitbox;
+	int		draw;
 	int		id;
 	int		hp;
 	int		dmg;
@@ -287,6 +288,7 @@ double	fix_texture_pos(t_rcdata dt, t_player pl);
 void	rcdda(t_cube *cube, char **map, t_player player);
 void	raycasting(t_cube *cube);
 void	set_angle(t_cube *cube, int x, int y);
+double	set_delta(double ray);
 
 void	draw_mirr_frame(t_data *screen, t_drawdata dt, int x, t_rcdata data);
 void	get_door_draw_data(t_drawdata *dt, t_rcdata data, t_cube *c);
@@ -343,6 +345,11 @@ int		get_mirr_state(t_mirr *mirr);
 //parse_enemy
 int		enemy_in_sight(t_cube *cube, t_rcdata *data);
 int		check_enemy_inf(t_cube *cube, char *str);
+void	set_draw_enemy(t_cube *cube, int val);
 void	set_enemy(t_maps *lvl, char *str);
 int		get_enemy_inf(t_cube *cube);
+
+//draw_enemy
+void	draw_enemy(t_cube *cube, t_drawdata *draw, int x, int id);
+void	raycast_enemy(t_cube *cube);
 #endif

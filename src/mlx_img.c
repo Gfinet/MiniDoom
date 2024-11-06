@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mlx_img.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 22:03:11 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 20:12:25 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/06 15:39:17 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	draw_doom(t_cube *cube)
 	draw_mini_background(cube->lvl);
 	draw_maps(cube);
 	draw_player(cube);
+	raycast_enemy(cube);
 	if (cube->lvl->weap)
 		draw_weapons(cube, 0);
 	draw_life(cube);

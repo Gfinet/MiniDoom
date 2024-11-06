@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 22:02:37 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/06 15:39:13 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
 
-static double set_delta(double ray)
+double set_delta(double ray)
 {
 	if (ray)
 		return (fabs(1 / ray));
@@ -116,7 +116,7 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 void raycasting(t_cube *cube)
 {
 	int			x;
-	int			en_id;
+	//int			en_id;
 	t_rcdata	data;
 	t_drawdata	draw;
 	t_point *play_pos;
@@ -125,6 +125,7 @@ void raycasting(t_cube *cube)
 	data.pov.x = -(float)(0.66 * cube->player->dir.y);
 	data.pov.y = (float)(0.66 * cube->player->dir.x);
 	x = -1;
+	set_draw_enemy(cube, 0);
 	while (++x < WIN_WIDTH)
 	{
 		//data.rays = *play_pos;
@@ -153,12 +154,6 @@ void raycasting(t_cube *cube)
 		data.hit = '0';
 		while (in_char_lst(data.hit, INVIS_WALL))
 		{
-			en_id = enemy_in_sight(cube, &data);
-			if (en_id)
-			{
-				data.hit = '!';
-				break;
-			}
 			if (data.side_dist.x < data.side_dist.y)
     	    {
         		data.side_dist.x += data.var.x;
@@ -179,10 +174,9 @@ void raycasting(t_cube *cube)
 		}
 		if (data.side % 2)
 			data.perp_wall_dist = (data.side_dist.y - data.var.y);
-		else if (data.side == 3 || data.side == 1)
+		else
 			data.perp_wall_dist = (data.side_dist.x - data.var.x);
-		// if (data.hit == '!')
-		// 	show_ennemi(en_id);
+			
 		get_base_info_draw(&draw, data, *cube->player, cube);
 		draw.tex_num = data.side;
 		draw_xwall(&cube->screen, &draw, cube, x);
