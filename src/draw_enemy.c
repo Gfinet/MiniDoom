@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/06 16:07:32 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/06 18:52:15 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,11 +108,26 @@ int enemy_in_sight(t_cube *cube, t_rcdata *data)
 	return (0);
 }
 
+static double dist_ab(t_point a, t_point b)
+{
+	double	carr_x, carr_y;
+	double	res;
+
+	carr_x = (a.x - b.x);
+	carr_x *= carr_x;
+	carr_y = (a.y - b.y);
+	carr_y *= carr_y;
+	res = sqrt(carr_x * carr_y);
+	return (res);
+}
+
 void draw_enemy(t_cube *cube, t_drawdata *draw, int x, int id)
 {
 	int			i;
 	int			wid, hei;
+	double		dist;
 	//static int	nb_draw = 0;
+	t_point		pos;
 	t_enemy 	*adv;
 
 	(void)draw;
@@ -120,8 +135,21 @@ void draw_enemy(t_cube *cube, t_drawdata *draw, int x, int id)
 	while (++i < cube->lvl->nb_enemy)
 		if (cube->lvl->enemy[i].id == id)
 			adv = &cube->lvl->enemy[i];
+	pos = cube->player->pos;
+	dist = dist_ab(pos, adv->pos);
+	//sqrt((pos.x - adv->pos.x) * (pos.x - adv->pos.x) + (pos.y - adv->pos.y) * (pos.y - adv->pos.y));
+	wid = 0;
+	hei = 0;
 	if (adv->spr_fr)
+	{
+		wid = adv->spr_fr->width * dist;
+		hei = adv->spr_fr->height * dist;
 		mlx_destroy_image(cube->mlx, adv->spr_fr->img);
-	new_img(cube, &adv->spr_fr, wid, hei);
+	}
+	mlx
+	adv->spr_fr->width = wid;
+	adv->spr_fr->height = hei;
+	xpm_to_img(cube, adv->spr_fr, adv->path[0]);
+	//new_img(cube, adv->spr_fr, wid, hei);
 	mlx_put_image_to_window(cube->mlx, cube->win, adv->spr_fr->img, x, WIN_HEIGHT / 2);
 }

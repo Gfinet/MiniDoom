@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 22:03:11 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/06 15:39:17 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/06 18:54:49 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ int	xpm_to_img(t_cube *cube, t_data *new_img, char *name)
 {
 	new_img->img = mlx_xpm_file_to_image(cube->mlx, name,
 			&new_img->width, &new_img->height);
+	// new_img->img = mlx_xpm_to_image(cube->mlx, name,
+	// 		&new_img->width, &new_img->height);
 	if (!new_img->img)
 		return (0);
 	new_img->addr = mlx_get_data_addr(new_img->img, &new_img->bits_per_pixel,
