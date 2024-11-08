@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 22:03:11 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/06 18:54:49 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/06 19:23:37 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,12 @@ void	draw_doom(t_cube *cube)
 
 int	xpm_to_img(t_cube *cube, t_data *new_img, char *name)
 {
+	//mlx_img_list_t *im;
+
+
 	new_img->img = mlx_xpm_file_to_image(cube->mlx, name,
 			&new_img->width, &new_img->height);
-	// new_img->img = mlx_xpm_to_image(cube->mlx, name,
+	//new_img->img = mlx_xpm_to_image(cube->mlx, name,
 	// 		&new_img->width, &new_img->height);
 	if (!new_img->img)
 		return (0);

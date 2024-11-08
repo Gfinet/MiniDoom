@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/06 15:39:13 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/08 02:23:42 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,10 @@ double	fix_texture_pos(t_rcdata dt, t_player pl)
 static void	get_base_info_draw(t_drawdata *dr, t_rcdata dt, t_player player,
 		t_cube *cube)
 {
-	double	fix_x;
+	double	fix_x = 0.0;
 
 	fix_x = fix_texture_pos(dt, player);
-	(*dr).line_height = (int)(WIN_HEIGHT / dt.perp_wall_dist);
+	(*dr).line_height = (int)( WIN_HEIGHT / dt.perp_wall_dist);
 	(*dr).pitch = 100;
 
 	(*dr).draw_start = -dr->line_height / 2 + WIN_HEIGHT / 2 + dr->pitch;
@@ -92,12 +92,15 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 
 	tex_pos = (dt->draw_start - dt->pitch - WIN_HEIGHT / 2 + dt->line_height
 			/ 2) * dt->step_f;
+	// background up
 	y = -1;
 	col = c->lvl->floor[0] * 65536 + c->lvl->floor[1] * 256 + c->lvl->floor[2];
 	if (dt->draw_start > WIN_HEIGHT)
 		dt->draw_start = 0;
 	while (++y < dt->draw_start)
 		my_mlx_pixel_put(screen, x, y, col);
+	// backgroung up end
+
 	y = dt->draw_start - 1;
 	while (++y < dt->draw_end)
 	{
@@ -107,16 +110,18 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 				((c->texture[dt->tex_num].height * dt->tex_y + dt->tex_x)));
 		my_mlx_pixel_put(screen, x, y, col);
 	}
+
+	//background down
 	y -= 1;
 	col = c->lvl->ceil[0] * 65536 + c->lvl->ceil[1] * 256 + c->lvl->ceil[2];
 	while (++y < WIN_HEIGHT - 1)
 		my_mlx_pixel_put(screen, x, y, col);
+	// background down end
 }
 
 void raycasting(t_cube *cube)
 {
 	int			x;
-	//int			en_id;
 	t_rcdata	data;
 	t_drawdata	draw;
 	t_point *play_pos;
@@ -125,10 +130,9 @@ void raycasting(t_cube *cube)
 	data.pov.x = -(float)(0.66 * cube->player->dir.y);
 	data.pov.y = (float)(0.66 * cube->player->dir.x);
 	x = -1;
-	set_draw_enemy(cube, 0);
+
 	while (++x < WIN_WIDTH)
 	{
-		//data.rays = *play_pos;
 		data.camerx = 2 * x / ((double)WIN_WIDTH) - 1; //x-coordinate in camera space
 		data.rays.x = cube->player->dir.x + data.pov.x * data.camerx;
 		data.rays.y = cube->player->dir.y + data.pov.y * data.camerx;
@@ -183,3 +187,5 @@ void raycasting(t_cube *cube)
 	}
 	mlx_put_image_to_window(cube->mlx, cube->win, cube->screen.img, 0, 0);
 }
+
+

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/06 18:52:15 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/08 02:04:07 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,15 @@ void raycast_enemy(t_cube *cube)
 {
 	int			x;
 	int			en_id;
+	int			center_flag = 0;
 	t_rcdata	data;
-	t_drawdata	draw;
 	t_point *play_pos;
-
+	
 	play_pos = &cube->player->pos;
 	data.pov.x = -(float)(0.66 * cube->player->dir.y);
 	data.pov.y = (float)(0.66 * cube->player->dir.x);
 	x = -1;
+	data.center = (t_point){0};
 	set_draw_enemy(cube, 0);
 	while (++x < WIN_WIDTH)
 	{
@@ -77,12 +78,10 @@ void raycast_enemy(t_cube *cube)
 			}
 			data.hit = cube->lvl->c_maps[(int)data.dest.y][(int)data.dest.x];
 		}
-		if (data.side % 2)
-			data.perp_wall_dist = (data.side_dist.y - data.var.y);
-		else if (data.side == 3 || data.side == 1)
-			data.perp_wall_dist = (data.side_dist.x - data.var.x);
+		if (x == WIN_WIDTH / 2 && !center_flag)
+			data.center = data.dest;
 		if (en_id)
-			draw_enemy(cube, &draw, x, en_id);
+			draw_enemy(cube, data.center, x, en_id);
 	}
 	//mlx_put_image_to_window(cube->mlx, cube->win, cube->screen.img, 0, 0);
 }
@@ -100,15 +99,16 @@ int enemy_in_sight(t_cube *cube, t_rcdata *data)
 	{
 		posi = adv[i].pos;
 		//hit = adv[i].hitbox;
-		if (!adv[i].draw && posi.x  < (int)data->dest.x && posi.x > (int)data->dest.x - 1 \
-		&& posi.y > (int)data->dest.y && posi.y < (int)data->dest.x + 1)
+		if (!adv[i].draw \
+		&& (int)posi.x  == (int)data->dest.x \
+		&& (int)posi.y == (int)data->dest.y ) // && posi.y < (int)data->dest.x + 1) // && posi.x < (int)data->dest.x + 1 
 			return (adv[i].draw = 1, adv[i].id);
 		i++;
 	}
 	return (0);
 }
 
-static double dist_ab(t_point a, t_point b)
+double dist_ab(t_point a, t_point b)
 {
 	double	carr_x, carr_y;
 	double	res;
@@ -117,39 +117,98 @@ static double dist_ab(t_point a, t_point b)
 	carr_x *= carr_x;
 	carr_y = (a.y - b.y);
 	carr_y *= carr_y;
-	res = sqrt(carr_x * carr_y);
+	res = sqrt(carr_x + carr_y);
 	return (res);
 }
+void blabla(t_cube *c, t_drawdata *dt, int x, t_data *screen)
+{
+	unsigned int col;
+	int y;
+	double tex_pos = 0.0;
+	
+	y = dt->draw_start - 1;
+	while (++y < dt->draw_end)
+	{
+		(*dt).tex_y = (int)tex_pos & (c->texture[dt->tex_num].height - 1);
+		tex_pos += dt->step_f;
+		col = *((unsigned int *)c->texture[dt->tex_num].addr +(int) ((c->texture[dt->tex_num].height * dt->tex_y + dt->tex_x)));
+		my_mlx_pixel_put(screen, x, y, col);
+	}
+}
+void put_xpm_to_mlx_img(t_enemy *adv, double scale, int wid, int hei)
+{
+	int 			x, y = -1;
+	int				pixel;
+	unsigned int	col;
 
-void draw_enemy(t_cube *cube, t_drawdata *draw, int x, int id)
+	(void)scale;
+	while (++y < hei)//49 118
+	{
+		x = -1;
+		while (++x < wid)
+		{
+			//printf("coucou %d %d ", x, y);
+			pixel = (int)(adv->spr_fr->line_length * y / 4 + x * (adv->text_on.bits_per_pixel / 32));
+			col = *((unsigned int *)adv->spr_fr->addr + pixel);
+			//col = 0x00FF00FF;
+			my_mlx_pixel_put(&adv->text_on, x, y, col);
+		}
+	}
+}
+/*
+Need to fix : get old img width and height and prject to new
+need to do : choose wich img to use depending to wich side player see
+had done : copy img from xpm to mlx img
+*/
+
+void draw_enemy(t_cube *cube, t_point center, int x, int id)
 {
 	int			i;
 	int			wid, hei;
+	int			old_wid, old_hei;
+	int			n_x, n_y;
 	double		dist;
+	double		scale = 0.0;
 	//static int	nb_draw = 0;
 	t_point		pos;
 	t_enemy 	*adv;
+	t_img_mlx	*img;
 
-	(void)draw;
 	i = -1;
 	while (++i < cube->lvl->nb_enemy)
 		if (cube->lvl->enemy[i].id == id)
 			adv = &cube->lvl->enemy[i];
 	pos = cube->player->pos;
 	dist = dist_ab(pos, adv->pos);
-	//sqrt((pos.x - adv->pos.x) * (pos.x - adv->pos.x) + (pos.y - adv->pos.y) * (pos.y - adv->pos.y));
-	wid = 0;
-	hei = 0;
-	if (adv->spr_fr)
+	scale = dist / 20;
+	(void)center;
+	//printf("dist %f\n", dist);
+	if (adv->text_on.img)
 	{
-		wid = adv->spr_fr->width * dist;
-		hei = adv->spr_fr->height * dist;
-		mlx_destroy_image(cube->mlx, adv->spr_fr->img);
+		//printf("scale : %f %d %d\n", scale, wid, adv->spr_fr->width);
+		img = adv->text_on.img;
+		old_wid = img->width;
+		old_hei = img->height;
+		mlx_destroy_image(cube->mlx, adv->text_on.img);
 	}
-	mlx
-	adv->spr_fr->width = wid;
-	adv->spr_fr->height = hei;
-	xpm_to_img(cube, adv->spr_fr, adv->path[0]);
-	//new_img(cube, adv->spr_fr, wid, hei);
-	mlx_put_image_to_window(cube->mlx, cube->win, adv->spr_fr->img, x, WIN_HEIGHT / 2);
+	else
+	{
+		img = adv->spr_fr->img;
+		old_wid = img->width;
+		old_hei = img->height;
+	}
+	
+	wid = old_wid ;// * scale ;
+	hei = old_hei ;// * scale ; // dont know how to make them look bigger without segfault
+
+	cube->player->prev_pos = (t_point){cube->player->pos.x, cube->player->pos.y};
+	n_x = x + wid / dist;
+	dist = dist_ab(pos, adv->pos);
+	// if (dist > 0 && dist < 1)
+	// 	n_x = WIN_WIDTH / 2;
+	n_y = 100 + (WIN_HEIGHT / 2) ;
+	new_img(cube, &adv->text_on, wid, hei);
+	put_xpm_to_mlx_img(adv, scale, wid, hei);
+	
+	mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
 }

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/06 15:31:54 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/08 00:03:21 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,13 @@ typedef struct s_mirr
 	int	state;
 }	t_mirr;
 
+typedef struct s_img_mlx
+{
+	int width;
+	int height;
+	void *other;
+}	t_img_mlx;
+
 typedef struct s_data
 {
 	void	*img;
@@ -92,6 +99,7 @@ typedef struct s_weapon
 
 typedef struct s_enemy
 {
+	t_data	text_on;
 	t_data	*spr_fr;
 	t_data	*spr_bk;
 	t_data	*spr_sd;
@@ -194,6 +202,7 @@ typedef struct s_rcdata
 	t_point			step;
 	t_point			pov;
 	t_point			dest;
+	t_point			center;
 	int				side;
 	int				d_side;
 	char				hit;
@@ -209,7 +218,6 @@ typedef struct s_rcdata
 
 typedef struct s_drawdata
 {
-	t_data			texture;
 	int				tex_x;
 	int				tex_y;
 	double			tex_pos;
@@ -350,6 +358,6 @@ void	set_enemy(t_maps *lvl, char *str);
 int		get_enemy_inf(t_cube *cube);
 
 //draw_enemy
-void	draw_enemy(t_cube *cube, t_drawdata *draw, int x, int id);
+void	draw_enemy(t_cube *cube, t_point center, int x, int id);
 void	raycast_enemy(t_cube *cube);
 #endif
