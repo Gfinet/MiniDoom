@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/08 00:03:21 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/10 01:37:46 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,11 +107,15 @@ typedef struct s_enemy
 	t_point	pos;
 	t_point	dir;
 	t_point	hitbox;
+	char	**path;
+	int		max_text_fr;
+	int		max_text_bk;
+	int		max_text_sd;
 	int		draw;
 	int		id;
 	int		hp;
 	int		dmg;
-	char	**path;
+	int		path_len;
 	double	freq_atk;
 }	t_enemy;
 
@@ -178,6 +182,7 @@ typedef struct s_cube
 	t_player	*player;
 	t_data		screen;
 	t_door		*doors;
+	int			ground_end;
 	int			frame;
 	int			mouse;
 	int			pause;
@@ -332,7 +337,7 @@ int		check_weapon(t_cube *cube, char *str);
 
 //draw_weapon
 int		xpm_to_img(t_cube *cube, t_data *new_img, char *name);
-void	draw_weapons(t_cube *cube, int fre);
+void	draw_weapons(t_cube *cube);
 
 //life
 int		set_life(t_cube *cube);
@@ -358,6 +363,6 @@ void	set_enemy(t_maps *lvl, char *str);
 int		get_enemy_inf(t_cube *cube);
 
 //draw_enemy
-void	draw_enemy(t_cube *cube, t_point center, int x, int id);
+void	draw_enemy(t_cube *cube, int x, int id);
 void	raycast_enemy(t_cube *cube);
 #endif

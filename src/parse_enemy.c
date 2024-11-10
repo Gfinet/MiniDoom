@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/07 22:13:05 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/10 03:21:56 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void set_enemy_pos(t_maps *lvl, t_enemy *adv, int nb)
 
 void set_enemy(t_maps *lvl, char *str)
 {
-	int		len = 1;
+	int		len = 0;
 	char	*tmp;
 	char	**lst;
 
@@ -62,30 +62,83 @@ void set_enemy(t_maps *lvl, char *str)
 		lvl->enemy = malloc(sizeof(t_enemy));
 		if (!lvl->enemy)
 			return ;
+		*lvl->enemy = (t_enemy){0};
 	}
 	lst = ft_split(str, ' ');
+	while (lst[len])
+		len++;
 	tmp = ft_substr(lst[len - 1], 0, ft_strlen(lst[len - 1]) - 1);
 	free(lst[len - 1]);
 	lst[len - 1] = tmp;
 	lst[len] = 0;
+	lvl->enemy[0].path_len = len;
 	lvl->enemy[0].path = lst;
+	lvl->enemy[0].dir = (t_point){1,1};
+}
+
+static t_data **get_ptr_texture(t_enemy *adv, int *num)
+{
+	t_data **text = NULL;
+
+	if (*num == 0)
+		text = &adv->spr_fr;
+	else if (*num == 1)
+		text = &adv->spr_bk;
+	else if (*num == 2)
+		text = &adv->spr_sd;
+	return ((*num)++, text);
+}
+
+static int *get_ptr_len(t_enemy *adv, int *num)
+{
+	int 	*len = 0;
+	
+	if (*num == 0)
+		len = &adv->max_text_fr;
+	else if (*num == 1)
+		len = &adv->max_text_bk;
+	else if (*num == 2)
+		len = &adv->max_text_sd;
+	return (len);
 }
 
 int get_enemy_inf(t_cube *cube)
 {
+	int		first_text, i, j, l;
+	int		*len;
 	t_enemy *adv;
+	t_data	**text = NULL;
 	
 	adv = cube->lvl->enemy;
-
-	adv[0].spr_fr = malloc(sizeof(t_data));
-	if (!adv[0].spr_fr)
-		return (printf("enemy sprites malloc error\n"), 0);
-	adv[0].spr_fr[0].width = 80;
-	adv[0].spr_fr[0].height = 120;
-	xpm_to_img(cube, &adv[0].spr_fr[0], adv[0].path[0]);
-	if (!adv[0].spr_fr[0].img)
-		return (printf("enemy sprites loading error\n"), 0);
-	adv->dmg = 5;
+	i = -1;
+	l = 0;
+	while (++i < adv[0].path_len - 1)
+	{
+		first_text = 0;
+		if (i > 1)
+			first_text = i - 1;
+		while (i < adv[0].path_len - 1 && !ft_strncmp(adv[0].path[i], adv[0].path[i + 1], ft_strlen(adv[0].path[i]) - 5))
+			i++;
+		len = get_ptr_len(&adv[0], &l);
+		*len = i - first_text;
+		if (first_text ==  0)
+			(*len)++;
+		text = get_ptr_texture(&adv[0], &l);
+		if (!*text)
+			*text = malloc(sizeof(t_data) * ((*len) + 1));
+		if (!*text)
+			return (0);
+		j = -1;
+		while (++j < *len)
+		{
+		//ft_printf("%s %p %d bug\n", adv[0].path[first_text + j], text, *len);
+			(*text)[j].width = 100;
+			(*text)[j].height = 150;
+			xpm_to_img(cube, &(*text)[j], adv[0].path[first_text + j]);
+			if (!(*text)[j].img)
+				return (printf("enemy sprites loading error\n"), 0);
+		}
+	}
 	set_enemy_pos(cube->lvl, &cube->lvl->enemy[0], 1);
 	return (1);
 }
@@ -108,7 +161,7 @@ int check_enemy_inf(t_cube *cube, char *str)
 	data.width = 80;
 	data.height = 120;
 	data.img = mlx_xpm_file_to_image(cube->mlx, lst[0], &data.width, &data.height);
-	printf("%s\n", lst[0]);
+	//printf("%s\n", lst[0]);
 	if (!data.img)
 		return (printf("Enemy texture error\n"), 0);
 	return (free_maps(lst, len), cube->lvl->nb_enemy++, 1);

@@ -1,6 +1,6 @@
 CC       = GCC
 NAME = MiniDoom
-CFLAGS   = -Wall -Wextra -Werror -Imlx -finline-functions -fvectorize -fslp-vectorize -ffast-math -falign-functions -funroll-loops -fstrict-aliasing -fomit-frame-pointer -flto -Ofast -O1 -O2 -Os -O3 #-g3 -fsanitize=address
+CFLAGS   = -Wall -Wextra -Werror -Imlx -finline-functions -fvectorize -fslp-vectorize -ffast-math -falign-functions -funroll-loops -fstrict-aliasing -fomit-frame-pointer -flto -Ofast -O1 -O2 -Os -O3 -g3 -fsanitize=address
 #FLAGS = -Wall -Wextra -Werror -Imlx -g3 -finline-functions -fvectorize -fslp-vectorize -ffast-math -falign-functions -funroll-loops -fstrict-aliasing -fomit-frame-pointer -flto -Ofast -O1 -O2 -Os -O3
 
 
@@ -56,7 +56,7 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.c
 	@$(CC) $(CFLAGS) -Imlx -c $< -o $@
 
 add:
-	git add src/ inc/ maps/ texture/ Makefile .gitignore
+	git add src/ inc/ maps/ texture/ enemy_sprites/ Makefile .gitignore
 
 $(LIBX):
 	@make -C $(MINI)

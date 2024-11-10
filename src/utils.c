@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 20:12:21 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/10 01:38:22 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,21 @@ void free_weapons(t_cube *cube)
 
 void free_enemy(t_cube *cube)
 {
+	int		i = -1;
 	t_enemy *adv;
 
 	adv = cube->lvl->enemy;
-	mlx_destroy_image(cube->mlx, adv[0].spr_fr[0].img);
+	while (++i < adv[0].max_text_fr)
+		mlx_destroy_image(cube->mlx, adv[0].spr_fr[i].img);
+	i = -1;
+	while (++i < adv[0].max_text_bk)
+		mlx_destroy_image(cube->mlx, adv[0].spr_bk[i].img);
+	i = -1;
+	while (++i < adv[0].max_text_sd)
+		mlx_destroy_image(cube->mlx, adv[0].spr_sd[i].img);
 	free(adv[0].spr_fr);
+	free(adv[0].spr_bk);
+	free(adv[0].spr_sd);
 	free(adv[0].path);
 }
 
@@ -82,7 +92,6 @@ void	free_cube(t_cube *cube)
 	printf("textures freed\n");
 	if (cube->lvl->weap)
 	{
-		draw_weapons(cube, 1);
 		free_weapons(cube);
 		free(cube->lvl->weap);
 		printf("guns freed\n");

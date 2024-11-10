@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/08 02:23:42 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/10 02:08:02 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,15 @@ double	get_time(long start)
 	return ((double)tv.tv_sec * 1000 + tv.tv_usec / 1000 - start);
 }
 
+static double ft_modf(double numb, double *integ)
+{
+	double	fract;
+
+	*integ = (double)(int)numb;
+	fract = numb - *integ;
+	return (fract);
+}
+
 double	fix_texture_pos(t_rcdata dt, t_player pl)
 {
 	double	fix_x;
@@ -36,17 +45,17 @@ double	fix_texture_pos(t_rcdata dt, t_player pl)
 
 	fix_x = 0;
 	if (dt.side == 0 || dt.side == 2)
-		fix_x = modf(pl.pos.y, &garb);
+		fix_x = ft_modf(pl.pos.y, &garb);
 	else
-		fix_x = modf(pl.pos.x, &garb);
+		fix_x = ft_modf(pl.pos.x, &garb);
 	if ((pl.prev_pos.y != pl.pos.y) && (dt.side == 0 || dt.side == 2))
-		fix_x = modf(pl.pos.y, &garb);
+		fix_x = ft_modf(pl.pos.y, &garb);
 	else if ((pl.prev_pos.x != pl.pos.x) && (dt.side == 1 || dt.side == 3))
-		fix_x = modf(pl.pos.x, &garb);
+		fix_x = ft_modf(pl.pos.x, &garb);
 	else if ((pl.prev_pos.x != pl.pos.x) && (dt.side == 0 || dt.side == 2))
-		fix_x = modf(pl.pos.y, &garb);
+		fix_x = ft_modf(pl.pos.y, &garb);
 	else if ((pl.prev_pos.y != pl.pos.y) && (dt.side == 1 || dt.side == 3))
-		fix_x = modf(pl.pos.x, &garb);
+		fix_x = ft_modf(pl.pos.x, &garb);
 	return (fix_x);
 }
 
@@ -100,7 +109,8 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 	while (++y < dt->draw_start)
 		my_mlx_pixel_put(screen, x, y, col);
 	// backgroung up end
-
+	if (x == WIN_WIDTH / 2)
+		c->ground_end = dt->draw_end;
 	y = dt->draw_start - 1;
 	while (++y < dt->draw_end)
 	{
@@ -110,7 +120,6 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 				((c->texture[dt->tex_num].height * dt->tex_y + dt->tex_x)));
 		my_mlx_pixel_put(screen, x, y, col);
 	}
-
 	//background down
 	y -= 1;
 	col = c->lvl->ceil[0] * 65536 + c->lvl->ceil[1] * 256 + c->lvl->ceil[2];
