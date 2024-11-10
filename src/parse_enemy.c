@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/10 03:21:56 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/10 17:57:22 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,9 @@ void set_enemy_pos(t_maps *lvl, t_enemy *adv, int nb)
 				break;
 		i++;
 	}
-	adv->pos.x = (double)j + 0.5;
-	adv->pos.y = (double)i + 0.5;
-	adv->hitbox.x = 0.4;
-	adv->hitbox.y = 1;
+	adv->pos = (t_point){j + 0.5, i + 0.5};
+	adv->dir = (t_point){0, -1};
+	adv->hitbox = (t_point){0.4, 1};
 	adv->id = nb;
 }
 
@@ -114,15 +113,11 @@ int get_enemy_inf(t_cube *cube)
 	l = 0;
 	while (++i < adv[0].path_len - 1)
 	{
-		first_text = 0;
-		if (i > 1)
-			first_text = i - 1;
+		first_text = i;
 		while (i < adv[0].path_len - 1 && !ft_strncmp(adv[0].path[i], adv[0].path[i + 1], ft_strlen(adv[0].path[i]) - 5))
 			i++;
 		len = get_ptr_len(&adv[0], &l);
-		*len = i - first_text;
-		if (first_text ==  0)
-			(*len)++;
+		*len = i - first_text + 1;
 		text = get_ptr_texture(&adv[0], &l);
 		if (!*text)
 			*text = malloc(sizeof(t_data) * ((*len) + 1));
@@ -131,7 +126,6 @@ int get_enemy_inf(t_cube *cube)
 		j = -1;
 		while (++j < *len)
 		{
-		//ft_printf("%s %p %d bug\n", adv[0].path[first_text + j], text, *len);
 			(*text)[j].width = 100;
 			(*text)[j].height = 150;
 			xpm_to_img(cube, &(*text)[j], adv[0].path[first_text + j]);
@@ -145,7 +139,6 @@ int get_enemy_inf(t_cube *cube)
 
 int check_enemy_inf(t_cube *cube, char *str)
 {
-	//int		i;
 	int		len;
 	char	*tmp;
 	char	**lst;
@@ -161,7 +154,6 @@ int check_enemy_inf(t_cube *cube, char *str)
 	data.width = 80;
 	data.height = 120;
 	data.img = mlx_xpm_file_to_image(cube->mlx, lst[0], &data.width, &data.height);
-	//printf("%s\n", lst[0]);
 	if (!data.img)
 		return (printf("Enemy texture error\n"), 0);
 	return (free_maps(lst, len), cube->lvl->nb_enemy++, 1);
