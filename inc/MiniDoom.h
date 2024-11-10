@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/10 01:37:46 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/10 19:32:48 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,7 @@ typedef struct s_enemy
 	t_point	dir;
 	t_point	hitbox;
 	char	**path;
+	int		path_len;
 	int		max_text_fr;
 	int		max_text_bk;
 	int		max_text_sd;
@@ -115,8 +116,9 @@ typedef struct s_enemy
 	int		id;
 	int		hp;
 	int		dmg;
-	int		path_len;
 	double	freq_atk;
+	double	speed;
+	double	fov;
 }	t_enemy;
 
 typedef struct s_maps
