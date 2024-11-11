@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/10 19:16:42 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/10 19:40:22 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,7 +284,10 @@ void draw_enemy(t_cube *cube, int x, int id)
 	fps %= cube->frame * 4 + cube->frame * cube->player->run;
 	hei = img->height * scale;
 	wid = img->width * scale;
-	n_x = x - wid / 2;
+	// n_x = x + wid / 2;
+	// if (side == 0)
+	// 	n_x = x - wid / 2;
+	n_x = x;
 	n_y = cube->ground_end + (WIN_HEIGHT - cube->ground_end) / dist - hei;
 	if (adv->text_on.img)
 		mlx_destroy_image(cube->mlx, adv->text_on.img);
