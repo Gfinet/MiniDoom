@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MiniDoom.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/14 18:42:47 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/15 20:43:50 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,7 @@ typedef struct s_player
 	t_point	pos;
 	t_point	dir;
 	t_point	prev_pos;
+	t_point	pov;
 	t_data	life;
 	int		shoot;
 	int		run;
@@ -190,7 +191,7 @@ typedef struct s_cube
 	t_data		door_texture[4];
 	t_data		screen;
 	t_door		*doors;
-	t_point		en_wall;
+	int			wall;
 	int			frame;
 	int			mouse;
 	int			pause;
@@ -213,12 +214,11 @@ typedef struct s_rcdata
 	t_point			side_dist_m;
 	t_point			rays;
 	t_point			step;
-	t_point			pov;
 	t_point			dest;
 	t_point			center;
 	int				side;
 	int				d_side;
-	char				hit;
+	char			hit;
 	double			frameTime;
 	double			oldTime;
 	double			time;

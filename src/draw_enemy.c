@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   draw_enemy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/14 21:45:12 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/15 21:47:49 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,16 @@ void raycast_enemy(t_cube *cube)
 	t_point		*play_pos;
 	
 	play_pos = &cube->player->pos;
-	data.pov.x = -(float)(0.66 * cube->player->dir.y);
-	data.pov.y = (float)(0.66 * cube->player->dir.x);
+	cube->player->pov.x = -(float)(0.66 * cube->player->dir.y);
+	cube->player->pov.y = (float)(0.66 * cube->player->dir.x);
 	x = -1;
 	set_draw_enemy(cube, 0);
 	while (++x < WIN_WIDTH)
 	{
 		en_seen = 0;
 		data.camerx = 2 * x / ((double)WIN_WIDTH) - 1; //x-coordinate in camera space
-		data.rays.x = cube->player->dir.x + data.pov.x * data.camerx;
-		data.rays.y = cube->player->dir.y + data.pov.y * data.camerx;
+		data.rays.x = cube->player->dir.x + cube->player->pov.x * data.camerx;
+		data.rays.y = cube->player->dir.y + cube->player->pov.y * data.camerx;
 		//Digital Differential Analysis
 		data.var.x = set_delta(data.rays.x);
 		data.var.y = set_delta(data.rays.y);
@@ -58,7 +58,7 @@ void raycast_enemy(t_cube *cube)
 			{
 				adv->pix_pos = data.dest;
 				adv->x = x;
-				adv->draw = 1;
+				adv->draw ++;
 				en_seen = 1;
 			}
 			if (data.side_dist.x < data.side_dist.y)
@@ -86,11 +86,15 @@ void raycast_enemy(t_cube *cube)
 			else
 				data.perp_wall_dist = (data.side_dist.x - data.var.x);
 			
+			dr.draw_start = WIN_HEIGHT / 2 - dr.line_height / 2 + 100;
+			if (dr.draw_start < 0)
+				dr.draw_start = 0;
 			dr.line_height = (int)( WIN_HEIGHT / data.perp_wall_dist);
 			dr.draw_end = - dr.line_height / 2 + WIN_HEIGHT / 2 + 100;
 			if (dr.draw_end >= WIN_HEIGHT)
 				dr.draw_end = WIN_HEIGHT - 1;
-
+			cube->wall = dr.draw_end - dr.draw_start;
+			cube->wall /=2;
 			set_enemies_seen(cube, x, data.perp_wall_dist, dr.draw_end);
 		}
 	}
@@ -105,7 +109,7 @@ void set_enemies_seen(t_cube *cube, int x, double wall_dist, int dr_end)
 	while (++i < cube->lvl->nb_enemy)
 	{
 		adv = &advs[i];
-		if (adv->x == x && adv->draw)
+		if (adv->x == x && adv->draw == 1)
 		{
 			adv->ground_end = dr_end;
 			adv->wall_dist = wall_dist;
@@ -306,6 +310,28 @@ void draw_enemies(t_cube *cube)
 	}
 }
 
+// int find_y(t_enemy *adv, int x, double dist)
+// {
+// 	long long y;
+// 	double b, delta, dp1, dp2;
+
+// 	b = -2 * WIN_HEIGHT;
+// 	dp1 = x * x +WIN_WIDTH * WIN_WIDTH / 4 - WIN_WIDTH * x + WIN_HEIGHT * WIN_HEIGHT;
+// 	dp2 = dist * (WIN_HEIGHT - adv->ground_end) / adv->wall_dist;
+// 	delta = (4 * WIN_HEIGHT * WIN_HEIGHT) - 4 * (dp1 - dp2);
+// 	printf("del : %f\n", delta);
+// 	delta = sqrt(delta);
+// 	printf("b   : %f\ndp1 : %f\ndp2 : %f\ndel : %f\n", b, dp1, dp2, delta);
+
+// 	y = (-b - delta) / 2;
+// 	printf("y = %lld\n", y);
+// 	if (y < 0)
+// 	{
+// 		printf("neg\n");
+// 		y = (-b + delta) / 2;
+// 	}
+// 	return (printf("y = %lld\n\n", y), y);
+// }
 
 void draw_enemy(t_cube *cube, t_enemy *adv)
 {
@@ -313,23 +339,26 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	int			max_text;
 	double		dist, dist_w, scale = 0.0;
 	static int	nb_draw[4] = {0, 0, 0, 0},	fps = 0;
+	t_player	*play;
 	t_point		pos;
 	t_data		*use_text;
 	t_img_mlx	*img;
 
-	pos = cube->player->pos;
+	play = cube->player;
+	pos = play->pos;
+	
 	dist = dist_ab(pos, adv->pos);
 	dist_w = adv->wall_dist;
 	if (dist == 0)
 		return ;
-	side = get_en_side(adv, cube->player->dir, &use_text, &max_text);
+	side = get_en_side(adv, play->dir, &use_text, &max_text);
 	scale = 6 / dist;
 	fps++;
-	if (fps - 1 == (cube->frame / (1 + cube->player->run) / 2))
+	if (fps - 1 == (cube->frame / (1 + play->run) / 2))
 		nb_draw[side]++;
 	nb_draw[side] %= max_text;
 	img = use_text[nb_draw[side]].img;
-	fps %= cube->frame * 4 + cube->frame * cube->player->run;
+	fps %= cube->frame * 4 + cube->frame * play->run;
 
 	if (side % 2)
 		fix = (adv->pos.y - adv->dest.y) / adv->hitbox.y;
@@ -337,9 +366,13 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 		fix = (adv->pos.x - adv->dest.x) / adv->hitbox.x;
 	hei = img->height * scale;
 	wid = img->width * scale;
-	n_x = adv->x - fix;
-	n_y = adv->ground_end + dist / dist_w ; //(adv->ground_end) * (dist) / (dist_w);
-	printf("%f\n", adv->ground_end / dist_w);
+	n_x = adv->x;
+	n_y = adv->ground_end - cube->wall + (dist) / dist_w ; //(adv->ground_end) * (dist) / (dist_w);
+	n_y = (int)(WIN_HEIGHT / dist);
+	n_y = WIN_HEIGHT / 2 - hei / 2 + 110;
+	//n_y = WIN_HEIGHT + (adv->ground_end * dist - WIN_HEIGHT) / dist_w ; //(adv->ground_end) * (dist) / (dist_w);
+	//n_y = WIN_HEIGHT - n_y;
+	//printf("%f\n", adv->ground_end / dist_w);
 	(void)dist_w;
 	(void)n_x;
 	(void)n_y;
@@ -351,3 +384,4 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	put_xpm_to_mlx_img(adv, &use_text[nb_draw[side]], scale, (side == 1));
 	mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
 }
+

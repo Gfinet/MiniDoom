@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/14 17:12:18 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/15 20:44:27 by gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,15 +138,15 @@ void raycasting(t_cube *cube)
 	t_point *play_pos;
 
 	play_pos = &cube->player->pos;
-	data.pov.x = -(float)(0.66 * cube->player->dir.y);
-	data.pov.y = (float)(0.66 * cube->player->dir.x);
+	cube->player->pov.x = -(float)(0.66 * cube->player->dir.y);
+	cube->player->pov.y = (float)(0.66 * cube->player->dir.x);
 	x = -1;
 
 	while (++x < WIN_WIDTH)
 	{
 		data.camerx = 2 * x / ((double)WIN_WIDTH) - 1; //x-coordinate in camera space
-		data.rays.x = cube->player->dir.x + data.pov.x * data.camerx;
-		data.rays.y = cube->player->dir.y + data.pov.y * data.camerx;
+		data.rays.x = cube->player->dir.x + cube->player->pov.x * data.camerx;
+		data.rays.y = cube->player->dir.y + cube->player->pov.y * data.camerx;
 		//Digital Differential Analysis
 		data.var.x = set_delta(data.rays.x);
 		data.var.y = set_delta(data.rays.y);
