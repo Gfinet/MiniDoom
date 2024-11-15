@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   draw_enemy.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/15 21:47:49 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/15 23:01:00 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ void raycast_enemy(t_cube *cube)
 			adv = enemy_in_sight(cube, &data);
 			if (adv && !adv->draw)
 			{
-				adv->pix_pos = data.dest;
 				adv->x = x;
 				adv->draw ++;
 				en_seen = 1;
@@ -136,7 +135,7 @@ t_enemy *enemy_in_sight(t_cube *cube, t_rcdata *data)
 		// && (int)posi.y == (int)ray.y ) // && posi.y < (int)data->dest.x + 1) // && posi.x < (int)data->dest.x + 1 
 		&& ray.x < posi.x + hitb.x && ray.x > posi.x - hitb.x \
 		&& ray.y < posi.y + hitb.y && ray.y > posi.y - hitb.y )
-			return (adv->dest = ray, &adv[i]);
+			return (&adv[i]);
 		i++;
 	}
 	return (0);
@@ -187,38 +186,28 @@ void put_xpm_to_mlx_img(t_enemy *adv, t_data *use_text, double scale, int side)
 	img2 = adv->text_on.img;
 	while (++y < img->height)
 	{
-		if (!side)
+		x = -1;
+		while (++x < img->width)
 		{
-			x = -1;
-			while (++x < img->width)
-			{
-				pixel = (int)(use_text->line_length * y / 4 + x * (use_text->bits_per_pixel / 32));
-				col = *((unsigned int *)use_text->addr + pixel);
-				
+			pixel = (int)(use_text->line_length * y / 4 + x * (use_text->bits_per_pixel / 32));
+			col = *((unsigned int *)use_text->addr + pixel);
+			// if (x < adv->st_dr_end.x || x > adv->st_dr_end.y)
+			// 	col = 0xFFFFFFFF;
+			if (!side)
+			{	
 				if (scale > 1)
 					up_scale(adv, x, y, scale, col);		
 				else if (!(x % (int)(1 / scale)) && !(y % (int)(1 / scale)))
-				{
 					if (x * scale < img2->width && y * scale < img2->height)
 						my_mlx_pixel_put(&adv->text_on, (x * scale), (y * scale), col);
-				}
 			}
-		}
-		else
-		{
-			x = -1;
-			while (++x < img->width)
+			else
 			{
-				pixel = (int)(use_text->line_length * y / 4 + x * (use_text->bits_per_pixel / 32));
-				col = *((unsigned int *)use_text->addr + pixel);
-				
 				if (scale > 1)
 					up_scale(adv, img->width - 1 - x, y, scale, col);		
 				else if (!(x % (int)(1 / scale)) && !(y % (int)(1 / scale)))
-				{
 					if ((img->width - x) * scale < img2->width && y * scale < img2->height)
 						my_mlx_pixel_put(&adv->text_on, ((img->width - x) * scale), (y * scale), col);
-				}
 			}
 		}
 	}
@@ -335,7 +324,7 @@ void draw_enemies(t_cube *cube)
 
 void draw_enemy(t_cube *cube, t_enemy *adv)
 {
-	int			wid, hei, n_x, n_y, side = -1, fix;
+	int			wid, hei, n_x, n_y, side = -1; //, fix;
 	int			max_text;
 	double		dist, dist_w, scale = 0.0;
 	static int	nb_draw[4] = {0, 0, 0, 0},	fps = 0;
@@ -360,10 +349,10 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	img = use_text[nb_draw[side]].img;
 	fps %= cube->frame * 4 + cube->frame * play->run;
 
-	if (side % 2)
-		fix = (adv->pos.y - adv->dest.y) / adv->hitbox.y;
-	else
-		fix = (adv->pos.x - adv->dest.x) / adv->hitbox.x;
+	// if (side % 2)
+	// 	fix = (adv->pos.y - adv->dest.y) / adv->hitbox.y;
+	// else
+	// 	fix = (adv->pos.x - adv->dest.x) / adv->hitbox.x;
 	hei = img->height * scale;
 	wid = img->width * scale;
 	n_x = adv->x;

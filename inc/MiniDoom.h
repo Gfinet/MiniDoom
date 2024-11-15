@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   MiniDoom.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/15 20:43:50 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/15 22:51:55 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,8 +107,7 @@ typedef struct s_enemy
 	t_point	pos;
 	t_point	dir;
 	t_point	hitbox;
-	t_point	pix_pos;
-	t_point	dest;
+	t_point st_dr_end;
 	double	wall_dist;
 	char	**path;
 	int		ground_end;
