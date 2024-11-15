@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/10 19:36:36 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/14 19:33:58 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,9 @@ void set_enemy_pos(t_maps *lvl, t_enemy *adv, int nb)
 				break;
 		i++;
 	}
-	adv->pos = (t_point){j + 0.5, i + 1.5};
+	adv->pos = (t_point){j, i + 0.5};
 	adv->dir = (t_point){0, -1};
-	adv->hitbox = (t_point){0.4, 1};
+	adv->hitbox = (t_point){0.5, 0.5};
 	adv->id = nb;
 }
 

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/10 02:08:02 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/14 17:12:18 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static void	get_base_info_draw(t_drawdata *dr, t_rcdata dt, t_player player,
 	(*dr).line_height = (int)( WIN_HEIGHT / dt.perp_wall_dist);
 	(*dr).pitch = 100;
 
-	(*dr).draw_start = -dr->line_height / 2 + WIN_HEIGHT / 2 + dr->pitch;
+	(*dr).draw_start = WIN_HEIGHT / 2 - dr->line_height / 2 + dr->pitch;
 	if (dr->draw_start < 0)
 		(*dr).draw_start = 0;
 
@@ -109,8 +109,10 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 	while (++y < dt->draw_start)
 		my_mlx_pixel_put(screen, x, y, col);
 	// backgroung up end
-	if (x == WIN_WIDTH / 2)
-		c->ground_end = dt->draw_end;
+	
+	// if (x == WIN_WIDTH / 2)
+	// 	c->ground_end = dt->draw_end;
+	
 	y = dt->draw_start - 1;
 	while (++y < dt->draw_end)
 	{
@@ -121,7 +123,7 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 		my_mlx_pixel_put(screen, x, y, col);
 	}
 	//background down
-	y -= 1;
+	y = dt->draw_end - 1;
 	col = c->lvl->ceil[0] * 65536 + c->lvl->ceil[1] * 256 + c->lvl->ceil[2];
 	while (++y < WIN_HEIGHT - 1)
 		my_mlx_pixel_put(screen, x, y, col);

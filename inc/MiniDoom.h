@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/10 19:32:48 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/14 18:42:47 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,12 +107,18 @@ typedef struct s_enemy
 	t_point	pos;
 	t_point	dir;
 	t_point	hitbox;
+	t_point	pix_pos;
+	t_point	dest;
+	double	wall_dist;
 	char	**path;
+	int		ground_end;
+	int		x;
 	int		path_len;
 	int		max_text_fr;
 	int		max_text_bk;
 	int		max_text_sd;
 	int		draw;
+	int		seen;
 	int		id;
 	int		hp;
 	int		dmg;
@@ -177,14 +183,14 @@ typedef struct s_cube
 {
 	void		*mlx;
 	void		*win;
+	t_player	*player;
 	t_maps		*lvl;
 	t_pause		pause_sc;
 	t_data		texture[4];
 	t_data		door_texture[4];
-	t_player	*player;
 	t_data		screen;
 	t_door		*doors;
-	int			ground_end;
+	t_point		en_wall;
 	int			frame;
 	int			mouse;
 	int			pause;
@@ -358,13 +364,15 @@ t_mirr	*find_mirr(t_cube *cube, int x, int y);
 int		get_mirr_state(t_mirr *mirr);
 
 //parse_enemy
-int		enemy_in_sight(t_cube *cube, t_rcdata *data);
+t_enemy	*enemy_in_sight(t_cube *cube, t_rcdata *data);
 int		check_enemy_inf(t_cube *cube, char *str);
 void	set_draw_enemy(t_cube *cube, int val);
 void	set_enemy(t_maps *lvl, char *str);
 int		get_enemy_inf(t_cube *cube);
 
 //draw_enemy
-void	draw_enemy(t_cube *cube, int x, int id);
+void	draw_enemy(t_cube *cube, t_enemy *adv);
+void	set_enemies_seen(t_cube *cube, int x, double wall_dist, int dr_end);
+void	draw_enemies(t_cube *cube);
 void	raycast_enemy(t_cube *cube);
 #endif
