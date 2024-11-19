@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/15 22:51:55 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/19 20:16:59 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,8 @@ typedef struct s_enemy
 	t_point	hitbox;
 	t_point st_dr_end;
 	double	wall_dist;
+	double	tmp_dist;
+	double	short_dist;
 	char	**path;
 	int		ground_end;
 	int		x;
@@ -374,4 +376,6 @@ void	draw_enemy(t_cube *cube, t_enemy *adv);
 void	set_enemies_seen(t_cube *cube, int x, double wall_dist, int dr_end);
 void	draw_enemies(t_cube *cube);
 void	raycast_enemy(t_cube *cube);
+void	adjust_enemy_visibility(t_cube *cube,t_enemy *adv, t_rcdata *data);
+double	dist_ab(t_point a, t_point b);
 #endif

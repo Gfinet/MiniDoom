@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/14 19:33:58 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/19 20:15:45 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,12 @@ void set_draw_enemy(t_cube *cube, int val)
 	int		i = -1;
 
 	while (++i < cube->lvl->nb_enemy)
+	{
 		cube->lvl->enemy[i].draw = val;
+		cube->lvl->enemy[i].short_dist = 999;
+		cube->lvl->enemy[i].tmp_dist = 0;
+	}
+	
 }
 
 void set_enemy_pos(t_maps *lvl, t_enemy *adv, int nb)

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/15 23:01:00 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/19 20:26:39 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 void raycast_enemy(t_cube *cube)
 {
-	int			x, en_seen;
+	int			x; //, en_seen;
 	t_rcdata	data;
-	t_drawdata	dr;
+	//t_drawdata	dr;
 	t_enemy		*adv = 0;
 	t_point		*play_pos;
 	
@@ -27,7 +27,7 @@ void raycast_enemy(t_cube *cube)
 	set_draw_enemy(cube, 0);
 	while (++x < WIN_WIDTH)
 	{
-		en_seen = 0;
+		//en_seen = 0;
 		data.camerx = 2 * x / ((double)WIN_WIDTH) - 1; //x-coordinate in camera space
 		data.rays.x = cube->player->dir.x + cube->player->pov.x * data.camerx;
 		data.rays.y = cube->player->dir.y + cube->player->pov.y * data.camerx;
@@ -56,9 +56,16 @@ void raycast_enemy(t_cube *cube)
 			adv = enemy_in_sight(cube, &data);
 			if (adv && !adv->draw)
 			{
-				adv->x = x;
-				adv->draw ++;
-				en_seen = 1;
+				adv->tmp_dist = dist_ab(*play_pos, adv->pos);
+				if (adv->tmp_dist < adv->short_dist)
+				{
+					adv->short_dist = adv->tmp_dist;
+					adjust_enemy_visibility(cube, adv, &data);
+					adv->x = x;
+					adv->wall_dist = adv->tmp_dist;
+					adv->draw++;
+					//en_seen = 1;
+				}
 			}
 			if (data.side_dist.x < data.side_dist.y)
     	    {
@@ -78,24 +85,24 @@ void raycast_enemy(t_cube *cube)
 			}
 			data.hit = cube->lvl->c_maps[(int)data.dest.y][(int)data.dest.x];
 		}
-		if (en_seen)
-		{
-			if (data.side % 2)
-				data.perp_wall_dist = (data.side_dist.y - data.var.y);
-			else
-				data.perp_wall_dist = (data.side_dist.x - data.var.x);
+		// if (en_seen)
+		// {
+		// 	if (data.side % 2)
+		// 		data.perp_wall_dist = (data.side_dist.y - data.var.y);
+		// 	else
+		// 		data.perp_wall_dist = (data.side_dist.x - data.var.x);
 			
-			dr.draw_start = WIN_HEIGHT / 2 - dr.line_height / 2 + 100;
-			if (dr.draw_start < 0)
-				dr.draw_start = 0;
-			dr.line_height = (int)( WIN_HEIGHT / data.perp_wall_dist);
-			dr.draw_end = - dr.line_height / 2 + WIN_HEIGHT / 2 + 100;
-			if (dr.draw_end >= WIN_HEIGHT)
-				dr.draw_end = WIN_HEIGHT - 1;
-			cube->wall = dr.draw_end - dr.draw_start;
-			cube->wall /=2;
-			set_enemies_seen(cube, x, data.perp_wall_dist, dr.draw_end);
-		}
+		// 	dr.draw_start = WIN_HEIGHT / 2 - dr.line_height / 2 + 100;
+		// 	if (dr.draw_start < 0)
+		// 		dr.draw_start = 0;
+		// 	dr.line_height = (int)( WIN_HEIGHT / data.perp_wall_dist);
+		// 	dr.draw_end = - dr.line_height / 2 + WIN_HEIGHT / 2 + 100;
+		// 	if (dr.draw_end >= WIN_HEIGHT)
+		// 		dr.draw_end = WIN_HEIGHT - 1;
+		// 	cube->wall = dr.draw_end - dr.draw_start;
+		// 	cube->wall /=2;
+		// 	//set_enemies_seen(cube, x, data.perp_wall_dist, dr.draw_end);
+		// }
 	}
 }
 
@@ -133,8 +140,8 @@ t_enemy *enemy_in_sight(t_cube *cube, t_rcdata *data)
 		if (!(adv[i].draw) \
 		// && (int)posi.x == (int)ray.x \
 		// && (int)posi.y == (int)ray.y ) // && posi.y < (int)data->dest.x + 1) // && posi.x < (int)data->dest.x + 1 
-		&& ray.x < posi.x + hitb.x && ray.x > posi.x - hitb.x \
-		&& ray.y < posi.y + hitb.y && ray.y > posi.y - hitb.y )
+		&& ray.x < posi.x + hitb.x / 2 && ray.x > posi.x - hitb.x / 2 \
+		&& ray.y < posi.y + hitb.y / 2 && ray.y > posi.y - hitb.y / 2 )
 			return (&adv[i]);
 		i++;
 	}
@@ -175,6 +182,28 @@ void up_scale(t_enemy *adv, int x, int y, double scale, unsigned int col)
 	}
 }
 
+void adjust_enemy_visibility(t_cube *cube, t_enemy *adv, t_rcdata *data)
+{
+	double hitbox_left, hitbox_right;
+    double intersection_start, intersection_end;
+
+    // Calculer les bords gauche et droit de la hitbox de l'ennemi
+    hitbox_left = adv->pos.x - adv->hitbox.x / 2;
+    hitbox_right = adv->pos.x + adv->hitbox.x / 2;
+
+    // Calculer les intersections entre le rayon et les bords de la hitbox
+    intersection_start = (hitbox_left - cube->player->pos.x) / data->rays.x;
+    intersection_end = (hitbox_right - cube->player->pos.x) / data->rays.x;
+
+    // Convertir les intersections en coordonnées écran (X)
+    adv->st_dr_end.x = (int)((WIN_WIDTH / 2) * (1 + intersection_start / data->perp_wall_dist));
+    adv->st_dr_end.y = (int)((WIN_WIDTH / 2) * (1 + intersection_end / data->perp_wall_dist));
+
+    // Clamper les valeurs pour rester dans les limites de l'écran
+    if (adv->st_dr_end.x < 0) adv->st_dr_end.x = 0;
+    if (adv->st_dr_end.y >= WIN_WIDTH) adv->st_dr_end.y = WIN_WIDTH - 1;	
+}
+
 void put_xpm_to_mlx_img(t_enemy *adv, t_data *use_text, double scale, int side)
 {
 	int 			x, y = -1;
@@ -191,6 +220,7 @@ void put_xpm_to_mlx_img(t_enemy *adv, t_data *use_text, double scale, int side)
 		{
 			pixel = (int)(use_text->line_length * y / 4 + x * (use_text->bits_per_pixel / 32));
 			col = *((unsigned int *)use_text->addr + pixel);
+			// if (x < img->width / 2)
 			// if (x < adv->st_dr_end.x || x > adv->st_dr_end.y)
 			// 	col = 0xFFFFFFFF;
 			if (!side)
@@ -223,20 +253,6 @@ t_enemy *get_enemy(t_cube *cube, int id)
 		if (cube->lvl->enemy[i].id == id)
 			adv = &cube->lvl->enemy[i];
 	return (adv);
-}
-
-double get_angle_vect(t_point adv, t_point play)
-{
-	double	angle, res, up_form, down_form, sqrt_x, sqrt_y;
-
-	up_form = (play.x * adv.x + play.y * adv.y);
-	sqrt_x = sqrt(play.x * play.x + adv.x * adv.x);
-	sqrt_y = sqrt(play.y * play.y + adv.y * adv.y);
-	down_form = sqrt_x * sqrt_y;
-	res = up_form / down_form;
-	angle = acos(res);
-	printf("%f %f %f %f %f %f\n",up_form, down_form, sqrt_x, sqrt_y, res, angle);
-	return (angle);
 }
 
 int get_en_side(t_enemy *adv, t_point play_dir, t_data **text, int *max_text)
@@ -338,10 +354,11 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	
 	dist = dist_ab(pos, adv->pos);
 	dist_w = adv->wall_dist;
-	if (dist == 0)
+	if (dist <= 0)
 		return ;
-	side = get_en_side(adv, play->dir, &use_text, &max_text);
 	scale = 6 / dist;
+	
+	side = get_en_side(adv, play->dir, &use_text, &max_text);
 	fps++;
 	if (fps - 1 == (cube->frame / (1 + play->run) / 2))
 		nb_draw[side]++;
@@ -356,8 +373,8 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	hei = img->height * scale;
 	wid = img->width * scale;
 	n_x = adv->x;
-	n_y = adv->ground_end - cube->wall + (dist) / dist_w ; //(adv->ground_end) * (dist) / (dist_w);
-	n_y = (int)(WIN_HEIGHT / dist);
+	//n_y = adv->ground_end - cube->wall + (dist) / dist_w ; //(adv->ground_end) * (dist) / (dist_w);
+	//n_y = (int)(WIN_HEIGHT / dist);
 	n_y = WIN_HEIGHT / 2 - hei / 2 + 110;
 	//n_y = WIN_HEIGHT + (adv->ground_end * dist - WIN_HEIGHT) / dist_w ; //(adv->ground_end) * (dist) / (dist_w);
 	//n_y = WIN_HEIGHT - n_y;
