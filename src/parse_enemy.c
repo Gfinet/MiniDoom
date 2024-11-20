@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/19 20:15:45 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/20 00:45:04 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void set_enemy_pos(t_maps *lvl, t_enemy *adv, int nb)
 	}
 	adv->pos = (t_point){j, i + 0.5};
 	adv->dir = (t_point){0, -1};
-	adv->hitbox = (t_point){0.5, 0.5};
+	adv->hitbox = (t_point){0.8, 0.8};
 	adv->id = nb;
 }
 
@@ -106,7 +106,7 @@ static int *get_ptr_len(t_enemy *adv, int *num)
 	return (len);
 }
 
-int get_enemy_inf(t_cube *cube)
+int get_enemy_inf(t_cube *cube, int ind)
 {
 	int		first_text, i, j, l;
 	int		*len;
@@ -116,14 +116,14 @@ int get_enemy_inf(t_cube *cube)
 	adv = cube->lvl->enemy;
 	i = -1;
 	l = 0;
-	while (++i < adv[0].path_len - 1)
+	while (++i < adv[ind].path_len - 1)
 	{
 		first_text = i;
-		while (i < adv[0].path_len - 1 && !ft_strncmp(adv[0].path[i], adv[0].path[i + 1], ft_strlen(adv[0].path[i]) - 5))
+		while (i < adv[ind].path_len - 1 && !ft_strncmp(adv[ind].path[i], adv[ind].path[i + 1], ft_strlen(adv[ind].path[i]) - 5))
 			i++;
-		len = get_ptr_len(&adv[0], &l);
+		len = get_ptr_len(&adv[ind], &l);
 		*len = i - first_text + 1;
-		text = get_ptr_texture(&adv[0], &l);
+		text = get_ptr_texture(&adv[ind], &l);
 		if (!*text)
 			*text = malloc(sizeof(t_data) * ((*len) + 1));
 		if (!*text)
@@ -133,12 +133,12 @@ int get_enemy_inf(t_cube *cube)
 		{
 			(*text)[j].width = 100;
 			(*text)[j].height = 150;
-			xpm_to_img(cube, &(*text)[j], adv[0].path[first_text + j]);
+			xpm_to_img(cube, &(*text)[j], adv[ind].path[first_text + j]);
 			if (!(*text)[j].img)
 				return (printf("enemy sprites loading error\n"), 0);
 		}
 	}
-	set_enemy_pos(cube->lvl, &cube->lvl->enemy[0], 1);
+	set_enemy_pos(cube->lvl, &adv[ind], 1);
 	return (1);
 }
 

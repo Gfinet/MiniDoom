@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/10 00:55:37 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/20 00:53:36 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ static int	init_cube(t_cube *cube, t_player *play, t_maps *level)
 	*cube = (t_cube){0};
 	*play = (t_player){0};
 	*level = (t_maps){0};
+	cube->hit_data = (t_ray_hit){0};
 	cube->screen = (t_data){0};
 	cube->frame = FRAME;
 	cube->mlx = mlx_init();
@@ -58,8 +59,16 @@ static int	get_textures(t_cube *cube)
 			return (-i);
 	if (!get_weapon(cube))
 		return (0);
-	if (!get_enemy_inf(cube))
+	i = -1;
+	cube->hit_data.enemies_dist = malloc(sizeof(double) * cube->lvl->nb_enemy);
+	if (!cube->hit_data.enemies_dist)
 		return (0);
+	cube->hit_data.enemies_hit = malloc(sizeof(t_enemy *) * cube->lvl->nb_enemy);
+	if (!cube->hit_data.enemies_hit)
+		return (0);
+	while (++i < cube->lvl->nb_enemy)
+		if (!get_enemy_inf(cube, i))
+			return (0);
 	if (!new_img(cube, &cube->screen, WIN_WIDTH, WIN_HEIGHT))
 		return (0);
 	return (1);

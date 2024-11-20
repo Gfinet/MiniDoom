@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/10 01:38:22 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/20 00:47:32 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,28 +49,28 @@ void free_weapons(t_cube *cube)
 	}
 }
 
-void free_enemy(t_cube *cube)
+void free_enemy(t_cube *cube, t_enemy *adv)
 {
 	int		i = -1;
-	t_enemy *adv;
 
-	adv = cube->lvl->enemy;
-	while (++i < adv[0].max_text_fr)
-		mlx_destroy_image(cube->mlx, adv[0].spr_fr[i].img);
+	while (++i < adv->max_text_fr)
+		mlx_destroy_image(cube->mlx, adv->spr_fr[i].img);
 	i = -1;
-	while (++i < adv[0].max_text_bk)
-		mlx_destroy_image(cube->mlx, adv[0].spr_bk[i].img);
+	while (++i < adv->max_text_bk)
+		mlx_destroy_image(cube->mlx, adv->spr_bk[i].img);
 	i = -1;
-	while (++i < adv[0].max_text_sd)
-		mlx_destroy_image(cube->mlx, adv[0].spr_sd[i].img);
-	free(adv[0].spr_fr);
-	free(adv[0].spr_bk);
-	free(adv[0].spr_sd);
-	free(adv[0].path);
+	while (++i < adv->max_text_sd)
+		mlx_destroy_image(cube->mlx, adv->spr_sd[i].img);
+	mlx_destroy_image(cube->mlx, adv->text_on.img);
+	free(adv->spr_fr);
+	free(adv->spr_bk);
+	free(adv->spr_sd);
+	free(adv->path);
 }
 
 void	free_cube(t_cube *cube)
 {
+	int		i = -1;
 	t_door	*cur;
 	t_door	*next;
 
@@ -79,6 +79,11 @@ void	free_cube(t_cube *cube)
 		free_maps(cube->lvl->c_maps, cube->lvl->m_height - 1);
 		if (cube->lvl->c_text)
 			free_maps(cube->lvl->c_text, 3);
+		if (cube->lvl->nb_enemy > 0)
+		{
+			free(cube->hit_data.enemies_dist);
+			free(cube->hit_data.enemies_hit);
+		}
 		printf("maps freed\n");
 	}
 	cur = cube->doors;
@@ -97,8 +102,9 @@ void	free_cube(t_cube *cube)
 		printf("guns freed\n");
 	}
 	if (cube->lvl->enemy)
-	{	
-		free_enemy(cube);
+	{
+		while (++i < cube->lvl->nb_enemy)
+			free_enemy(cube, &cube->lvl->enemy[i]);
 		free(cube->lvl->enemy);
 		printf("enemies freed\n");
 	}

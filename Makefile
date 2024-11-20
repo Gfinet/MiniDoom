@@ -15,6 +15,7 @@ SRCS = 	src/MiniDoom.c				\
 		src/check_arg.c 			\
 		src/check_arg2.c 			\
 		src/mlx_img.c 				\
+		src/math_utils.c 				\
 		src/utils.c 				\
 		src/life.c 					\
 		src/movements.c 			\

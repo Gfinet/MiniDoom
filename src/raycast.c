@@ -3,15 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/15 20:44:27 by gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/20 01:22:14 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
+int		ray_in_limit(t_cube *cube, int x, int y)
+{
+	t_maps *lvl;
+
+	lvl = cube->lvl;
+	return (!(x >= lvl->max_len || y >= lvl->m_height));
+}
 
 double set_delta(double ray)
 {
@@ -27,15 +34,6 @@ double	get_time(long start)
 
 	gettimeofday(&tv, 0);
 	return ((double)tv.tv_sec * 1000 + tv.tv_usec / 1000 - start);
-}
-
-static double ft_modf(double numb, double *integ)
-{
-	double	fract;
-
-	*integ = (double)(int)numb;
-	fract = numb - *integ;
-	return (fract);
 }
 
 double	fix_texture_pos(t_rcdata dt, t_player pl)
@@ -101,17 +99,14 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 
 	tex_pos = (dt->draw_start - dt->pitch - WIN_HEIGHT / 2 + dt->line_height
 			/ 2) * dt->step_f;
-	// background up
+	// background down
 	y = -1;
 	col = c->lvl->floor[0] * 65536 + c->lvl->floor[1] * 256 + c->lvl->floor[2];
 	if (dt->draw_start > WIN_HEIGHT)
 		dt->draw_start = 0;
 	while (++y < dt->draw_start)
 		my_mlx_pixel_put(screen, x, y, col);
-	// backgroung up end
-	
-	// if (x == WIN_WIDTH / 2)
-	// 	c->ground_end = dt->draw_end;
+	// backgroung down end
 	
 	y = dt->draw_start - 1;
 	while (++y < dt->draw_end)
@@ -122,12 +117,12 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 				((c->texture[dt->tex_num].height * dt->tex_y + dt->tex_x)));
 		my_mlx_pixel_put(screen, x, y, col);
 	}
-	//background down
+	//background up
 	y = dt->draw_end - 1;
 	col = c->lvl->ceil[0] * 65536 + c->lvl->ceil[1] * 256 + c->lvl->ceil[2];
 	while (++y < WIN_HEIGHT - 1)
 		my_mlx_pixel_put(screen, x, y, col);
-	// background down end
+	// background up end
 }
 
 void raycasting(t_cube *cube)
@@ -185,6 +180,7 @@ void raycasting(t_cube *cube)
 				if (data.step.y > 0)
 					data.side = 3;
 			}
+			//if (ray_in_limit(cube, data.dest.x, data.dest.y))
 			data.hit = cube->lvl->c_maps[(int)data.dest.y][(int)data.dest.x];
 		}
 		if (data.side % 2)

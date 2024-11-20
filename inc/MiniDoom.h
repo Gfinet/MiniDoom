@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/19 20:16:59 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/20 00:43:38 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,6 @@ typedef struct s_enemy
 	double	tmp_dist;
 	double	short_dist;
 	char	**path;
-	int		ground_end;
 	int		x;
 	int		path_len;
 	int		max_text_fr;
@@ -181,25 +180,6 @@ typedef struct s_pause
 	int		choice;
 }	t_pause;
 
-typedef struct s_cube
-{
-	void		*mlx;
-	void		*win;
-	t_player	*player;
-	t_maps		*lvl;
-	t_pause		pause_sc;
-	t_data		texture[4];
-	t_data		door_texture[4];
-	t_data		screen;
-	t_door		*doors;
-	int			wall;
-	int			frame;
-	int			mouse;
-	int			pause;
-	int			m_sensi;
-	int			s_mouse;
-}	t_cube;
-
 typedef struct s_img
 {
 	void	*img;
@@ -207,6 +187,13 @@ typedef struct s_img
 	int		witdh;
 	int		height;
 }	t_img;
+
+typedef struct s_ray_hit {
+    double	wall_dist;
+    t_enemy	**enemies_hit;
+    double	*enemies_dist;
+    int 	nb_enemies;
+}	t_ray_hit;
 
 typedef struct s_rcdata
 {
@@ -244,6 +231,26 @@ typedef struct s_drawdata
 	double			step_f;
 	int				mirr;
 }	t_drawdata;
+
+typedef struct s_cube
+{
+	void		*mlx;
+	void		*win;
+	t_player	*player;
+	t_maps		*lvl;
+	t_pause		pause_sc;
+	t_data		texture[4];
+	t_data		door_texture[4];
+	t_data		screen;
+	t_door		*doors;
+	t_ray_hit	hit_data;
+	int			wall;
+	int			frame;
+	int			mouse;
+	int			pause;
+	int			m_sensi;
+	int			s_mouse;
+}	t_cube;
 
 //handle_event.c
 int		esc_handle(t_cube *cube);
@@ -294,17 +301,19 @@ void	draw_maps(t_cube *cube);
 int		make_mini(t_cube *cube, t_maps *lvl);
 
 //mlx_img
-void	get_player_pos(t_cube *cube);
-void	fill_map_char(t_maps *lvl, char c);
-void	draw_mini_pixel(t_maps *lvl, int w_h[2], int i[2]);
-void	draw_player(t_cube *cube);
-void	draw_doom(t_cube *cube);
+void			get_player_pos(t_cube *cube);
+void			fill_map_char(t_maps *lvl, char c);
+void			draw_mini_pixel(t_maps *lvl, int w_h[2], int i[2]);
+void			draw_player(t_cube *cube);
+void			draw_doom(t_cube *cube);
+unsigned int	get_color_from_xpm(t_data *text, int x, int y);
 
 //movements
 void	update_player(t_cube *cube, t_player *player);
 void	turn(t_cube *cube, double angle, int frame);
 
 //raycast
+int		ray_in_limit(t_cube *cube, int x, int y);
 void	calculate_perp_wall_dist(t_rcdata *data, int mirr);
 double	fix_texture_pos(t_rcdata dt, t_player pl);
 void	rcdda(t_cube *cube, char **map, t_player player);
@@ -337,7 +346,7 @@ void	free_maps(char **maps, int ind);
 void	free_cube(t_cube *cube);
 int		out_of_maps(t_maps *maps, int x, int y);
 void	free_weapons(t_cube *cube);
-void	free_enemy(t_cube *cube);
+void	free_enemy(t_cube *cube, t_enemy *adv);
 
 //parse_weapon
 int		get_weapon(t_cube *cube);
@@ -369,13 +378,16 @@ t_enemy	*enemy_in_sight(t_cube *cube, t_rcdata *data);
 int		check_enemy_inf(t_cube *cube, char *str);
 void	set_draw_enemy(t_cube *cube, int val);
 void	set_enemy(t_maps *lvl, char *str);
-int		get_enemy_inf(t_cube *cube);
+int		get_enemy_inf(t_cube *cube, int i);
 
 //draw_enemy
 void	draw_enemy(t_cube *cube, t_enemy *adv);
-void	set_enemies_seen(t_cube *cube, int x, double wall_dist, int dr_end);
+void	set_enemies_seen(t_cube *cube, int x, double wall_dist);
 void	draw_enemies(t_cube *cube);
 void	raycast_enemy(t_cube *cube);
 void	adjust_enemy_visibility(t_cube *cube,t_enemy *adv, t_rcdata *data);
+
+//math_utils
 double	dist_ab(t_point a, t_point b);
+double	ft_modf(double numb, double *integ);
 #endif

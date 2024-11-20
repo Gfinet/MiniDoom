@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 22:03:11 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/14 16:38:42 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/19 23:11:47 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,13 +49,8 @@ void	draw_doom(t_cube *cube)
 
 int	xpm_to_img(t_cube *cube, t_data *new_img, char *name)
 {
-	//mlx_img_list_t *im;
-
-
 	new_img->img = mlx_xpm_file_to_image(cube->mlx, name,
 			&new_img->width, &new_img->height);
-	//new_img->img = mlx_xpm_to_image(cube->mlx, name,
-	// 		&new_img->width, &new_img->height);
 	if (!new_img->img)
 		return (0);
 	new_img->addr = mlx_get_data_addr(new_img->img, &new_img->bits_per_pixel,
@@ -80,4 +75,14 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
 	*(unsigned int *)dst = color;
 
+}
+
+unsigned int get_color_from_xpm(t_data *text, int x, int y)
+{
+	int				pixel;
+	unsigned int	color;
+
+	pixel = (int)(text->line_length * y / 4 + x * (text->bits_per_pixel / 32));
+	color = *((unsigned int *)text->addr + pixel);
+	return (color);
 }
