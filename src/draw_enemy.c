@@ -6,19 +6,19 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/20 01:24:25 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/21 19:04:31 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
-// static double	ray_hit(t_point ray, t_point var, int side)
-// {
-// 	if (side % 2)
-// 		return (ray.x - var.x);
-// 	else
-// 		return (ray.y - var.y);
-// }
+static double	ray_hit(t_point ray, t_point var, int side)
+{
+	if (side % 2)
+		return (ray.x - var.x);
+	else
+		return (ray.y - var.y);
+}
 
 void raycast_enemy(t_cube *cube)
 {
@@ -30,8 +30,8 @@ void raycast_enemy(t_cube *cube)
 	t_point		*play_pos;
 	
 	play_pos = &cube->player->pos;
-	cube->player->pov.x = -(float)(0.66 * cube->player->dir.y);
-	cube->player->pov.y = (float)(0.66 * cube->player->dir.x);
+	cube->player->pov.x = -(float)(FOV * cube->player->dir.y);
+	cube->player->pov.y = (float)(FOV * cube->player->dir.x);
 	x = -1;
 	set_draw_enemy(cube, 0);
 	hit_data = &cube->hit_data;
@@ -64,22 +64,27 @@ void raycast_enemy(t_cube *cube)
 
 		
 		data.hit = '0';
-		while (in_char_lst(data.hit, INVIS_WALL)) //ray_in_limit(cube, data.dest.x, data.dest.y))
+		while (ray_in_limit(cube, data.dest.x, data.dest.y))
 		{
-			// if (data.hit == '1' && hit_data->wall_dist == -1)
-			// 	hit_data->wall_dist = ray_hit(data.side_dist, data.var, data.side);
+			if (data.hit == '1' && hit_data->wall_dist == -1)
+				hit_data->wall_dist = ray_hit(data.side_dist, data.var, data.side);
 			adv = enemy_in_sight(cube, &data);
 			if (adv)
 			{
+				if (hit_data->wall_dist == -1)
+					adv->ray_hit++;
+				adv->ray_max++;
+				if (adv->ray_max == 1 && !adv->ray_hit)
+				adv->l_r = 1;
 				adv->tmp_dist = dist_ab(*play_pos, adv->pos);
-				// hit_data->enemies_hit[hit_data->nb_enemies] = adv;
-				// hit_data->enemies_dist[hit_data->nb_enemies] = \
-				// 	ray_hit(data.side_dist, data.var, data.side);
-				//hit_data->nb_enemies++;
+				hit_data->enemies_hit[hit_data->nb_enemies] = adv;
+				hit_data->enemies_dist[hit_data->nb_enemies] = \
+					ray_hit(data.side_dist, data.var, data.side);
+				hit_data->nb_enemies++;
 				if (adv->tmp_dist < adv->short_dist)
 				{
 					adv->short_dist = adv->tmp_dist;
-					adjust_enemy_visibility(cube, adv, &data);
+					//adjust_enemy_visibility(cube, adv, &data);
 					adv->x = x;
 					//adv->wall_dist = adv->tmp_dist;
 					adv->draw++;
@@ -102,12 +107,13 @@ void raycast_enemy(t_cube *cube)
 				if (data.step.y > 0)
 					data.side = 3;
 			}
-			//if (ray_in_limit(cube, data.dest.x, data.dest.y))
-			data.hit = cube->lvl->c_maps[(int)data.dest.y][(int)data.dest.x];
+			if (ray_in_limit(cube, data.dest.x, data.dest.y))
+				data.hit = cube->lvl->c_maps[(int)data.dest.y][(int)data.dest.x];
 		}
 		if (en_seen)
 		{
-			//data.perp_wall_dist = ray_hit(data.side_dist, data.var, data.side);
+			data.perp_wall_dist = ray_hit(data.side_dist, data.var, data.side);
+			
 			if (data.side % 2)
 				data.perp_wall_dist = (data.side_dist.y - data.var.y);
 			else
@@ -154,10 +160,10 @@ t_enemy *enemy_in_sight(t_cube *cube, t_rcdata *data)
 	{
 		posi = adv[i].pos;
 		hitb = adv[i].hitbox;
-		if (!(adv[i].draw) \
+		if ( \
 		// && (int)posi.x == (int)ray.x \
 		// && (int)posi.y == (int)ray.y ) // && posi.y < (int)data->dest.x + 1) // && posi.x < (int)data->dest.x + 1 
-		&& ray.x < posi.x + hitb.x / 2 && ray.x > posi.x - hitb.x / 2 \
+		ray.x < posi.x + hitb.x / 2 && ray.x > posi.x - hitb.x / 2 \
 		&& ray.y < posi.y + hitb.y / 2 && ray.y > posi.y - hitb.y / 2 )
 			return (&adv[i]);
 		i++;
@@ -222,8 +228,8 @@ void put_xpm_to_mlx_img(t_enemy *adv, t_data *use_text, double scale, int side)
 		while (++x < img->width)
 		{
 			col = get_color_from_xpm(use_text, x, y);
-			// if (x < adv->st_dr_end.x || x > adv->st_dr_end.y)
-			// 	col = 0xFFFFFFFF;
+			if (!(x >= adv->st_dr_end.x && x < adv->st_dr_end.y))
+				col = 0xFFFFFFFF;
 			if (!side)
 				xx = x;
 			else
@@ -292,6 +298,36 @@ int get_en_side(t_enemy *adv, t_point play_dir, t_data **text, int *max_text)
 	return (side);
 }
 
+void set_part_visible(t_enemy *adv)
+{
+	t_img_mlx	*img;
+	double		part;
+
+	img = adv->text_on.img;
+	if (adv->ray_hit == 0 && adv->ray_max == 0)
+		return;
+	part = (double)adv->ray_hit / (double)adv->ray_max;
+	adv->st_dr_end = (t_point){0};
+	//printf("%f %f\n", adv->st_dr_end.x, adv->st_dr_end.y);
+	printf("%f ", part);
+	if (adv->ray_hit == adv->ray_max)
+	{
+		adv->st_dr_end.x = 0;
+		adv->st_dr_end.y = img->width;
+	}
+	else if (adv->l_r)
+	{
+		adv->st_dr_end.x = img->width * part;
+		adv->st_dr_end.y = img->width;
+	}
+	else
+	{
+		adv->st_dr_end.x = 0;
+		adv->st_dr_end.y = img->width * part;
+	}
+	printf("%f %f %d %d\n", adv->st_dr_end.x, adv->st_dr_end.y, adv->ray_hit, adv->ray_max);
+}
+
 void draw_enemies(t_cube *cube)
 {
 	int		i = -1;
@@ -327,14 +363,14 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	dist_w = adv->wall_dist;
 	if (dist <= 0)
 		return ;
-	scale = 6 / dist;
-	
+	printf("scale %f\n", scale);
 	side = get_en_side(adv, play->dir, &use_text, &max_text);
 	fps++;
 	if (fps - 1 == (cube->frame / (1 + play->run) / 2))
 		nb_draw[side]++;
 	nb_draw[side] %= max_text;
 	img = use_text[nb_draw[side]].img;
+	scale = 6 / dist;
 	fps %= cube->frame * 4 + cube->frame * play->run;
 
 	// if (side % 2)
@@ -353,6 +389,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	if (adv->text_on.img)
 		mlx_destroy_image(cube->mlx, adv->text_on.img);
 	new_img(cube, &adv->text_on, wid, hei);
+	set_part_visible(adv);
 	put_xpm_to_mlx_img(adv, &use_text[nb_draw[side]], scale, (side == 1));
 	mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
 }

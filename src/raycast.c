@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/20 01:22:14 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/21 17:24:51 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@ int		ray_in_limit(t_cube *cube, int x, int y)
 	t_maps *lvl;
 
 	lvl = cube->lvl;
-	return (!(x >= lvl->max_len || y >= lvl->m_height));
+	// if (x == lvl->max_len || y == lvl->m_height - 1)
+	// 	printf("%d %d %d %d\n", x, lvl->max_len, y, lvl->m_height);
+	return (x < lvl->max_len && y < lvl->m_height && x >= 0 && y >= 0);
 }
 
 double set_delta(double ray)

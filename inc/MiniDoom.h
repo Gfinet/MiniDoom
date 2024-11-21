@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/20 00:43:38 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/21 18:18:08 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@
 # endif
 
 # define FRAME 4 //12
+# define FOV 0.66 
 # define JUMP_HEIGHT 80
 # define LST_CHAR "012NSEWDGTA"
 
@@ -112,11 +113,14 @@ typedef struct s_enemy
 	double	tmp_dist;
 	double	short_dist;
 	char	**path;
+	int		l_r;
 	int		x;
 	int		path_len;
 	int		max_text_fr;
 	int		max_text_bk;
 	int		max_text_sd;
+	int		ray_hit;
+	int		ray_max;
 	int		draw;
 	int		seen;
 	int		id;
@@ -244,6 +248,7 @@ typedef struct s_cube
 	t_data		screen;
 	t_door		*doors;
 	t_ray_hit	hit_data;
+	double		focal_length;
 	int			wall;
 	int			frame;
 	int			mouse;

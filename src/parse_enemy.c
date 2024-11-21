@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/20 00:45:04 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/21 18:03:00 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@ void set_draw_enemy(t_cube *cube, int val)
 		cube->lvl->enemy[i].draw = val;
 		cube->lvl->enemy[i].short_dist = 999;
 		cube->lvl->enemy[i].tmp_dist = 0;
+		cube->lvl->enemy[i].ray_hit = 0;
+		cube->lvl->enemy[i].ray_max = 0;
+		cube->lvl->enemy[i].l_r = 0;
 	}
 	
 }
