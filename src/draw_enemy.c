@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/21 19:04:31 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/23 19:22:05 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -228,7 +228,8 @@ void put_xpm_to_mlx_img(t_enemy *adv, t_data *use_text, double scale, int side)
 		while (++x < img->width)
 		{
 			col = get_color_from_xpm(use_text, x, y);
-			if (!(x >= adv->st_dr_end.x && x < adv->st_dr_end.y))
+			if (adv->ray_hit != adv->ray_max \
+			&& (x <= (int)adv->st_dr_end.x || x >= (int)adv->st_dr_end.y))
 				col = 0xFFFFFFFF;
 			if (!side)
 				xx = x;
@@ -309,7 +310,7 @@ void set_part_visible(t_enemy *adv)
 	part = (double)adv->ray_hit / (double)adv->ray_max;
 	adv->st_dr_end = (t_point){0};
 	//printf("%f %f\n", adv->st_dr_end.x, adv->st_dr_end.y);
-	printf("%f ", part);
+	printf("%f%% ", part);
 	if (adv->ray_hit == adv->ray_max)
 	{
 		adv->st_dr_end.x = 0;
@@ -325,7 +326,7 @@ void set_part_visible(t_enemy *adv)
 		adv->st_dr_end.x = 0;
 		adv->st_dr_end.y = img->width * part;
 	}
-	printf("%f %f %d %d\n", adv->st_dr_end.x, adv->st_dr_end.y, adv->ray_hit, adv->ray_max);
+	printf("%f %f %d/%d  %d\n", adv->st_dr_end.x, adv->st_dr_end.y, adv->ray_hit, adv->ray_max, img->width);
 }
 
 void draw_enemies(t_cube *cube)
@@ -361,16 +362,17 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	
 	dist = dist_ab(pos, adv->pos);
 	dist_w = adv->wall_dist;
-	if (dist <= 0)
+	if (dist <= 0 || adv->ray_hit == 0)
 		return ;
-	printf("scale %f\n", scale);
+	//printf("scale %f\n", scale);
 	side = get_en_side(adv, play->dir, &use_text, &max_text);
 	fps++;
 	if (fps - 1 == (cube->frame / (1 + play->run) / 2))
 		nb_draw[side]++;
 	nb_draw[side] %= max_text;
 	img = use_text[nb_draw[side]].img;
-	scale = 6 / dist;
+	//scale = adv->hitbox.x * WIN_HEIGHT / dist;
+	scale = adv->hitbox.x * 6 / dist;
 	fps %= cube->frame * 4 + cube->frame * play->run;
 
 	// if (side % 2)
