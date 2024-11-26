@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/21 18:03:00 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/26 22:56:06 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void set_enemy_pos(t_maps *lvl, t_enemy *adv, int nb)
 
 void set_enemy(t_maps *lvl, char *str)
 {
-	int		len = 0;
+	int		len = 0, i = -1;
 	char	*tmp;
 	char	**lst;
 
@@ -78,9 +78,12 @@ void set_enemy(t_maps *lvl, char *str)
 	free(lst[len - 1]);
 	lst[len - 1] = tmp;
 	lst[len] = 0;
-	lvl->enemy[0].path_len = len;
-	lvl->enemy[0].path = lst;
-	lvl->enemy[0].dir = (t_point){1,1};
+	while (++i < lvl->nb_enemy)
+	{
+		lvl->enemy[i].path_len = len;
+		lvl->enemy[i].path = lst;
+		lvl->enemy[i].dir = (t_point){1,1};
+	}
 }
 
 static t_data **get_ptr_texture(t_enemy *adv, int *num)

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/23 19:22:05 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/26 20:39:03 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void raycast_enemy(t_cube *cube)
 					adv->ray_hit++;
 				adv->ray_max++;
 				if (adv->ray_max == 1 && !adv->ray_hit)
-				adv->l_r = 1;
+					adv->l_r = 1;
 				adv->tmp_dist = dist_ab(*play_pos, adv->pos);
 				hit_data->enemies_hit[hit_data->nb_enemies] = adv;
 				hit_data->enemies_dist[hit_data->nb_enemies] = \
@@ -160,11 +160,14 @@ t_enemy *enemy_in_sight(t_cube *cube, t_rcdata *data)
 	{
 		posi = adv[i].pos;
 		hitb = adv[i].hitbox;
+		(void)hitb;
 		if ( \
 		// && (int)posi.x == (int)ray.x \
 		// && (int)posi.y == (int)ray.y ) // && posi.y < (int)data->dest.x + 1) // && posi.x < (int)data->dest.x + 1 
 		ray.x < posi.x + hitb.x / 2 && ray.x > posi.x - hitb.x / 2 \
 		&& ray.y < posi.y + hitb.y / 2 && ray.y > posi.y - hitb.y / 2 )
+		// ray.x < posi.x + 0.5 && ray.x > posi.x - 0.5 \
+		// && ray.y < posi.y + 0.5 && ray.y > posi.y - 0.5 )
 			return (&adv[i]);
 		i++;
 	}
@@ -310,7 +313,7 @@ void set_part_visible(t_enemy *adv)
 	part = (double)adv->ray_hit / (double)adv->ray_max;
 	adv->st_dr_end = (t_point){0};
 	//printf("%f %f\n", adv->st_dr_end.x, adv->st_dr_end.y);
-	printf("%f%% ", part);
+	//printf("%f%% ", part);
 	if (adv->ray_hit == adv->ray_max)
 	{
 		adv->st_dr_end.x = 0;
@@ -326,7 +329,7 @@ void set_part_visible(t_enemy *adv)
 		adv->st_dr_end.x = 0;
 		adv->st_dr_end.y = img->width * part;
 	}
-	printf("%f %f %d/%d  %d\n", adv->st_dr_end.x, adv->st_dr_end.y, adv->ray_hit, adv->ray_max, img->width);
+	//printf("%f %f %d/%d  %d\n", adv->st_dr_end.x, adv->st_dr_end.y, adv->ray_hit, adv->ray_max, img->width);
 }
 
 void draw_enemies(t_cube *cube)
@@ -374,7 +377,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	//scale = adv->hitbox.x * WIN_HEIGHT / dist;
 	scale = adv->hitbox.x * 6 / dist;
 	fps %= cube->frame * 4 + cube->frame * play->run;
-
+	//adv->hitbox.x = (img.width * 6) / (dist * WIN_WIDTH);
 	// if (side % 2)
 	// 	fix = (adv->pos.y - adv->dest.y) / adv->hitbox.y;
 	// else

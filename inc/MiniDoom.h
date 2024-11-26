@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/21 18:18:08 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/26 20:39:52 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ typedef struct s_enemy
 	t_point	dir;
 	t_point	hitbox;
 	t_point st_dr_end;
+	double	hitb;
 	double	wall_dist;
 	double	tmp_dist;
 	double	short_dist;
