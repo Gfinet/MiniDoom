@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/20 00:47:32 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/27 01:13:48 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,14 +54,18 @@ void free_enemy(t_cube *cube, t_enemy *adv)
 	int		i = -1;
 
 	while (++i < adv->max_text_fr)
-		mlx_destroy_image(cube->mlx, adv->spr_fr[i].img);
+		if (adv->spr_fr[i].img)
+			mlx_destroy_image(cube->mlx, adv->spr_fr[i].img);
 	i = -1;
 	while (++i < adv->max_text_bk)
-		mlx_destroy_image(cube->mlx, adv->spr_bk[i].img);
+		if (adv->spr_bk[i].img)
+			mlx_destroy_image(cube->mlx, adv->spr_bk[i].img);
 	i = -1;
 	while (++i < adv->max_text_sd)
-		mlx_destroy_image(cube->mlx, adv->spr_sd[i].img);
-	mlx_destroy_image(cube->mlx, adv->text_on.img);
+		if (adv->spr_sd[i].img)
+			mlx_destroy_image(cube->mlx, adv->spr_sd[i].img);
+	if (adv->text_on.img)
+		mlx_destroy_image(cube->mlx, adv->text_on.img);
 	free(adv->spr_fr);
 	free(adv->spr_bk);
 	free(adv->spr_sd);

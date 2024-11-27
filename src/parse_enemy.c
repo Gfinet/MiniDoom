@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/26 22:56:06 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/27 01:36:58 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,22 @@ static int *get_ptr_len(t_enemy *adv, int *num)
 	return (len);
 }
 
+void set_first_hitb(t_cube *cube, t_enemy *adv)
+{
+	//t_img_mlx	*img;
+	t_data		spr;
+	//double		dist;
+
+	xpm_to_img(cube, &spr, adv->path[0]);
+	//img = spr.img;
+	//dist = dist_ab(cube->player->pos, adv->pos);
+	// if (dist == 0)
+		adv->bobox = 1;
+	// else
+	// 	adv->hitb = (img->width * 6) / (dist * WIN_WIDTH);
+	mlx_destroy_image(cube->mlx, spr.img);
+}
+
 int get_enemy_inf(t_cube *cube, int ind)
 {
 	int		first_text, i, j, l;
@@ -145,6 +161,7 @@ int get_enemy_inf(t_cube *cube, int ind)
 		}
 	}
 	set_enemy_pos(cube->lvl, &adv[ind], 1);
+	set_first_hitb(cube, &adv[ind]);
 	return (1);
 }
 

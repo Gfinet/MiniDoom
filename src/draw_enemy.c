@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/26 20:39:03 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/11/27 01:32:39 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,6 +150,7 @@ void set_enemies_seen(t_cube *cube, int x, double wall_dist)
 t_enemy *enemy_in_sight(t_cube *cube, t_rcdata *data)
 {
 	int		i;
+	double	hit;
 	t_enemy	*adv;
 	t_point	posi, hitb, ray;
 
@@ -160,12 +161,13 @@ t_enemy *enemy_in_sight(t_cube *cube, t_rcdata *data)
 	{
 		posi = adv[i].pos;
 		hitb = adv[i].hitbox;
+		hit = adv->bobox;
 		(void)hitb;
 		if ( \
 		// && (int)posi.x == (int)ray.x \
 		// && (int)posi.y == (int)ray.y ) // && posi.y < (int)data->dest.x + 1) // && posi.x < (int)data->dest.x + 1 
-		ray.x < posi.x + hitb.x / 2 && ray.x > posi.x - hitb.x / 2 \
-		&& ray.y < posi.y + hitb.y / 2 && ray.y > posi.y - hitb.y / 2 )
+		ray.x < posi.x + hit / 2 && ray.x > posi.x - hit / 2 \
+		&& ray.y < posi.y + hit / 2 && ray.y > posi.y - hit / 2 )
 		// ray.x < posi.x + 0.5 && ray.x > posi.x - 0.5 \
 		// && ray.y < posi.y + 0.5 && ray.y > posi.y - 0.5 )
 			return (&adv[i]);
@@ -375,7 +377,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	nb_draw[side] %= max_text;
 	img = use_text[nb_draw[side]].img;
 	//scale = adv->hitbox.x * WIN_HEIGHT / dist;
-	scale = adv->hitbox.x * 6 / dist;
+	scale = 6 / dist;
 	fps %= cube->frame * 4 + cube->frame * play->run;
 	//adv->hitbox.x = (img.width * 6) / (dist * WIN_WIDTH);
 	// if (side % 2)
@@ -384,6 +386,8 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	// 	fix = (adv->pos.x - adv->dest.x) / adv->hitbox.x;
 	hei = img->height * scale;
 	wid = img->width * scale;
+	printf("%f\n", adv->bobox);
+	adv->bobox *= scale;//(double)img->width / (double)wid;
 	n_x = adv->x;
 	//n_y = adv->ground_end - cube->wall + (dist) / dist_w ; //(adv->ground_end) * (dist) / (dist_w);
 	//n_y = (int)(WIN_HEIGHT / dist);
