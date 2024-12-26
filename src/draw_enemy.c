@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/27 01:32:39 by Gfinet           ###   ########.fr       */
+/*   Updated: 2024/12/26 05:40:57 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,13 @@ void raycast_enemy(t_cube *cube)
 		data.dest.x = (int)play_pos->x;
 		data.dest.y = (int)play_pos->y;
 		
-		data.step.x = (!(data.rays.x < 0) - (data.rays.x < 0)) * 0.5;
-		data.step.y = (!(data.rays.y < 0) - (data.rays.y < 0)) * 0.5;
-		if (data.step.x == -0.5)
+		data.step.x = (!(data.rays.x < 0) - (data.rays.x < 0)) * 1.0;
+		data.step.y = (!(data.rays.y < 0) - (data.rays.y < 0)) * 1.0;
+		if (data.step.x == -1.0)
 			data.side_dist.x = (play_pos->x - data.dest.x) * data.var.x;
 		else
 			data.side_dist.x = (1.0 + data.dest.x - play_pos->x) * data.var.x;
-		if (data.step.y == -0.5)
+		if (data.step.y == -1.0)
 			data.side_dist.y = (play_pos->y - data.dest.y) * data.var.y;
 		else
 			data.side_dist.y = (1.0 + data.dest.y - play_pos->y) * data.var.y;
@@ -163,11 +163,12 @@ t_enemy *enemy_in_sight(t_cube *cube, t_rcdata *data)
 		hitb = adv[i].hitbox;
 		hit = adv->bobox;
 		(void)hitb;
+		(void)hit;
 		if ( \
-		// && (int)posi.x == (int)ray.x \
-		// && (int)posi.y == (int)ray.y ) // && posi.y < (int)data->dest.x + 1) // && posi.x < (int)data->dest.x + 1 
-		ray.x < posi.x + hit / 2 && ray.x > posi.x - hit / 2 \
-		&& ray.y < posi.y + hit / 2 && ray.y > posi.y - hit / 2 )
+		 (int)posi.x == (int)ray.x \
+		&& (int)posi.y == (int)ray.y ) // && posi.y < (int)data->dest.x + 1) // && posi.x < (int)data->dest.x + 1 
+		// ray.x < posi.x + hit / 2 && ray.x > posi.x - hit / 2 \
+		// && ray.y < posi.y + hit / 2 && ray.y > posi.y - hit / 2 )
 		// ray.x < posi.x + 0.5 && ray.x > posi.x - 0.5 \
 		// && ray.y < posi.y + 0.5 && ray.y > posi.y - 0.5 )
 			return (&adv[i]);
@@ -367,7 +368,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	
 	dist = dist_ab(pos, adv->pos);
 	dist_w = adv->wall_dist;
-	if (dist <= 0 || adv->ray_hit == 0)
+	if (dist <= 1.0 || adv->ray_hit == 0)
 		return ;
 	//printf("scale %f\n", scale);
 	side = get_en_side(adv, play->dir, &use_text, &max_text);
@@ -387,8 +388,8 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	hei = img->height * scale;
 	wid = img->width * scale;
 	printf("%f\n", adv->bobox);
-	adv->bobox *= scale;//(double)img->width / (double)wid;
-	n_x = adv->x;
+	//adv->bobox *= scale;//(double)img->width / (double)wid;*/
+	n_x = adv->x + wid / 2;
 	//n_y = adv->ground_end - cube->wall + (dist) / dist_w ; //(adv->ground_end) * (dist) / (dist_w);
 	//n_y = (int)(WIN_HEIGHT / dist);
 	n_y = WIN_HEIGHT / 2 - hei / 2 + 110;
