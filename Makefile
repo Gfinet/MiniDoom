@@ -58,9 +58,11 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.c
 
 add:
 	git add src/ inc/ maps/ texture/ enemy_sprites/ Makefile .gitignore
+	git status
+	git commit -m "$(MSG)"
 
 $(LIBX):
-	@make -C $(MINI)
+	make -C $(MINI)
 	@echo "library mlx made"
 
 libftprintf.a:

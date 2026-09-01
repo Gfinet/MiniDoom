@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/12/26 05:40:57 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/01 03:58:37 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static double	ray_hit(t_point ray, t_point var, int side)
 void raycast_enemy(t_cube *cube)
 {
 	int			x, en_seen;
-	t_ray_hit	*hit_data;
+	t_ray_hit	*hit_data = 0;
 	t_rcdata	data;
 	t_drawdata	dr;
 	t_enemy		*adv = 0;
@@ -35,6 +35,9 @@ void raycast_enemy(t_cube *cube)
 	x = -1;
 	set_draw_enemy(cube, 0);
 	hit_data = &cube->hit_data;
+	cube->zbuffer[x] = hit_data->wall_dist;
+	if (hit_data->wall_dist == -1)
+		cube->zbuffer[x] = 1e30;
 	//printf("%p %p\n", hit_data->enemies_hit, hit_data->enemies_dist);
 	while (++x < WIN_WIDTH)
 	{
@@ -305,36 +308,6 @@ int get_en_side(t_enemy *adv, t_point play_dir, t_data **text, int *max_text)
 	return (side);
 }
 
-void set_part_visible(t_enemy *adv)
-{
-	t_img_mlx	*img;
-	double		part;
-
-	img = adv->text_on.img;
-	if (adv->ray_hit == 0 && adv->ray_max == 0)
-		return;
-	part = (double)adv->ray_hit / (double)adv->ray_max;
-	adv->st_dr_end = (t_point){0};
-	//printf("%f %f\n", adv->st_dr_end.x, adv->st_dr_end.y);
-	//printf("%f%% ", part);
-	if (adv->ray_hit == adv->ray_max)
-	{
-		adv->st_dr_end.x = 0;
-		adv->st_dr_end.y = img->width;
-	}
-	else if (adv->l_r)
-	{
-		adv->st_dr_end.x = img->width * part;
-		adv->st_dr_end.y = img->width;
-	}
-	else
-	{
-		adv->st_dr_end.x = 0;
-		adv->st_dr_end.y = img->width * part;
-	}
-	//printf("%f %f %d/%d  %d\n", adv->st_dr_end.x, adv->st_dr_end.y, adv->ray_hit, adv->ray_max, img->width);
-}
-
 void draw_enemies(t_cube *cube)
 {
 	int		i = -1;
@@ -352,11 +325,50 @@ void draw_enemies(t_cube *cube)
 	}
 }
 
+void compute_occlusion(t_enemy *adv, t_cube *cube, int sprite_left, int wid, int img_w, double cam_z)
+{
+	int     col;
+    int     screen_col;
+    // int     xpm_col;
+    int     vis_start;
+    int     vis_end;
+
+    vis_start = -1;
+    vis_end = -1;
+    col = -1;
+    while (++col < wid)
+    {
+        screen_col = sprite_left + col;
+        // colonne hors écran : masquée
+        if (screen_col < 0 || screen_col >= WIN_WIDTH)
+            continue ;
+        // si le mur est plus proche que l'ennemi : masqué
+        if (cube->zbuffer[screen_col] < cam_z)
+            continue ;
+        // pixel visible : noter la première et dernière colonne
+        if (vis_start == -1)
+            vis_start = col;
+        vis_end = col;
+    }
+    // aucun pixel visible
+    if (vis_start == -1)
+    {
+        adv->st_dr_end.x = 0;
+        adv->st_dr_end.y = 0;
+        return ;
+    }
+    // convertir les bornes pixel écran en coordonnées XPM source
+    adv->st_dr_end.x = (double)vis_start * img_w / wid;
+    adv->st_dr_end.y = (double)(vis_end + 1) * img_w / wid;
+}
+
 void draw_enemy(t_cube *cube, t_enemy *adv)
 {
-	int			wid, hei, n_x, n_y, side = -1; //, fix;
+	int			wid, hei, n_x, n_y, side = -1;
 	int			max_text;
 	double		dist, dist_w, scale = 0.0;
+	double		dx, dy, inv_det, cam_x, cam_z;
+	int			screen_x;
 	static int	nb_draw[4] = {0, 0, 0, 0},	fps = 0;
 	t_player	*play;
 	t_point		pos;
@@ -365,41 +377,48 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 
 	play = cube->player;
 	pos = play->pos;
-	
+
 	dist = dist_ab(pos, adv->pos);
 	dist_w = adv->wall_dist;
-	if (dist <= 1.0 || adv->ray_hit == 0)
+	if (dist <= 0.5)
 		return ;
-	//printf("scale %f\n", scale);
+
+	/*
+	** Projection de l'ennemi dans l'espace caméra.
+	** On applique la transformation inverse de la matrice caméra :
+	**   | pov.x  dir.x |^-1   (avec det = pov.x*dir.y - dir.x*pov.y)
+	**   | pov.y  dir.y |
+	** cam_z : profondeur perp. au plan caméra (doit être > 0 = devant)
+	** cam_x : position horizontale en espace caméra
+	** screen_x = centre horizontal du sprite à l'écran
+	*/
+	dx = adv->pos.x - pos.x;
+	dy = adv->pos.y - pos.y;
+	inv_det = 1.0 / (play->pov.x * play->dir.y - play->dir.x * play->pov.y);
+	cam_x = inv_det * (play->dir.y * dx - play->dir.x * dy);
+	cam_z = inv_det * (-play->pov.y * dx + play->pov.x * dy);
+	if (cam_z <= 0.0)
+		return ;
+	screen_x = (int)((WIN_WIDTH / 2) * (1.0 + cam_x / cam_z));
+
 	side = get_en_side(adv, play->dir, &use_text, &max_text);
 	fps++;
 	if (fps - 1 == (cube->frame / (1 + play->run) / 2))
 		nb_draw[side]++;
 	nb_draw[side] %= max_text;
 	img = use_text[nb_draw[side]].img;
-	//scale = adv->hitbox.x * WIN_HEIGHT / dist;
 	scale = 6 / dist;
 	fps %= cube->frame * 4 + cube->frame * play->run;
-	//adv->hitbox.x = (img.width * 6) / (dist * WIN_WIDTH);
-	// if (side % 2)
-	// 	fix = (adv->pos.y - adv->dest.y) / adv->hitbox.y;
-	// else
-	// 	fix = (adv->pos.x - adv->dest.x) / adv->hitbox.x;
 	hei = img->height * scale;
 	wid = img->width * scale;
-	printf("%f\n", adv->bobox);
-	//adv->bobox *= scale;//(double)img->width / (double)wid;*/
-	n_x = adv->x + wid / 2;
-	//n_y = adv->ground_end - cube->wall + (dist) / dist_w ; //(adv->ground_end) * (dist) / (dist_w);
-	//n_y = (int)(WIN_HEIGHT / dist);
+
+	n_x = screen_x - wid / 2;
 	n_y = WIN_HEIGHT / 2 - hei / 2 + 110;
-	//printf("%f\n", adv->ground_end / dist_w);
-	//printf("%d %d ", cube->ground_end, n_y);
 	(void)dist_w;
 	if (adv->text_on.img)
 		mlx_destroy_image(cube->mlx, adv->text_on.img);
 	new_img(cube, &adv->text_on, wid, hei);
-	set_part_visible(adv);
+	compute_occlusion(adv, cube, n_x, wid, img->width, cam_z);
 	put_xpm_to_mlx_img(adv, &use_text[nb_draw[side]], scale, (side == 1));
 	mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
 }

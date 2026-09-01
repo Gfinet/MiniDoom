@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/21 17:24:51 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/01 03:34:56 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,6 +193,7 @@ void raycasting(t_cube *cube)
 		get_base_info_draw(&draw, data, *cube->player, cube);
 		draw.tex_num = data.side;
 		draw_xwall(&cube->screen, &draw, cube, x);
+		cube->zbuffer[x] = data.perp_wall_dist;
 	}
 	mlx_put_image_to_window(cube->mlx, cube->win, cube->screen.img, 0, 0);
 }

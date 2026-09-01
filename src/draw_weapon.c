@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 00:26:20 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/10 01:45:14 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/01 04:30:30 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,15 @@ void	draw_weapons(t_cube *cube)
 {
 	int			n;
 	int			u_w;
-	static int	i[3] = {0, 0, 0};
+	static int	*i = 0;//[3] = {0, 0, 0};
 	static int	fps = 0;
 	t_weapon	*weap;
 
+	if (!i)
+	{
+		i = malloc(cube->lvl->nb_weap * sizeof(int));
+		*i = (int){0};
+	}
 	weap = cube->lvl->weap;
 	u_w = cube->player->use_weap;
 	n = 0;
@@ -54,6 +59,6 @@ void	draw_weapons(t_cube *cube)
 	fps++;
 	if (fps - 1 == (cube->frame / (1 + cube->player->run)) / 4)
 		i[u_w]++;
-	i[u_w] %= (n - (u_w != 0));
+	i[u_w] %= (n ); //- (u_w != 0)
 	fps %= cube->frame + cube->frame * cube->player->run;
 }

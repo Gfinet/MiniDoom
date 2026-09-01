@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/27 01:32:02 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/01 03:30:25 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,6 +250,7 @@ typedef struct s_cube
 	t_door		*doors;
 	t_ray_hit	hit_data;
 	double		focal_length;
+	double 		zbuffer[WIN_WIDTH];
 	int			wall;
 	int			frame;
 	int			mouse;

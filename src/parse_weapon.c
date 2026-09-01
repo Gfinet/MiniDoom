@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_weapon.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 21:10:01 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 19:17:11 by gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/01 04:15:18 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int	get_weapon(t_cube *cube)
 		while (weap[i].path[len])
 			len++;
 		weap[i].sprites = malloc(sizeof(t_data) * len);
+		printf("weap %d len %zu", i, len);
 		if (!weap[i].sprites)
 			return (printf("gun sprites malloc error\n"), 0);
 		weap[i].sprites[0].width = 10;
