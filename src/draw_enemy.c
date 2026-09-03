@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 05:14:34 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 15:03:42 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ static double	ray_hit(t_point ray, t_point var, int side)
 void raycast_enemy(t_cube *cube)
 {
 	int			x, en_seen;
-	t_ray_hit	*hit_data = 0;
+	// t_ray_hit	*hit_data = 0;
+	double		*wall_dist;
 	t_rcdata	data;
 	t_drawdata	dr;
 	t_enemy		*adv = 0;
@@ -34,17 +35,18 @@ void raycast_enemy(t_cube *cube)
 	cube->player->pov.y = (float)(FOV * cube->player->dir.x);
 	x = -1;
 	set_draw_enemy(cube, 0);
-	hit_data = &cube->hit_data;
+	wall_dist = &cube->wall_dist;
+	// hit_data = &cube->hit_data;
 	
 	//printf("%p %p\n", hit_data->enemies_hit, hit_data->enemies_dist);
 	while (++x < WIN_WIDTH)
 	{
-		cube->zbuffer[x] = hit_data->wall_dist;
-		if (hit_data->wall_dist == -1)
+		cube->zbuffer[x] = *wall_dist;
+		if (*wall_dist == -1)
 			cube->zbuffer[x] = 1e30;
 		en_seen = 0;
-		hit_data->wall_dist = -1;
-		hit_data->nb_enemies = 0;
+		*wall_dist = -1;
+		// hit_data->nb_enemies = 0;
 		data.camerx = 2 * x / ((double)WIN_WIDTH) - 1; //x-coordinate in camera space
 		data.rays.x = cube->player->dir.x + cube->player->pov.x * data.camerx;
 		data.rays.y = cube->player->dir.y + cube->player->pov.y * data.camerx;
@@ -70,12 +72,12 @@ void raycast_enemy(t_cube *cube)
 		data.hit = '0';
 		while (ray_in_limit(cube, data.dest.x, data.dest.y))
 		{
-			if (data.hit == '1' && hit_data->wall_dist == -1)
-				hit_data->wall_dist = ray_hit(data.side_dist, data.var, data.side);
+			if (data.hit == '1' && *wall_dist == -1)
+				*wall_dist = ray_hit(data.side_dist, data.var, data.side);
 			adv = enemy_in_sight(cube, &data);
 			if (adv)
 			{
-				if (hit_data->wall_dist == -1)
+				if (*wall_dist == -1)
 					adv->ray_hit++;
 				adv->ray_max++;
 				if (adv->ray_max == 1 && !adv->ray_hit)
@@ -84,7 +86,7 @@ void raycast_enemy(t_cube *cube)
 				// hit_data->enemies_hit[hit_data->nb_enemies] = adv;
 				// hit_data->enemies_dist[hit_data->nb_enemies] = \
 				// 	ray_hit(data.side_dist, data.var, data.side);
-				hit_data->nb_enemies++;
+				// hit_data->nb_enemies++;
 				if (adv->tmp_dist < adv->short_dist)
 				{
 					adv->short_dist = adv->tmp_dist;
@@ -165,7 +167,7 @@ t_enemy *enemy_in_sight(t_cube *cube, t_rcdata *data)
 	{
 		posi = adv[i].pos;
 		hitb = adv[i].hitbox;
-		hit = adv->bobox;
+		// hit = adv->bobox;
 		(void)hitb;
 		(void)hit;
 		if ( \

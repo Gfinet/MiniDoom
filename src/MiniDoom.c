@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 03:47:07 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 15:38:27 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,10 @@ static int	init_cube(t_cube *cube, t_player *play, t_maps *level)
 	*cube = (t_cube){0};
 	*play = (t_player){0};
 	*level = (t_maps){0};
-	cube->hit_data = (t_ray_hit){0};
+	// cube->hit_data = (t_ray_hit){0};
 	cube->screen = (t_data){0};
+	cube->wall_dist = 0;
+	cube->stop = 0;
 	cube->frame = FRAME;
 	cube->mlx = mlx_init();
 	if (!cube->mlx)

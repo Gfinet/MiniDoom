@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 04:55:37 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 15:39:24 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include "./minilibx/mlx.h"
 # include <math.h>
 # include <sys/time.h>
-// # include <thread.h>
+# include <pthread.h>
 
 # include <stdlib.h>
 # include <unistd.h>
@@ -80,15 +80,15 @@ typedef struct s_mini_maps
 	int		height;
 }	t_mini_maps;
 
-typedef struct s_part
-{
-	t_data	sprite;
-	t_point	prev_pos;
-	t_point	pos;
-	t_point	dir;
-	float	speed;
-	int		dmg;
-}	t_part;
+// typedef struct s_part
+// {
+// 	t_data	sprite;
+// 	t_point	prev_pos;
+// 	t_point	pos;
+// 	t_point	dir;
+// 	float	speed;
+// 	int		dmg;
+// }	t_part;
 
 typedef struct s_weapon
 {
@@ -106,17 +106,20 @@ typedef struct s_enemy_type
 	t_data	*spr_fr;
 	t_data	*spr_bk;
 	t_data	*spr_sd;
-	t_point	hitbox;
-	t_point st_dr_end;
 	char	**path;
 	int		path_len;
 	int		max_text_fr;
 	int		max_text_bk;
 	int		max_text_sd;
+	// t_point st_dr_end;
+	// t_point	hitbox;
 } t_enemy_type;
+
+typedef struct s_cube		t_cube;
 
 typedef struct s_enemy
 {
+	t_cube			*cube;
 	t_enemy_type 	*type;
 	t_data			text_on;
 	t_point			prev_pos;
@@ -124,7 +127,6 @@ typedef struct s_enemy
 	t_point			dir;
 	t_point			hitbox;
 	t_point 		st_dr_end;
-	double			bobox;
 	double			wall_dist;
 	double			tmp_dist;
 	double			short_dist;
@@ -135,13 +137,12 @@ typedef struct s_enemy
 	int				ray_hit;
 	int				ray_max;
 	int				draw;
-	int				seen;
+	int				play_seen;
 	int				id;
 	int				hp;
 	int				dmg;
 	double			freq_atk;
 	double			speed;
-	double			fov;
 }	t_enemy;
 
 typedef struct s_maps
@@ -199,20 +200,20 @@ typedef struct s_pause
 	int		choice;
 }	t_pause;
 
-typedef struct s_img
-{
-	void	*img;
-	char	*path;
-	int		witdh;
-	int		height;
-}	t_img;
+// typedef struct s_img
+// {
+// 	void	*img;
+// 	char	*path;
+// 	int		witdh;
+// 	int		height;
+// }	t_img;
 
-typedef struct s_ray_hit {
-    double	wall_dist;
-    t_enemy	**enemies_hit;
-    double	*enemies_dist;
-    int 	nb_enemies;
-}	t_ray_hit;
+// typedef struct s_ray_hit {
+//     double	wall_dist;
+//     t_enemy	**enemies_hit;
+//     double	*enemies_dist;
+//     int 	nb_enemies;
+// }	t_ray_hit;
 
 typedef struct s_rcdata
 {
@@ -262,15 +263,17 @@ typedef struct s_cube
 	t_data		door_texture[4];
 	t_data		screen;
 	t_door		*doors;
-	t_ray_hit	hit_data;
 	double		focal_length;
+	double		wall_dist;
 	double 		zbuffer[WIN_WIDTH];
+	int 		stop;
 	int			wall;
 	int			frame;
 	int			mouse;
 	int			pause;
 	int			m_sensi;
 	int			s_mouse;
+	// t_ray_hit	hit_data;
 }	t_cube;
 
 //handle_event.c
@@ -352,12 +355,6 @@ void	set_dda_ray_delta(t_rcdata *data, t_player player, int x);
 void	set_side_dist_and_step(t_player p, t_rcdata *dt);
 void	check_hit_target(t_rcdata *dt, char **map);
 void	calculate_wall_dist(t_rcdata *data, char **map);
-
-//parse_maps
-void	set_map(t_maps *lvl, char *str, int fd[2]);
-void	set_floor_ceiling(int fl_ce[3], char *str);
-void	fill_maps(t_maps *lvl, char *str, int fd[2]);
-int		get_maps(t_cube *cube, char *file);
 
 //utils.c
 void	my_mlx_pixel_put(t_data *data, int x, int y, int color);

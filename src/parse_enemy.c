@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 04:50:35 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 15:04:50 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ int set_enemy_pos(t_maps *lvl)
 		{
 			if (lvl->c_maps[i][j] == 'A')
 			{
+				// adv->name = ft_strdup("something")
 				adv->type = &lvl->enemy_types[0];
 				adv->pos = (t_point){j + 0.5, i + 0.5};
 				adv->dir = (t_point){0, -1};
@@ -141,22 +142,6 @@ static int *get_ptr_len(t_enemy_type *adv, int *num)
 	return (len);
 }
 
-void set_first_hitb(t_cube *cube, t_enemy *adv)
-{
-	//t_img_mlx	*img;
-	t_data		spr;
-	//double		dist;
-
-	// xpm_to_img(cube, &spr, adv->path[0]);
-	//img = spr.img;
-	//dist = dist_ab(cube->player->pos, adv->pos);
-	// if (dist == 0)
-		adv->bobox = 1;
-	// else
-	// 	adv->hitb = (img->width * 6) / (dist * WIN_WIDTH);
-	mlx_destroy_image(cube->mlx, spr.img);
-}
-
 int get_enemy_inf(t_cube *cube, int ind)
 {
 	int				first_text, i, j, l;
@@ -190,7 +175,6 @@ int get_enemy_inf(t_cube *cube, int ind)
 		}
 	}
 	set_enemy_pos(cube->lvl);
-	// set_first_hitb(cube, &adv[ind]);
 	return (1);
 }
 

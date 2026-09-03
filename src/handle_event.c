@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 21:04:25 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/03 18:18:03 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 15:38:13 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 int	esc_handle(t_cube *cube)
 {
+	cube->stop = 1;
 	if (cube->win)
 	{
 		mlx_clear_window(cube->mlx, cube->win);
