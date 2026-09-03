@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   keycode.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/09 16:47:34 by gfinet            #+#    #+#             */
-/*   Updated: 2024/08/17 20:45:34 by gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 16:18:30 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 # define ERROR_MMP "Error\nAttempt for mini map failed\n"
 # define ERROR_HP "Error\nAttempt for life failed\n"
 # define ERROR_PSC "Error\nAttempt for pause screen failed\n"
+# define ERROR_TH "Error\nAttempt for thread failed\n"
 
 # define ESC 53
 # define W 13

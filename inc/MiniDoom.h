@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 15:39:24 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 16:48:29 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ typedef struct s_cube		t_cube;
 
 typedef struct s_enemy
 {
+	pthread_t		thread;
 	t_cube			*cube;
 	t_enemy_type 	*type;
 	t_data			text_on;
@@ -145,8 +146,9 @@ typedef struct s_enemy
 	double			speed;
 }	t_enemy;
 
-typedef struct s_maps
+typedef struct s_lvl
 {
+	t_cube			*cube;
 	t_mini_maps		mini;
 	t_mirr			*mirr;
 	char			**c_maps;
@@ -162,7 +164,7 @@ typedef struct s_maps
 	t_weapon		*weap;
 	t_enemy			*enemies;
 	t_enemy_type 	*enemy_types;
-}	t_maps;
+}	t_lvl;
 
 typedef struct s_player
 {
@@ -257,7 +259,7 @@ typedef struct s_cube
 	void		*mlx;
 	void		*win;
 	t_player	*player;
-	t_maps		*lvl;
+	t_lvl		*lvl;
 	t_pause		pause_sc;
 	t_data		texture[4];
 	t_data		door_texture[4];
@@ -288,9 +290,9 @@ void	set_use_weapon(int key, t_cube *cube);
 
 //parse_maps.c
 int		get_maps(t_cube *cube, char *file);
-void	fill_maps(t_maps *lvl, char *str, int fd[2]);
+void	fill_maps(t_lvl *lvl, char *str, int fd[2]);
 void	set_floor_ceiling(int fl_ce[3], char *str);
-void	set_map(t_maps *lvl, char *str, int fd[2]);
+void	set_map(t_lvl *lvl, char *str, int fd[2]);
 
 //check_maps.c
 int		check_map(t_cube *cube);
@@ -319,15 +321,15 @@ int		impassable(char **map, t_cube *cb, int x, int y);
 void	draw_background(t_cube *cube);
 
 //mini_maps
-void	draw_mini_background(t_maps *lvl);
-int		*get_ind(int i[2], int w_h[2], t_maps *lvl);
+void	draw_mini_background(t_lvl *lvl);
+int		*get_ind(int i[2], int w_h[2], t_lvl *lvl);
 void	draw_maps(t_cube *cube);
-int		make_mini(t_cube *cube, t_maps *lvl);
+int		make_mini(t_cube *cube, t_lvl *lvl);
 
 //mlx_img
 void			get_player_pos(t_cube *cube);
-void			fill_map_char(t_maps *lvl, char c);
-void			draw_mini_pixel(t_maps *lvl, int w_h[2], int i[2]);
+void			fill_map_char(t_lvl *lvl, char c);
+void			draw_mini_pixel(t_lvl *lvl, int w_h[2], int i[2]);
 void			draw_player(t_cube *cube);
 void			draw_doom(t_cube *cube);
 unsigned int	get_color_from_xpm(t_data *text, int x, int y);
@@ -362,13 +364,13 @@ void	free_and_gnl(char **str, int fd);
 int		new_img(t_cube *cube, t_data *new_img, int width, int height);
 void	free_maps(char **maps, int ind);
 void	free_cube(t_cube *cube);
-int		out_of_maps(t_maps *maps, int x, int y);
+int		out_of_maps(t_lvl *maps, int x, int y);
 void	free_weapons(t_cube *cube);
 void	free_enemy(t_cube *cube, t_enemy_type *adv);
 
 //parse_weapon
 int		get_weapon(t_cube *cube);
-void	set_weapon(t_maps *lvl, char *str);
+void	set_weapon(t_lvl *lvl, char *str);
 int		check_weapon(t_cube *cube, char *str);
 
 //draw_weapon
@@ -386,7 +388,7 @@ int		choose_pause(int keycode, t_cube *cube);
 void	free_text(t_cube *cube);
 
 //broken_mirror
-void	set_mirr(t_maps *lvl);
+void	set_mirr(t_lvl *lvl);
 int		count_mirr(char *line);
 t_mirr	*find_mirr(t_cube *cube, int x, int y);
 int		get_mirr_state(t_mirr *mirr);
@@ -395,7 +397,7 @@ int		get_mirr_state(t_mirr *mirr);
 t_enemy	*enemy_in_sight(t_cube *cube, t_rcdata *data);
 int		check_enemy_inf(t_cube *cube, char *str);
 void	set_draw_enemy(t_cube *cube, int val);
-void	set_enemy(t_maps *lvl, char *str);
+void	set_enemy(t_lvl *lvl, char *str);
 int		get_enemy_inf(t_cube *cube, int i);
 
 //draw_enemy
@@ -404,6 +406,10 @@ void	set_enemies_seen(t_cube *cube, int x, double wall_dist);
 void	draw_enemies(t_cube *cube);
 void	raycast_enemy(t_cube *cube);
 void	adjust_enemy_visibility(t_cube *cube,t_enemy *adv, t_rcdata *data);
+
+//enemy_move
+int launch_eneny_thread(t_cube *cube);
+void *enemy_thread(void *data);
 
 //math_utils
 double	dist_ab(t_point a, t_point b);

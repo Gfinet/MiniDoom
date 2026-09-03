@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 04:11:26 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 16:09:17 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void	free_cube(t_cube *cube)
 		
 }
 
-int out_of_maps(t_maps *maps, int x, int y)
+int out_of_maps(t_lvl *maps, int x, int y)
 {
 	return (x > maps->max_len || y > maps->m_height);
 }

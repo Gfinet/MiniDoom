@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 15:04:50 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 17:19:50 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void set_draw_enemy(t_cube *cube, int val)
 	
 }
 
-int set_enemy_pos(t_maps *lvl)
+int set_enemy_pos(t_lvl *lvl)
 {
 	t_enemy 	*adv;
 	int 		adv_nb;
@@ -71,7 +71,9 @@ int set_enemy_pos(t_maps *lvl)
 				adv->pos = (t_point){j + 0.5, i + 0.5};
 				adv->dir = (t_point){0, -1};
 				adv->hitbox = (t_point){0.8, 0.8};
+				adv->speed = 0.0000005;
 				adv->id = ind;
+				adv->cube = lvl->cube;
 				ind++;
 				adv = &lvl->enemies[ind];
 				printf("Got %d en %d %d\n", ind, i, j);
@@ -88,7 +90,7 @@ int set_enemy_pos(t_maps *lvl)
 	return 1;
 }
 
-void set_enemy(t_maps *lvl, char *str)
+void set_enemy(t_lvl *lvl, char *str)
 {
 	int		len = 0, i = -1;
 	char	*tmp;

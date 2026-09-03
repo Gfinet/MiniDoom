@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 19:05:21 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/11 17:05:11 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 16:10:10 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	is_border(int x, int y)
 		return (0);
 }
 
-void	draw_mini_background(t_maps *lvl)
+void	draw_mini_background(t_lvl *lvl)
 {
 	int		i;
 	int		j;
@@ -45,7 +45,7 @@ void	draw_mini_background(t_maps *lvl)
 	}
 }
 
-int	*get_ind(int i[2], int w_h[2], t_maps *lvl)
+int	*get_ind(int i[2], int w_h[2], t_lvl *lvl)
 {
 	int	bf;
 	int	af;
@@ -98,7 +98,7 @@ void	draw_maps(t_cube *cube)
 {
 	int		i[2];
 	int		w_h[2];
-	t_maps	*lvl;
+	t_lvl	*lvl;
 
 	i[0] = -1;
 	lvl = cube->lvl;
@@ -150,7 +150,7 @@ void	get_player_pos(t_cube *cube)
 		cube->player->pos.y};
 }
 
-int	make_mini(t_cube *cube, t_maps *lvl)
+int	make_mini(t_cube *cube, t_lvl *lvl)
 {
 	new_img(cube, &(lvl->mini.maps), WIN_WIDTH / 5, WIN_HEIGHT / 5);
 	lvl->mini.witdh = lvl->max_len + 1;

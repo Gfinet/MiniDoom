@@ -6,13 +6,13 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 22:03:11 by gfinet            #+#    #+#             */
-/*   Updated: 2024/12/26 05:31:06 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 16:09:17 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
-void	draw_mini_pixel(t_maps *lvl, int w_h[2], int i[2])
+void	draw_mini_pixel(t_lvl *lvl, int w_h[2], int i[2])
 {
 	int	x;
 	int	y;

@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   parse_maps.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
+/*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 19:05:21 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/05 19:57:02 by gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 16:09:17 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
-static int	cpy_line(t_maps *lvl, char *str, int ind)
+static int	cpy_line(t_lvl *lvl, char *str, int ind)
 {
 	size_t	len;
 
@@ -25,7 +25,7 @@ static int	cpy_line(t_maps *lvl, char *str, int ind)
 	return (1);
 }
 
-void	fill_map_char(t_maps *lvl, char c)
+void	fill_map_char(t_lvl *lvl, char c)
 {
 	int		i;
 	int		j;
@@ -49,7 +49,7 @@ void	fill_map_char(t_maps *lvl, char c)
 	}
 }
 
-void	set_map(t_maps *lvl, char *str, int fd[2])
+void	set_map(t_lvl *lvl, char *str, int fd[2])
 {
 	int		i;
 	char	*tmp;
@@ -102,7 +102,7 @@ void	set_floor_ceiling(int fl_ce[3], char *str)
 	}
 }
 
-void	fill_maps(t_maps *lvl, char *str, int fd[2])
+void	fill_maps(t_lvl *lvl, char *str, int fd[2])
 {
 	if (!str)
 		return ;

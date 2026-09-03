@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 21:10:01 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/01 15:04:10 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 16:09:17 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	get_weapon(t_cube *cube)
 	return (1);
 }
 
-void	set_weapon(t_maps *lvl, char *str)
+void	set_weapon(t_lvl *lvl, char *str)
 {
 	static int	i = 0;
 	char		*tmp;

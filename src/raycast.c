@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/01 03:34:56 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 16:09:17 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int		ray_in_limit(t_cube *cube, int x, int y)
 {
-	t_maps *lvl;
+	t_lvl *lvl;
 
 	lvl = cube->lvl;
 	// if (x == lvl->max_len || y == lvl->m_height - 1)

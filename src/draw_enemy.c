@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 15:03:42 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 17:19:04 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,19 +285,19 @@ int get_en_side(t_enemy *adv, t_point play_dir, t_data **text, int *max_text)
 	}
 	else if (diff.x < 0.707 && diff.x > -0.707)
 	{
-		if (diff.y > -1)
+		if (diff.y < -1)
 		{
 			side = 2;
 			*text = adv->type->spr_bk;
 			*max_text = adv->type->max_text_bk;
-			//printf("back\n");
+			//printf("front\n");
 		}
 		else 
 		{
 			side = 0;
 			*max_text = adv->type->max_text_fr;
 			*text = adv->type->spr_fr;
-			//printf("front\n");
+			//printf("back\n");
 		}
 	}
 	else

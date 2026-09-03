@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 15:38:27 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 16:49:05 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ static int	check_format(char *file)
 	return (1);
 }
 
-static int	init_cube(t_cube *cube, t_player *play, t_maps *level)
+static int	init_cube(t_cube *cube, t_player *play, t_lvl *level)
 {
 	*cube = (t_cube){0};
 	*play = (t_player){0};
-	*level = (t_maps){0};
+	*level = (t_lvl){0};
 	// cube->hit_data = (t_ray_hit){0};
 	cube->screen = (t_data){0};
 	cube->wall_dist = 0;
@@ -42,6 +42,7 @@ static int	init_cube(t_cube *cube, t_player *play, t_maps *level)
 		return (0);
 	//load_door_texture(cube);
 	cube->lvl = level;
+	cube->lvl->cube = cube;
 	cube->player = play;
 	cube->m_sensi = 10;
 	cube->s_mouse = 1;
@@ -96,7 +97,7 @@ static void	game_loop_init(t_cube *cube)
 int	main(int argc, char **argv)
 {
 	t_cube		cube;
-	t_maps		level;
+	t_lvl		level;
 	t_player	player;
 
 	if (argc != 2)
@@ -115,6 +116,8 @@ int	main(int argc, char **argv)
 		return (write(2, ERROR_HP, 30), free_cube(&cube), 0);
 	if (!init_pause_screen(&cube))
 		return (write(2, ERROR_PSC, 38), free_cube(&cube), 0);
+	if (!launch_eneny_thread(&cube))
+		return (write(2, ERROR_TH, 32), free_cube(&cube), 0);
 	game_loop_init(&cube);
 	return (0);
 }
