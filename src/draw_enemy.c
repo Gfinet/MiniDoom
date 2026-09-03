@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/01 03:58:37 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 05:14:34 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,13 @@ void raycast_enemy(t_cube *cube)
 	x = -1;
 	set_draw_enemy(cube, 0);
 	hit_data = &cube->hit_data;
-	cube->zbuffer[x] = hit_data->wall_dist;
-	if (hit_data->wall_dist == -1)
-		cube->zbuffer[x] = 1e30;
+	
 	//printf("%p %p\n", hit_data->enemies_hit, hit_data->enemies_dist);
 	while (++x < WIN_WIDTH)
 	{
+		cube->zbuffer[x] = hit_data->wall_dist;
+		if (hit_data->wall_dist == -1)
+			cube->zbuffer[x] = 1e30;
 		en_seen = 0;
 		hit_data->wall_dist = -1;
 		hit_data->nb_enemies = 0;
@@ -80,9 +81,9 @@ void raycast_enemy(t_cube *cube)
 				if (adv->ray_max == 1 && !adv->ray_hit)
 					adv->l_r = 1;
 				adv->tmp_dist = dist_ab(*play_pos, adv->pos);
-				hit_data->enemies_hit[hit_data->nb_enemies] = adv;
-				hit_data->enemies_dist[hit_data->nb_enemies] = \
-					ray_hit(data.side_dist, data.var, data.side);
+				// hit_data->enemies_hit[hit_data->nb_enemies] = adv;
+				// hit_data->enemies_dist[hit_data->nb_enemies] = \
+				// 	ray_hit(data.side_dist, data.var, data.side);
 				hit_data->nb_enemies++;
 				if (adv->tmp_dist < adv->short_dist)
 				{
@@ -141,7 +142,7 @@ void set_enemies_seen(t_cube *cube, int x, double wall_dist)
 	int			i = -1;
 	t_enemy *advs, *adv;
 
-	advs = cube->lvl->enemy;
+	advs = cube->lvl->enemies;
 	while (++i < cube->lvl->nb_enemy)
 	{
 		adv = &advs[i];
@@ -157,7 +158,7 @@ t_enemy *enemy_in_sight(t_cube *cube, t_rcdata *data)
 	t_enemy	*adv;
 	t_point	posi, hitb, ray;
 
-	adv = cube->lvl->enemy;
+	adv = cube->lvl->enemies;
 	ray = data->dest;
 	i = 0;
 	while (i < cube->lvl->nb_enemy)
@@ -260,8 +261,8 @@ t_enemy *get_enemy(t_cube *cube, int id)
 
 	i = -1;
 	while (++i < cube->lvl->nb_enemy)
-		if (cube->lvl->enemy[i].id == id)
-			adv = &cube->lvl->enemy[i];
+		if (cube->lvl->enemies[i].id == id)
+			adv = &cube->lvl->enemies[i];
 	return (adv);
 }
 
@@ -276,8 +277,8 @@ int get_en_side(t_enemy *adv, t_point play_dir, t_data **text, int *max_text)
 	if (diff.x >= 0.707)
 	{
 		side = 1;
-		*text = adv->spr_sd;
-		*max_text = adv->max_text_sd;
+		*text = adv->type->spr_sd;
+		*max_text = adv->type->max_text_sd;
 		//printf("side droite\n");
 	}
 	else if (diff.x < 0.707 && diff.x > -0.707)
@@ -285,27 +286,49 @@ int get_en_side(t_enemy *adv, t_point play_dir, t_data **text, int *max_text)
 		if (diff.y > -1)
 		{
 			side = 2;
-			*text = adv->spr_bk;
-			*max_text = adv->max_text_bk;
+			*text = adv->type->spr_bk;
+			*max_text = adv->type->max_text_bk;
 			//printf("back\n");
 		}
 		else 
 		{
 			side = 0;
-			*max_text = adv->max_text_fr;
-			*text = adv->spr_fr;
+			*max_text = adv->type->max_text_fr;
+			*text = adv->type->spr_fr;
 			//printf("front\n");
 		}
 	}
 	else
 	{
 		side = 3;
-		*text = adv->spr_sd;
-		*max_text = adv->max_text_sd;
+		*text = adv->type->spr_sd;
+		*max_text = adv->type->max_text_sd;
 		//printf("side gauche\n");
 	}
 	
 	return (side);
+}
+
+static void sort_enemies_by_dist(t_enemy *enemies, int nb)
+{
+    int     i;
+    int     j;
+    t_enemy tmp;
+
+    i = 1;
+    while (i < nb)
+    {
+        tmp = enemies[i];
+        j = i - 1;
+        // tri décroissant : le plus loin en premier
+        while (j >= 0 && enemies[j].short_dist < tmp.short_dist)
+        {
+            enemies[j + 1] = enemies[j];
+            j--;
+        }
+        enemies[j + 1] = tmp;
+        i++;
+    }
 }
 
 void draw_enemies(t_cube *cube)
@@ -313,7 +336,9 @@ void draw_enemies(t_cube *cube)
 	int		i = -1;
 	t_enemy	*advs, *adv;
 
-	advs = cube->lvl->enemy;
+	advs = cube->lvl->enemies;
+	// printf("nb en : %d", cube->lvl->nb_enemy);
+	sort_enemies_by_dist(advs, cube->lvl->nb_enemy);
 	while (++i < cube->lvl->nb_enemy)
 	{
 		adv = &advs[i];
@@ -369,7 +394,6 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	double		dist, dist_w, scale = 0.0;
 	double		dx, dy, inv_det, cam_x, cam_z;
 	int			screen_x;
-	static int	nb_draw[4] = {0, 0, 0, 0},	fps = 0;
 	t_player	*play;
 	t_point		pos;
 	t_data		*use_text;
@@ -377,6 +401,9 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 
 	play = cube->player;
 	pos = play->pos;
+	// for (int i = 0; i<4;i++)
+	// 	adv->nb_draw[i] = 0;
+
 
 	dist = dist_ab(pos, adv->pos);
 	dist_w = adv->wall_dist;
@@ -402,13 +429,13 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	screen_x = (int)((WIN_WIDTH / 2) * (1.0 + cam_x / cam_z));
 
 	side = get_en_side(adv, play->dir, &use_text, &max_text);
-	fps++;
-	if (fps - 1 == (cube->frame / (1 + play->run) / 2))
-		nb_draw[side]++;
-	nb_draw[side] %= max_text;
-	img = use_text[nb_draw[side]].img;
+	adv->fps++;
+	if (adv->fps - 1 == (cube->frame / (1 + play->run) / 2))
+		adv->nb_draw[side]++;
+	adv->nb_draw[side] %= max_text;
+	img = use_text[adv->nb_draw[side]].img;
 	scale = 6 / dist;
-	fps %= cube->frame * 4 + cube->frame * play->run;
+	adv->fps %= cube->frame * 4 + cube->frame * play->run;
 	hei = img->height * scale;
 	wid = img->width * scale;
 
@@ -419,7 +446,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 		mlx_destroy_image(cube->mlx, adv->text_on.img);
 	new_img(cube, &adv->text_on, wid, hei);
 	compute_occlusion(adv, cube, n_x, wid, img->width, cam_z);
-	put_xpm_to_mlx_img(adv, &use_text[nb_draw[side]], scale, (side == 1));
+	put_xpm_to_mlx_img(adv, &use_text[adv->nb_draw[side]], scale, (side == 1));
 	mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
 }
 

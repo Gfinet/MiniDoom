@@ -1,27 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   enemy_act.c                                        :+:      :+:    :+:   */
+/*   enemy_move.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/01 14:43:40 by Gfinet           ###   ########.fr       */
+/*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
+/*   Updated: 2026/09/01 16:12:21 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
-void draw_enemy(t_cube *cube, t_drawdata *draw, int x, int id)
+void enemy_move(t_enemy *adv)
 {
-	int		i;
-	t_enemy *adv;
-
-	i = -1;
-	while (++i < cube->lvl->nb_enemy)
-		if (cube->lvl->enemies[i].id == id)
-			adv = &cube->lvl->enemies[i];
-	if (adv->draw)
-		return ;
-	mlx_put_image_to_window(cube->mlx, cube->win, adv->spr_fr->img, x, draw->draw_start);
+	t_point origin = adv->pos;
+	
 }

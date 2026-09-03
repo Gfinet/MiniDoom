@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/01 03:02:36 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 03:47:07 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,15 +61,18 @@ static int	get_textures(t_cube *cube)
 	if (!get_weapon(cube))
 		return (0);
 	i = -1;
-	cube->hit_data.enemies_dist = malloc(sizeof(double) * cube->lvl->nb_enemy);
-	if (!cube->hit_data.enemies_dist)
-		return (0);
-	cube->hit_data.enemies_hit = malloc(sizeof(t_enemy *) * cube->lvl->nb_enemy);
-	if (!cube->hit_data.enemies_hit)
-		return (0);
-	while (++i < cube->lvl->nb_enemy)
+	// cube->hit_data.enemies_dist = malloc(sizeof(double) * cube->lvl->nb_enemy);
+	// if (!cube->hit_data.enemies_dist)
+	// 	return (0);
+	// cube->hit_data.enemies_hit = malloc(sizeof(t_enemy *) * cube->lvl->nb_enemy);
+	// if (!cube->hit_data.enemies_hit)
+	// 	return (0);
+	while (++i < cube->lvl->nb_enemy_type)
+	{
+		printf("Ens :%d, getting en %d\n", cube->lvl->nb_enemy, i);
 		if (!get_enemy_inf(cube, i))
 			return (0);
+	}
 	if (!new_img(cube, &cube->screen, WIN_WIDTH, WIN_HEIGHT))
 		return (0);
 	return (1);

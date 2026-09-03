@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/01 03:30:25 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 04:55:37 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 // # include "./Printf/libft/libft.h"
 # include "./minilibx/mlx.h"
 # include <math.h>
-#include <sys/time.h>
+# include <sys/time.h>
+// # include <thread.h>
 
 # include <stdlib.h>
 # include <unistd.h>
@@ -98,55 +99,68 @@ typedef struct s_weapon
 	char	**path;
 }	t_weapon;
 
-typedef struct s_enemy
+typedef struct s_enemy_type
 {
-	t_data	text_on;
+	char 	letter;
+	char 	*name;
 	t_data	*spr_fr;
 	t_data	*spr_bk;
 	t_data	*spr_sd;
-	t_point	prev_pos;
-	t_point	pos;
-	t_point	dir;
 	t_point	hitbox;
 	t_point st_dr_end;
-	double	bobox;
-	double	wall_dist;
-	double	tmp_dist;
-	double	short_dist;
 	char	**path;
-	int		l_r;
-	int		x;
 	int		path_len;
 	int		max_text_fr;
 	int		max_text_bk;
 	int		max_text_sd;
-	int		ray_hit;
-	int		ray_max;
-	int		draw;
-	int		seen;
-	int		id;
-	int		hp;
-	int		dmg;
-	double	freq_atk;
-	double	speed;
-	double	fov;
+} t_enemy_type;
+
+typedef struct s_enemy
+{
+	t_enemy_type 	*type;
+	t_data			text_on;
+	t_point			prev_pos;
+	t_point			pos;
+	t_point			dir;
+	t_point			hitbox;
+	t_point 		st_dr_end;
+	double			bobox;
+	double			wall_dist;
+	double			tmp_dist;
+	double			short_dist;
+	int				nb_draw[4];
+	int				fps;
+	int				l_r;
+	int				x;
+	int				ray_hit;
+	int				ray_max;
+	int				draw;
+	int				seen;
+	int				id;
+	int				hp;
+	int				dmg;
+	double			freq_atk;
+	double			speed;
+	double			fov;
 }	t_enemy;
 
 typedef struct s_maps
 {
-	t_mini_maps	mini;
-	t_mirr		*mirr;
-	char		**c_maps;
-	char		**c_text;
-	int			max_len;
-	int			floor[3];
-	int			ceil[3];
-	int			m_height;
-	int			nb_weap;
-	int			nb_enemy;
-	int			nb_mirr;
-	t_weapon	*weap;
-	t_enemy		*enemy;
+	t_mini_maps		mini;
+	t_mirr			*mirr;
+	char			**c_maps;
+	char			**c_text;
+	int				max_len;
+	int				floor[3];
+	int				ceil[3];
+	int				m_height;
+	int				nb_weap;
+	int				nb_enemy;
+	int				nb_enemy_type;
+	int				nb_mirr;
+	t_weapon		*weap;
+	t_enemy			*enemies;
+	t_enemy_type 	*enemy_types;
 }	t_maps;
 
 typedef struct s_player
@@ -353,7 +367,7 @@ void	free_maps(char **maps, int ind);
 void	free_cube(t_cube *cube);
 int		out_of_maps(t_maps *maps, int x, int y);
 void	free_weapons(t_cube *cube);
-void	free_enemy(t_cube *cube, t_enemy *adv);
+void	free_enemy(t_cube *cube, t_enemy_type *adv);
 
 //parse_weapon
 int		get_weapon(t_cube *cube);

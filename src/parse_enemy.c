@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/01 03:23:33 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 04:50:35 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,23 @@ void set_draw_enemy(t_cube *cube, int val)
 
 	while (++i < cube->lvl->nb_enemy)
 	{
-		cube->lvl->enemy[i].draw = val;
-		cube->lvl->enemy[i].short_dist = 999;
-		cube->lvl->enemy[i].tmp_dist = 0;
-		cube->lvl->enemy[i].ray_hit = 0;
-		cube->lvl->enemy[i].ray_max = 0;
-		cube->lvl->enemy[i].l_r = 0;
+		cube->lvl->enemies[i].draw = val;
+		cube->lvl->enemies[i].short_dist = 999;
+		cube->lvl->enemies[i].tmp_dist = 0;
+		cube->lvl->enemies[i].ray_hit = 0;
+		cube->lvl->enemies[i].ray_max = 0;
+		cube->lvl->enemies[i].l_r = 0;
 	}
 	
 }
 
-void set_enemy_pos(t_maps *lvl, t_enemy *adv, int nb)
+int set_enemy_pos(t_maps *lvl)
 {
-	int 	adv_nb;
-	int		i;
-	int		j;
+	t_enemy 	*adv;
+	int 		adv_nb;
+	int			i;
+	int			j;
+	int 		ind;
 
 	i = 0;
 	adv_nb = 0;
@@ -43,18 +45,46 @@ void set_enemy_pos(t_maps *lvl, t_enemy *adv, int nb)
 		{
 			if (lvl->c_maps[i][j] == 'A')
 				adv_nb++;
-			if (adv_nb == nb)
-				break;
 			j++;
 		}
-		if (adv_nb == nb)
-				break;
 		i++;
 	}
-	adv->pos = (t_point){j + 0.5, i + 0.5};
-	adv->dir = (t_point){0, -1};
-	adv->hitbox = (t_point){0.8, 0.8};
-	adv->id = nb;
+	if (!lvl->enemies)
+	{
+		lvl->enemies = malloc(sizeof(t_enemy) * adv_nb);
+		if (!lvl->enemies)
+			return 0;
+	}
+	lvl->nb_enemy = adv_nb;
+	ind = 0;
+	i = 0;
+	adv = &lvl->enemies[ind];
+	while (lvl->c_maps && lvl->c_maps[i] && i < lvl->m_height)
+	{
+		j = 0;
+		while (lvl->c_maps[i][j] && j < lvl->max_len - 1)
+		{
+			if (lvl->c_maps[i][j] == 'A')
+			{
+				adv->type = &lvl->enemy_types[0];
+				adv->pos = (t_point){j + 0.5, i + 0.5};
+				adv->dir = (t_point){0, -1};
+				adv->hitbox = (t_point){0.8, 0.8};
+				adv->id = ind;
+				ind++;
+				adv = &lvl->enemies[ind];
+				printf("Got %d en %d %d\n", ind, i, j);
+			}
+			if (ind == adv_nb)
+				break;
+			// printf("%d %d ", i, j);
+			j++;
+		}
+		if (ind == adv_nb)
+			break;
+		i++;
+	}
+	return 1;
 }
 
 void set_enemy(t_maps *lvl, char *str)
@@ -63,13 +93,13 @@ void set_enemy(t_maps *lvl, char *str)
 	char	*tmp;
 	char	**lst;
 
-
-	if (!lvl->enemy)
+	lvl->nb_enemy_type++;
+	if (!lvl->enemy_types)
 	{
-		lvl->enemy = malloc(sizeof(t_enemy));
-		if (!lvl->enemy)
+		lvl->enemy_types = malloc(sizeof(t_enemy_type) * lvl->nb_enemy_type);
+		if (!lvl->enemy_types)
 			return ;
-		*lvl->enemy = (t_enemy){0};
+		*lvl->enemy_types = (t_enemy_type){0};
 	}
 	lst = ft_split(str, ' ');
 	while (lst[len])
@@ -78,15 +108,14 @@ void set_enemy(t_maps *lvl, char *str)
 	free(lst[len - 1]);
 	lst[len - 1] = tmp;
 	lst[len] = 0;
-	while (++i < lvl->nb_enemy)
+	while (++i < lvl->nb_enemy_type)
 	{
-		lvl->enemy[i].path_len = len;
-		lvl->enemy[i].path = lst;
-		lvl->enemy[i].dir = (t_point){1,1};
+		lvl->enemy_types[i].path_len = len;
+		lvl->enemy_types[i].path = lst;
 	}
 }
 
-static t_data **get_ptr_texture(t_enemy *adv, int *num)
+static t_data **get_ptr_texture(t_enemy_type *adv, int *num)
 {
 	t_data **text = NULL;
 
@@ -99,7 +128,7 @@ static t_data **get_ptr_texture(t_enemy *adv, int *num)
 	return ((*num)++, text);
 }
 
-static int *get_ptr_len(t_enemy *adv, int *num)
+static int *get_ptr_len(t_enemy_type *adv, int *num)
 {
 	int 	*len = 0;
 	
@@ -118,7 +147,7 @@ void set_first_hitb(t_cube *cube, t_enemy *adv)
 	t_data		spr;
 	//double		dist;
 
-	xpm_to_img(cube, &spr, adv->path[0]);
+	// xpm_to_img(cube, &spr, adv->path[0]);
 	//img = spr.img;
 	//dist = dist_ab(cube->player->pos, adv->pos);
 	// if (dist == 0)
@@ -130,12 +159,12 @@ void set_first_hitb(t_cube *cube, t_enemy *adv)
 
 int get_enemy_inf(t_cube *cube, int ind)
 {
-	int		first_text, i, j, l;
-	int		*len;
-	t_enemy *adv;
-	t_data	**text = NULL;
+	int				first_text, i, j, l;
+	int				*len;
+	t_enemy_type 	*adv;
+	t_data			**text = NULL;
 	
-	adv = cube->lvl->enemy;
+	adv = cube->lvl->enemy_types;
 	i = -1;
 	l = 0;
 	while (++i < adv[ind].path_len - 1)
@@ -160,8 +189,8 @@ int get_enemy_inf(t_cube *cube, int ind)
 				return (printf("enemy sprites loading error\n"), 0);
 		}
 	}
-	set_enemy_pos(cube->lvl, &adv[ind], 1);
-	set_first_hitb(cube, &adv[ind]);
+	set_enemy_pos(cube->lvl);
+	// set_first_hitb(cube, &adv[ind]);
 	return (1);
 }
 
@@ -184,5 +213,5 @@ int check_enemy_inf(t_cube *cube, char *str)
 	data.img = mlx_xpm_file_to_image(cube->mlx, lst[0], &data.width, &data.height);
 	if (!data.img)
 		return (printf("Enemy texture error\n"), 0);
-	return (free_maps(lst, len), cube->lvl->nb_enemy++, 1);
+	return (free_maps(lst, len), 1);
 }

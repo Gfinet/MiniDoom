@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2024/11/27 01:13:48 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/03 04:11:26 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void free_weapons(t_cube *cube)
 	}
 }
 
-void free_enemy(t_cube *cube, t_enemy *adv)
+void free_enemy(t_cube *cube, t_enemy_type *adv)
 {
 	int		i = -1;
 
@@ -64,12 +64,25 @@ void free_enemy(t_cube *cube, t_enemy *adv)
 	while (++i < adv->max_text_sd)
 		if (adv->spr_sd[i].img)
 			mlx_destroy_image(cube->mlx, adv->spr_sd[i].img);
-	if (adv->text_on.img)
-		mlx_destroy_image(cube->mlx, adv->text_on.img);
-	free(adv->spr_fr);
-	free(adv->spr_bk);
-	free(adv->spr_sd);
-	free(adv->path);
+	i = -1;
+	while(++i < cube->lvl->nb_enemy)
+		if (cube->lvl->enemies[i].text_on.img)
+			mlx_destroy_image(cube->mlx, cube->lvl->enemies[i].text_on.img);
+	if (adv->spr_fr)
+	{
+		free(adv->spr_fr);
+		adv->spr_fr = 0;
+	}
+	if (adv->spr_bk)
+	{
+		free(adv->spr_bk);
+		adv->spr_bk = 0;
+	}
+	if (adv->spr_sd)
+	{
+		free(adv->spr_sd);
+		adv->spr_sd = 0;
+	}
 }
 
 void	free_cube(t_cube *cube)
@@ -83,11 +96,11 @@ void	free_cube(t_cube *cube)
 		free_maps(cube->lvl->c_maps, cube->lvl->m_height - 1);
 		if (cube->lvl->c_text)
 			free_maps(cube->lvl->c_text, 3);
-		if (cube->lvl->nb_enemy > 0)
-		{
-			free(cube->hit_data.enemies_dist);
-			free(cube->hit_data.enemies_hit);
-		}
+		// if (cube->lvl->nb_enemy > 0)
+		// {
+			// free(cube->hit_data.enemies_dist);
+			// free(cube->hit_data.enemies_hit);
+		// }
 		printf("maps freed\n");
 	}
 	cur = cube->doors;
@@ -105,11 +118,15 @@ void	free_cube(t_cube *cube)
 		free(cube->lvl->weap);
 		printf("guns freed\n");
 	}
-	if (cube->lvl->enemy)
+	if (cube->lvl->enemies)
 	{
-		while (++i < cube->lvl->nb_enemy)
-			free_enemy(cube, &cube->lvl->enemy[i]);
-		free(cube->lvl->enemy);
+		while (++i < cube->lvl->nb_enemy_type)
+			free_enemy(cube, &cube->lvl->enemy_types[i]);
+		for (int j = 0; j < cube->lvl->enemy_types[0].path_len; j++)
+			free(cube->lvl->enemy_types[0].path[j]);
+		free(cube->lvl->enemy_types[0].path);
+		cube->lvl->enemy_types[0].path = 0;
+		free(cube->lvl->enemies);
 		printf("enemies freed\n");
 	}
 		

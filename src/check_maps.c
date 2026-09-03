@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 15:40:39 by gfinet            #+#    #+#             */
-/*   Updated: 2024/09/12 11:50:28 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/01 15:14:40 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int	check_map(t_cube *cube)
 		j = -1;
 		while (++j < cube->lvl->max_len)
 		{
-			if (in_char_lst(cube->lvl->c_maps[i][j], "0NSWEG"))
+			if (in_char_lst(cube->lvl->c_maps[i][j], "0NSWEGA"))
 				if (!check_surrounding(cube, i, j, '.'))
 					return (0);
 		}
