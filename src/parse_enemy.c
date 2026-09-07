@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 17:19:50 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/07 21:50:52 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,6 @@ void set_draw_enemy(t_cube *cube, int val)
 	{
 		cube->lvl->enemies[i].draw = val;
 		cube->lvl->enemies[i].short_dist = 999;
-		cube->lvl->enemies[i].tmp_dist = 0;
-		cube->lvl->enemies[i].ray_hit = 0;
-		cube->lvl->enemies[i].ray_max = 0;
-		cube->lvl->enemies[i].l_r = 0;
 	}
 	
 }
@@ -51,7 +47,7 @@ int set_enemy_pos(t_lvl *lvl)
 	}
 	if (!lvl->enemies)
 	{
-		lvl->enemies = malloc(sizeof(t_enemy) * adv_nb);
+		lvl->enemies = calloc(adv_nb, sizeof(t_enemy));
 		if (!lvl->enemies)
 			return 0;
 	}
@@ -71,7 +67,7 @@ int set_enemy_pos(t_lvl *lvl)
 				adv->pos = (t_point){j + 0.5, i + 0.5};
 				adv->dir = (t_point){0, -1};
 				adv->hitbox = (t_point){0.8, 0.8};
-				adv->speed = 0.0000005;
+				adv->speed = 1;
 				adv->id = ind;
 				adv->cube = lvl->cube;
 				ind++;
@@ -99,10 +95,9 @@ void set_enemy(t_lvl *lvl, char *str)
 	lvl->nb_enemy_type++;
 	if (!lvl->enemy_types)
 	{
-		lvl->enemy_types = malloc(sizeof(t_enemy_type) * lvl->nb_enemy_type);
+		lvl->enemy_types = calloc(lvl->nb_enemy_type, sizeof(t_enemy_type));
 		if (!lvl->enemy_types)
 			return ;
-		*lvl->enemy_types = (t_enemy_type){0};
 	}
 	lst = ft_split(str, ' ');
 	while (lst[len])
@@ -128,7 +123,7 @@ static t_data **get_ptr_texture(t_enemy_type *adv, int *num)
 		text = &adv->spr_bk;
 	else if (*num == 2)
 		text = &adv->spr_sd;
-	return ((*num)++, text);
+	return (text);
 }
 
 static int *get_ptr_len(t_enemy_type *adv, int *num)
@@ -146,22 +141,23 @@ static int *get_ptr_len(t_enemy_type *adv, int *num)
 
 int get_enemy_inf(t_cube *cube, int ind)
 {
-	int				first_text, i, j, l;
+	int				first_text, i, j, num_text;
 	int				*len;
 	t_enemy_type 	*adv;
 	t_data			**text = NULL;
 	
 	adv = cube->lvl->enemy_types;
 	i = -1;
-	l = 0;
+	num_text = 0;
 	while (++i < adv[ind].path_len - 1)
 	{
 		first_text = i;
 		while (i < adv[ind].path_len - 1 && !ft_strncmp(adv[ind].path[i], adv[ind].path[i + 1], ft_strlen(adv[ind].path[i]) - 5))
 			i++;
-		len = get_ptr_len(&adv[ind], &l);
+		len = get_ptr_len(&adv[ind], &num_text);
 		*len = i - first_text + 1;
-		text = get_ptr_texture(&adv[ind], &l);
+		text = get_ptr_texture(&adv[ind], &num_text);
+		num_text++;
 		if (!*text)
 			*text = malloc(sizeof(t_data) * ((*len) + 1));
 		if (!*text)

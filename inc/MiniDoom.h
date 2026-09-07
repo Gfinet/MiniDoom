@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 16:48:29 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/07 21:05:32 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,12 +131,10 @@ typedef struct s_enemy
 	double			wall_dist;
 	double			tmp_dist;
 	double			short_dist;
+	double			cam_x;
+	double			cam_z;
 	int				nb_draw[4];
 	int				fps;
-	int				l_r;
-	int				x;
-	int				ray_hit;
-	int				ray_max;
 	int				draw;
 	int				play_seen;
 	int				id;
@@ -256,25 +254,26 @@ typedef struct s_drawdata
 
 typedef struct s_cube
 {
-	void		*mlx;
-	void		*win;
-	t_player	*player;
-	t_lvl		*lvl;
-	t_pause		pause_sc;
-	t_data		texture[4];
-	t_data		door_texture[4];
-	t_data		screen;
-	t_door		*doors;
-	double		focal_length;
-	double		wall_dist;
-	double 		zbuffer[WIN_WIDTH];
+	void				*mlx;
+	void				*win;
+	t_player			*player;
+	t_lvl				*lvl;
+	t_pause				pause_sc;
+	t_data				texture[4];
+	t_data				door_texture[4];
+	t_data				screen;
+	t_door				*doors;
+	double				focal_length;
+	double				wall_dist;
+	double 				zbuffer[WIN_WIDTH];
 	int 		stop;
-	int			wall;
-	int			frame;
-	int			mouse;
-	int			pause;
-	int			m_sensi;
-	int			s_mouse;
+	// volatile int 		stop;
+	int					wall;
+	int					frame;
+	int					mouse;
+	int					pause;
+	int					m_sensi;
+	int					s_mouse;
 	// t_ray_hit	hit_data;
 }	t_cube;
 

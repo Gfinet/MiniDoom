@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 21:04:25 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 16:52:55 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/07 20:02:47 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@ int	esc_handle(t_cube *cube)
 {
 	
 	cube->stop = 1;
+	printf("Stop : %d\n", cube->stop);
 	for(int i=0 ;i < cube->lvl->nb_enemy; i++)
 		pthread_join(cube->lvl->enemies[i].thread, 0);
+	printf("all thread joined\n");
 	if (cube->win)
 	{
 		mlx_clear_window(cube->mlx, cube->win);
