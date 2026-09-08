@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/07 23:13:25 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 13:40:34 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,10 @@ typedef struct s_weapon
 	double	freq_atk;
 	char	*name;
 	int		dmg;
+	int		end_anim;
+	int		acquire;
+	int 	pathLen;
+	int		use_spr;
 	char	**path;
 }	t_weapon;
 

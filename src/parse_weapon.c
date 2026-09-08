@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 21:10:01 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 16:09:17 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 13:40:48 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,13 @@ int	get_weapon(t_cube *cube)
 		len = 0;
 		while (weap[i].path[len])
 			len++;
-		weap[i].sprites = malloc(sizeof(t_data) * len);
-		// printf("weap %d len %zu", i, len);
+		weap[i].pathLen = len;
+		weap[i].sprites = calloc(sizeof(t_data), len);
 		if (!weap[i].sprites)
 			return (printf("gun sprites malloc error\n"), 0);
+		weap[i].use_spr = 0; //calloc(sizeof(int), len);
+		// if (!weap[i].use_spr)
+		// 	return (printf("gun sprites malloc error\n"), 0);
 		weap[i].sprites[0].width = 10;
 		weap[i].sprites[0].height = 17;
 		j = -1;
@@ -53,7 +56,7 @@ void	set_weapon(t_lvl *lvl, char *str)
 
 	if (!lvl->weap)
 	{
-		lvl->weap = malloc(lvl->nb_weap * sizeof(t_weapon));
+		lvl->weap = calloc(sizeof(t_weapon), lvl->nb_weap);
 		if (!lvl->weap)
 			return ;
 	}
@@ -81,7 +84,7 @@ int	check_weapon(t_cube *cube, char *str)
 	lst = ft_split(&str[1], ' ');
 	while (lst[len] != 0)
 		len++;
-	if (len == 1)
+	if (len < 4)
 		return (free_maps(lst, len), printf("gun %s lack sprite\n", lst[0]), 0);
 	tmp = ft_substr(lst[len - 1], 0, ft_strlen(lst[len - 1]) - 1);
 	free(lst[len - 1]);

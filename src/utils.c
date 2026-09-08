@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 16:09:17 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 13:29:59 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,20 +30,15 @@ void	free_maps(char **maps, int ind)
 
 void free_weapons(t_cube *cube)
 {
-	int			i;
-	int 		j;
 	t_weapon	*weap;
 
 	weap = cube->lvl->weap;
-	i = -1;
-	while (++i < cube->lvl->nb_weap)
+	for (int i = 0; i < cube->lvl->nb_weap; i++)
 	{
-		j = 0;
-		while (weap[i].path[j])
+		for (int j = 0; weap[i].path[j]; j++)
 		{
 			mlx_destroy_image(cube->mlx, weap[i].sprites[j].img);
 			free(weap[i].path[j]);
-			j++;
 		}
 		free(weap[i].path);
 	}

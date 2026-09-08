@@ -6,27 +6,29 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 00:26:20 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 02:04:33 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 13:46:50 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
-void	put_weapon(t_cube *cube, int *i)
+void	put_weapon(t_cube *cube)
 {
 	int			w;
 	int			h;
 	int			u_w;
+	int			*spr;
 	t_weapon	*weap;
 
 	u_w = cube->player->use_weap;
 	weap = cube->lvl->weap;
-	if (cube->player->shoot == 1)
+	spr = &weap[u_w].use_spr;
+	if (cube->player->shoot == 1 || *spr != 1)
 	{
-		w = (WIN_WIDTH - weap[u_w].sprites[i[u_w]].width) / 2;
-		h = WIN_HEIGHT - weap[u_w].sprites[i[u_w]].height;
+		w = (WIN_WIDTH - weap[u_w].sprites[*spr].width) / 2;
+		h = WIN_HEIGHT - weap[u_w].sprites[*spr].height;
 		mlx_put_image_to_window(cube->mlx, cube->win,
-			weap[u_w].sprites[i[u_w]].img, w, h);
+			weap[u_w].sprites[*spr].img, w, h);
 	}
 	else
 	{
@@ -34,31 +36,31 @@ void	put_weapon(t_cube *cube, int *i)
 		h = WIN_HEIGHT - weap[u_w].sprites[0].height;
 		mlx_put_image_to_window(cube->mlx, cube->win,
 			weap[u_w].sprites[0].img, w, h);
+		*spr = 0;
 	}
 }
 
 void	draw_weapons(t_cube *cube)
 {
-	int			n;
+	int			len;
 	int			u_w;
-	static int	*i = 0;//[3] = {0, 0, 0};
+	int			*spr;
 	static int	fps = 0;
 	t_weapon	*weap;
 
-	if (!i)
-	{
-		i = malloc(cube->lvl->nb_weap * sizeof(int));
-		*i = (int){0};
-	}
 	weap = cube->lvl->weap;
 	u_w = cube->player->use_weap;
-	n = 0;
-	while (weap[u_w].path[n] != 0)
-		n++;
-	put_weapon(cube, i);
+	spr = &weap[u_w].use_spr;
+	len = weap[u_w].pathLen;
+	
+	put_weapon(cube);
 	fps++;
-	if (fps - 1 == (cube->frame / (1 + cube->player->run)) / 4)
-		i[u_w]++;
-	i[u_w] %= (n -1); //- (u_w != 0)
-	fps %= cube->frame + cube->frame * cube->player->run;
+	if (fps - 1 == (cube->frame / (1 + cube->player->run))) //speed  btw sprites
+		(*spr)++;
+	*spr %= (len - 1); //n - 1 avoid the img
+	if (!*spr) (*spr)++; //avoid the standing sprite
+
+	if (fps >= 2 * cube->frame + cube->frame * cube->player->run)
+		fps %= cube->frame; 
+	
 }
