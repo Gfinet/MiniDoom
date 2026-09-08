@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 16:12:12 by lvodak            #+#    #+#             */
-/*   Updated: 2024/11/10 15:32:25 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/07 23:13:17 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,8 @@ void	find_and_open_door(t_door *door, t_player *pl)
 	}
 }
 
-int	impassable(char **map, t_cube *cb, int x, int y)
+int	impassable(char **map, int x, int y)
 {
-
-	(void)cb;
 	if (map[y][x] == '1' || map[y][x] == '2')
 		return (1);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/07 21:11:25 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 01:04:01 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -313,11 +313,17 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	wid = img->width * scale;
 
 	n_x = screen_x - wid / 2;
-	n_y = WIN_HEIGHT / 2 - hei / 2 + 110;
+	n_y = WIN_HEIGHT / 2 - hei / 2 + 100;
 	if (adv->text_on.img)
 		mlx_destroy_image(cube->mlx, adv->text_on.img);
 	new_img(cube, &adv->text_on, wid, hei);
 	compute_occlusion(adv, cube, n_x, wid, img->width, cam_z);
+	if (adv->st_dr_end.x == 0 && adv->st_dr_end.y == 0)
+	{
+		mlx_destroy_image(cube->mlx, adv->text_on.img);
+		adv->text_on.img = NULL;
+		return ;
+	}
 	put_xpm_to_mlx_img(adv, &use_text[adv->nb_draw[side]], scale, (side == 1));
 	mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
 }

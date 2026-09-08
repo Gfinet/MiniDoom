@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 00:26:20 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/01 04:30:30 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 02:04:33 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,6 @@ void	draw_weapons(t_cube *cube)
 	fps++;
 	if (fps - 1 == (cube->frame / (1 + cube->player->run)) / 4)
 		i[u_w]++;
-	i[u_w] %= (n ); //- (u_w != 0)
+	i[u_w] %= (n -1); //- (u_w != 0)
 	fps %= cube->frame + cube->frame * cube->player->run;
 }

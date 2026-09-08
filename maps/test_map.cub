@@ -3,7 +3,7 @@ SO ./texture/nicpimp.xpm
 WE ./texture/eagle.xpm
 EA ./texture/nounours.xpm
 
-G ./weapon_sprites/fist.xpm ./weapon_sprites/fist2.xpm ./weapon_sprites/fist3.xpm
+G ./weapon_sprites/fist.xpm ./weapon_sprites/fist2.xpm ./weapon_sprites/fist3.xpm ./weapon_sprites/fist3.xpm
 G ./weapon_sprites/gun.xpm ./weapon_sprites/gun2.xpm ./weapon_sprites/gun3.xpm ./weapon_sprites/gun4.xpm ./weapon_sprites/gun5.xpm ./weapon_sprites/handgun.xpm
 G ./weapon_sprites/shotgun.xpm ./weapon_sprites/shotgun2.xpm ./weapon_sprites/shotgun3.xpm ./weapon_sprites/shotgun4.xpm ./weapon_sprites/gun5.xpm
 G ./weapon_sprites/machinegun.xpm ./weapon_sprites/machinegun2.xpm ./weapon_sprites/chaingun.xpm
@@ -19,7 +19,7 @@ C 40,40,40
 100000000000000000000001
 100000000000000000000001
 100000000000000000000001
-100000000A0A000000000001
+1000000000A0000000000001
 1000000000N0000000000001
 100000000000000000000001
 100000000010000000000001

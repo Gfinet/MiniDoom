@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/07 21:05:32 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/07 23:13:25 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,7 +314,7 @@ int		get_dir(char *str);
 
 //interactions
 void	find_and_open_door(t_door *door, t_player *player);
-int		impassable(char **map, t_cube *cb, int x, int y);
+int		impassable(char **map, int x, int y);
 
 //background.c
 void	draw_background(t_cube *cube);

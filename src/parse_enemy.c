@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/07 21:50:52 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 01:26:57 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,9 +65,9 @@ int set_enemy_pos(t_lvl *lvl)
 				// adv->name = ft_strdup("something")
 				adv->type = &lvl->enemy_types[0];
 				adv->pos = (t_point){j + 0.5, i + 0.5};
-				adv->dir = (t_point){0, -1};
-				adv->hitbox = (t_point){0.8, 0.8};
-				adv->speed = 1;
+				adv->dir = (t_point){0, -1};//to North
+				adv->hitbox = (t_point){0.4, 0.4};
+				adv->speed = 0.5;
 				adv->id = ind;
 				adv->cube = lvl->cube;
 				ind++;

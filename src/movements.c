@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 16:08:53 by lvodak            #+#    #+#             */
-/*   Updated: 2024/09/12 14:45:47 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 00:09:17 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@ void	update_player(t_cube *cb, t_player *play)
 	n_pos.y += play->move_h * (n_y / (4 * cb->frame));
 	if (play->turn)
 		turn(cb, 11.25 * play->turn, cb->frame);
-	if (!impassable(cb->lvl->c_maps, cb, n_pos.x, play->pos.y))
+	if (!impassable(cb->lvl->c_maps, n_pos.x, play->pos.y))
 		play->pos.x = n_pos.x;
-	if (!impassable(cb->lvl->c_maps, cb, play->pos.x, n_pos.y))
+	if (!impassable(cb->lvl->c_maps, play->pos.x, n_pos.y))
 		play->pos.y = n_pos.y;
 }
 

@@ -6,13 +6,44 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/07 21:50:38 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 02:00:18 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
-static int has_seen_player(t_enemy *adv)
+static int wall_between(t_enemy *adv)
+{
+	t_point visu, play_pos;
+	t_lvl *lvl;
+	double total_dist, traveled = 0;
+	double dx;
+    double dy;
+
+	play_pos = adv->cube->player->pos;
+	dx = play_pos.x - adv->pos.x;
+	dy= play_pos.y - adv->pos.y;
+	total_dist = sqrt(dx * dx + dy * dy);
+	if (total_dist < 0.0001)
+        return 0;
+    dx /= total_dist;
+    dy /= total_dist;
+
+	lvl = adv->cube->lvl;
+	visu = adv->pos;
+	while (traveled < total_dist)
+	{
+		visu.x += dx * 0.1;
+		visu.y += dy * 0.1;
+		if (impassable(lvl->c_maps, (int)visu.x, (int)visu.y))
+			return 1;
+
+		traveled += 0.1;
+	}
+	return 0;
+}
+
+static int see_player(t_enemy *adv)
 {
 	t_point play_pos;
     double  dx, dy, dist, dot;
@@ -21,6 +52,8 @@ static int has_seen_player(t_enemy *adv)
     dx = play_pos.x - adv->pos.x;
     dy = play_pos.y - adv->pos.y;
     dist = sqrt(dx * dx + dy * dy);
+	if (wall_between(adv))
+		return 0;
     // if (dist > 5.0)
     //     return (0);
     if (dist < 0.0001)
@@ -29,26 +62,8 @@ static int has_seen_player(t_enemy *adv)
     return (dot >= 0.707);
 }
 
-// static t_point compute_cam(t_enemy *adv)
-// {
-// 	double		dx, dy, inv_det;
-// 	t_point		pos;
-// 	t_point		cam;
-
-// 	pos = adv->cube->player->pos;
-// 	dx = pos.x - adv->pos.x;
-// 	dy = pos.y - adv->pos.y;
-// 	inv_det = 1.0 / (adv->dir.x * adv->dir.y - adv->dir.x * adv->dir.y);
-// 	cam.x = inv_det * (adv->dir.y * dx - adv->dir.x * dy);
-// 	cam.y = inv_det * (-adv->dir.y * dx + adv->dir.x * dy);
-// 	return cam;
-// }
-
 static void look_to_player(t_enemy *adv)
 {
-	// t_point	cam;
-
-	// cam = compute_cam(adv);
 
 	t_point play_pos = adv->cube->player->pos;
 
@@ -69,17 +84,20 @@ static int keep_space(t_enemy *adv, t_point n_pos)
 	t_cube	*cube;
 	t_lvl	*lvl;
 	t_enemy *other;
-	t_point play_pos;
+	t_point play_pos, hitb;
     double dx, dy;
 	double size_x, size_y;
 
 	cube = adv->cube;
 	lvl = cube->lvl;
+
 	play_pos = adv->cube->player->pos;
 	dx = play_pos.x - n_pos.x;
 	dy = play_pos.y - n_pos.y;
-	size_x = 0.5 + (adv->hitbox.x / 2);
-	size_y = 0.5 + (adv->hitbox.y / 2);
+	hitb.x = adv->hitbox.x / 2;
+	hitb.y = adv->hitbox.y / 2;
+	size_x = 0.5 + hitb.x;
+	size_y = 0.5 + hitb.y;
 	if (fabs(dy) < size_y && fabs(dx) < size_x)
 		return 0;
 	for (int i=0; i < lvl->nb_enemy; i++)
@@ -89,12 +107,12 @@ static int keep_space(t_enemy *adv, t_point n_pos)
 			continue;
 		dx = other->pos.x - n_pos.x;
 		dy = other->pos.y - n_pos.y;
-		size_x = 0.5 + (adv->hitbox.x / 2);
-		size_y = 0.5 + (adv->hitbox.y / 2);
+		size_x = (other->hitbox.x / 2.0) + (adv->hitbox.x / 2.0);
+		size_y = (other->hitbox.y / 2.0) + (adv->hitbox.y / 2.0);
 		if (fabs(dy) < size_y && fabs(dx) < size_x)
 			return 0;
 	}
-	return 1;
+	return !impassable(cube->lvl->c_maps, n_pos.x + hitb.x, n_pos.y + hitb.y);
 }
 
 static void enemy_move(t_enemy *adv)
@@ -104,7 +122,7 @@ static void enemy_move(t_enemy *adv)
 
 	cb = adv->cube;
 	// adv->prev_pos = adv->pos;
-	adv->play_seen = has_seen_player(adv);
+	adv->play_seen = see_player(adv);
 	if (adv->play_seen)
 		look_to_player(adv);
 	else
@@ -115,32 +133,31 @@ static void enemy_move(t_enemy *adv)
 	n_pos_x = (t_point){n_pos.x, adv->pos.y};
 	n_pos_y = (t_point){adv->pos.x, n_pos.y};
 	
-	if (!impassable(cb->lvl->c_maps, cb, n_pos.x, adv->pos.y) && keep_space(adv, n_pos_x))
+	if (keep_space(adv, n_pos_x))
 		adv->pos.x = n_pos.x;
-	if (!impassable(cb->lvl->c_maps, cb, adv->pos.x, n_pos.y) && keep_space(adv, n_pos_y))
+	if (keep_space(adv, n_pos_y))
 		adv->pos.y = n_pos.y;
 }
 
 void *enemy_thread(void *data)
 {
-	int stop, move;
+	int stop, can_move;
 	t_enemy *adv;
 	t_cube	*cube;
 
 	adv = (t_enemy *)data;
 	cube = adv->cube;
 	stop = cube->stop;
-	move = !cube->pause;
-	printf("bf move %d\n", cube->stop);
+	can_move = !cube->pause;
 	while (!stop)
 	{
 		// printf("pos %f %f - %f %f", adv->pos.x, adv->pos.y, cube->player->pos.x, cube->player->pos.y);
-		if (move)
+		if (can_move)
 			enemy_move(adv);
 		// printf("Stop: %d\n", cube->stop);
 		usleep(1000000 / 60);
 		stop = cube->stop;
-		move = !cube->pause;
+		can_move = !cube->pause;
 	}
 	printf("Thread %d Stop\n", adv->id);
 	return 0;
