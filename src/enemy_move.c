@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 02:00:18 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 02:27:41 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static int wall_between(t_enemy *adv)
 
 	lvl = adv->cube->lvl;
 	visu = adv->pos;
-	while (traveled < total_dist)
+	while (traveled < total_dist - 0.2)
 	{
 		visu.x += dx * 0.1;
 		visu.y += dy * 0.1;
@@ -112,7 +112,9 @@ static int keep_space(t_enemy *adv, t_point n_pos)
 		if (fabs(dy) < size_y && fabs(dx) < size_x)
 			return 0;
 	}
-	return !impassable(cube->lvl->c_maps, n_pos.x + hitb.x, n_pos.y + hitb.y);
+	hitb.x *= (-1) * (adv->dir.x < 0);
+	hitb.y *= (-1) * (adv->dir.y < 0);
+	return !impassable(cube->lvl->c_maps, n_pos.x, n_pos.y);
 }
 
 static void enemy_move(t_enemy *adv)
