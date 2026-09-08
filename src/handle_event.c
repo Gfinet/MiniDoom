@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 21:04:25 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 15:58:40 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 16:00:28 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,9 +121,9 @@ int	mouse_event(int x, int y, t_cube *cube)
 	if (x > WIN_WIDTH * 0.5)
 		cube->player->turn = -2;
 	if (y > WIN_HEIGHT * 0.5 )
-		cube->player->z_view-=5;
+		cube->player->z_view-=3;
 	if (y < WIN_HEIGHT * 0.5 )
-		cube->player->z_view+=5;
+		cube->player->z_view+=3;
 	set_angle(cube, x, y);
 	mlx_mouse_move(cube->win, WIN_WIDTH / 2, WIN_HEIGHT / 2);
 	return (0);
