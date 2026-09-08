@@ -1,7 +1,7 @@
 /* XPM */
 static char *_ad1551d79c8438396aed43a1021499fNngvDrWKIjOB6A5z[] = {
 /* columns rows colors chars-per-pixel */
-"76 102 255 2 ",
+"76 101 255 2 ",
 "   c None",
 ".  c #030301",
 "X  c #0B0401",
@@ -258,7 +258,7 @@ static char *_ad1551d79c8438396aed43a1021499fNngvDrWKIjOB6A5z[] = {
 "PX c #DBDDE1",
 "IX c #BDBEC2",
 /* pixels */
-"            KX                                                    KX                        JXtXfXeXtX                                                  ",
+"                                                                                            JXtXfXeXtX                                                  ",
 "                                                                                          AXaXl  .= } SXZXSX                                            ",
 "                                                                                      ZXNX@.@.f 2 = q &...eXDXJX                                        ",
 "                                                                                    SX .<.@.@.K 3 3 = q 1 K +.tX                                        ",
@@ -358,6 +358,5 @@ static char *_ad1551d79c8438396aed43a1021499fNngvDrWKIjOB6A5z[] = {
 "    NX*.$.B.U.`.XX.X.X@X0X3X:X#X1X:XoXS.-X4X>X4X9X2X^.!..X7X1X:XOXs.C.K.8.^ 3.^ _ Q G i 6 % . u A I P _ ` G i , K <.<.fX                                ",
 "KXnXx.e.u.s.OX|.|.$X&X&X&X7X&X%X7X#X(.l.g.#X&X9X0X3Xl.l.l.3X&X$XXX9.V.F.5.^ 3./ ' ! C 6 i 1 . i S A W ! U u e d fX                                      ",
 "mXY.8.T.P.P.2X#X#X3X7X3X3X7X7X1X0X1X~.~.w.#X.X3X7X1Xh.g.~.5X&X#XE.b.Z.G.7.~ ' _ $.H w , r j * 6 V A C G U t T aX                                        ",
-"7.A.L.oX:X%X*X5X*X1X5X5X4X2X4X4X8X:X~.w.@X.X XOX,X@Xf.d.!.1X$XoXY.N.N.B.] Q ` ` ) t 6 , r j 3 > t U Z G G > 1.                                          ",
-"hXcXcXVXBXnXnXBXnXVXBXBXBXBXBXBXFXBXnXhXFXVXVXcXBXVXhXhXnXVXVXVXhXcXhXhXhXpXuXpXuX[.[.eXeXrXeX].[.uXuXuXrX].aX                                          "
+"7.A.L.oX:X%X*X5X*X1X5X5X4X2X4X4X8X:X~.w.@X.X XOX,X@Xf.d.!.1X$XoXY.N.N.B.] Q ` ` ) t 6 , r j 3 > t U Z G G > 1.                                          "
 };

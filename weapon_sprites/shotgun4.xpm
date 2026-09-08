@@ -1,7 +1,7 @@
 /* XPM */
 static char *_dfb954fe9324827c4962b34a13bca8bHsuF6x7lb7avGGX5[] = {
 /* columns rows colors chars-per-pixel */
-"110 130 256 2 ",
+"110 129 256 2 ",
 "   c None",
 ".  c #030301",
 "X  c #0A0502",
@@ -387,6 +387,5 @@ static char *_dfb954fe9324827c4962b34a13bca8bHsuF6x7lb7avGGX5[] = {
 "                              rX. ~ r r r 0 E r r r 0 # . . . . . . @ 0 0 0 0 0 0 @ 0 r 0 O . . . . . . . @ r r 0 0 0 0 0 0 0 0 0 r r r r r 0 0 0 q # . e A @ . . @ @ & t r t t r w 0 0 w r r r A e q q e & r ( q fX        ",
 "                              eX. ( r r r 0 ~ r r E r 0 X . . + . O 0 0 0 0 0 0 0 q 0 0 0 0 @ . X . . & q @ @ w q 0 0 0 t 0 0 0 0 r r r r r r 0 q q 0 # @ r e . . O & 0 W W t t r w 0 w e r e w e r 5 w e 5 A ~ ~ Z.        ",
 "                              eX. r 0 0 0 # 0 0 > 5 0 @ . . + + + + # 9 & @ @ & @ @ @ # # @ # . O . X q e O . o O @ @ @ @ @ @ @ # > y 0 0 0 y @ @ @ @ # . @ 0 . . O @ 9 0 0 9 @ 0 @ @ @ 0 0 5 @ > 0 # @ @ 0 q 5 r > dX      ",
-"                              iX_ ..o.o.o.......[ { [ [ ( ( } } } } } } | | | | | | | } } } } _ | | q.q.q...( ) ' ' ' ' ' '  . . . ...o.o.o..... .( ....} ( } .._ ............_ .................... . . . . .' d.d.qXPX    ",
-"                              SXuXuXdXdXpXuXuXsXsXsXsXaXiXiXiXiXiXiXiXuXuXaXuXgXpXpXaXaXaXaXaXuXdXdXfXdXdXuXiXyXuXuXuXuXaXaXaXaXaXaXgXdXdXdXdXdXuXuXuXuXuXuXuXuXuXuXdXdXdXdXuXuXpXpXpXpXpXpXgXgXuXuXuXuXuXuXuXuXdXuXdX      "
+"                              iX_ ..o.o.o.......[ { [ [ ( ( } } } } } } | | | | | | | } } } } _ | | q.q.q...( ) ' ' ' ' ' '  . . . ...o.o.o..... .( ....} ( } .._ ............_ .................... . . . . .' d.d.qXPX    "
 };

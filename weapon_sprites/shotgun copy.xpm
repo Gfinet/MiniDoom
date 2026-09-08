@@ -1,7 +1,7 @@
 /* XPM */
 static char *e613ea63a7e2432386774832e7ca8b7aEWerQhdbZJ2hiDch[] = {
 /* columns rows colors chars-per-pixel */
-"71 60 238 2 ",
+"71 61 238 2 ",
 "   c None",
 ".  c #020201",
 "X  c #0A0502",
@@ -300,5 +300,6 @@ static char *e613ea63a7e2432386774832e7ca8b7aEWerQhdbZJ2hiDch[] = {
 "Q.,.1.[ ~ [ +.Z.A.H.T.T.Y.6.$ . O 6 6 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3 8 7 7 7 3 7 V 7 3 7 7 7 8 3 3 3 8 3 3 3 3 3 3 3 3 8 8 3 3 3 8 % @ o }.  ",
 ").' O.~ +.J.U.~.^.(.(./.Q.} $ X % 6 < 6 3 3 3 3 3 3 3 3 3 3 3 8 3 3 8 8 7 7 8 3 7 u 7 3 7 7 7 7 8 8 8 8 3 3 3 3 3 3 3 3 3 8 8 3 3 8 3 o X k 1X",
 ")./ ' 3.~.(.OXOX+X@XOX'.'.} & X 1 4 1 6 3 3 3 3 3 3 3 3 3 3 8 8 8 8 8 8 8 7 8 8 7 V u 8 7 7 7 8 8 8 8 8 3 3 3 3 3 3 3 3 3 8 8 3 3 8 3 O . k d.",
-"m.^ 8.W.@X@X+X+X@X@X@X@X'. .& & t t t 1 3 3 3 3 3 3 3 3 3 3 3 3 8 8 8 3 3 8 8 8 7 V 7 7 8 8 3 3 8 8 8 3 3 3 3 3 3 3 3 3 < 3 3 % 3 3 3 O X w d."
+"m.^ 8.W.@X@X+X+X@X@X@X@X'. .& & t t t 1 3 3 3 3 3 3 3 3 3 3 3 3 8 8 8 3 3 8 8 8 7 V 7 7 8 8 3 3 8 8 8 3 3 3 3 3 3 3 3 3 < 3 3 % 3 3 3 O X w d.",
+"6X,X2XqXwXwXeXeXeXwXwXeX8X,X_._.%X*X>X*X*X%X%X%X%X%X%X%X*X%X%X%X&X&X&X%X%X%X*X&X&X&X&X*X*X%X%X%X*X&X*X%X%X%X%X%X%X%X%X%X%X%X%X%X%X*X%X}.}.}.6X"
 };

@@ -1,7 +1,7 @@
 /* XPM */
 static char *_823af3a9ce84c93ce1154143aacf51bKYLbwPOUrjvllEK6[] = {
 /* columns rows colors chars-per-pixel */
-"60 82 249 2 ",
+"60 81 249 2 ",
 "   c None",
 ".  c #020301",
 "X  c #0B0501",
@@ -332,6 +332,5 @@ static char *_823af3a9ce84c93ce1154143aacf51bKYLbwPOUrjvllEK6[] = {
 "mX<.Q F Q ] c.L.#X5X+X}.3X>X{./.R.T.n.u.y.u.s.s.!.&X@X[.T.s.y.W r.y.h.E.T.L.t.K A I ^ d ; - . # @ + . + # + tX          ",
 ".Xa F D H J W ` u.C.~.`.3X4XbXbXbXqX5X}.L.u.` L t.b.g.b.@X&X~.u.s.W W L.L.!.f.Y A H Q P e - . @ + . # + @ B kX          ",
 "U 7 S S D A H K K L ) l.K.E.@X3X5X8X8X8X3X{.E.j.y.r.L ) b.[.[.[.[.g.` f.f.Y.P.{ H S P P p - : # . . # B uXlX            ",
-"; 7 a F / Q | | { _ _ { { { ] i.u.m.}.4X8X0X0X4X).k.g.] E ( J.J.[.[.Y...{ U.|.J.I r 7 p 6 $ : . 1 @ . q.                ",
-"$X%XiXsXgXgXnXnXxXxXxXxXgXdXdXdXdXdXcXnXNXNXAXNXNXnXnXxXsXsXgXxXnXMXnXxXdXnXMXmXsX%X%X%X$X X XtXpXyX$XkX                "
+"; 7 a F / Q | | { _ _ { { { ] i.u.m.}.4X8X0X0X4X).k.g.] E ( J.J.[.[.Y...{ U.|.J.I r 7 p 6 $ : . 1 @ . q.                "
 };
