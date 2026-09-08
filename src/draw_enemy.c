@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 01:04:01 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 15:53:04 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -313,7 +313,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	wid = img->width * scale;
 
 	n_x = screen_x - wid / 2;
-	n_y = WIN_HEIGHT / 2 - hei / 2 + 100;
+	n_y = WIN_HEIGHT / 2 - hei / 2 + 100 + play->z_view;
 	if (adv->text_on.img)
 		mlx_destroy_image(cube->mlx, adv->text_on.img);
 	new_img(cube, &adv->text_on, wid, hei);

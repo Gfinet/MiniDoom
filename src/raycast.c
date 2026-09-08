@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 16:09:17 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 15:49:20 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,13 @@ double	fix_texture_pos(t_rcdata dt, t_player pl)
 		fix_x = ft_modf(pl.pos.y, &garb);
 	else
 		fix_x = ft_modf(pl.pos.x, &garb);
-	if ((pl.prev_pos.y != pl.pos.y) && (dt.side == 0 || dt.side == 2))
-		fix_x = ft_modf(pl.pos.y, &garb);
-	else if ((pl.prev_pos.x != pl.pos.x) && (dt.side == 1 || dt.side == 3))
-		fix_x = ft_modf(pl.pos.x, &garb);
-	else if ((pl.prev_pos.x != pl.pos.x) && (dt.side == 0 || dt.side == 2))
-		fix_x = ft_modf(pl.pos.y, &garb);
-	else if ((pl.prev_pos.y != pl.pos.y) && (dt.side == 1 || dt.side == 3))
-		fix_x = ft_modf(pl.pos.x, &garb);
+	// if (((pl.prev_pos.y != pl.pos.y) || (pl.prev_pos.x != pl.pos.x))
+	// 	&& (dt.side == 0 || dt.side == 2))
+	// 	fix_x = ft_modf(pl.pos.y, &garb);
+	// else if (((pl.prev_pos.x != pl.pos.x) || (pl.prev_pos.y != pl.pos.y))
+	// 		&& (dt.side == 1 || dt.side == 3))
+	// 	fix_x = ft_modf(pl.pos.x, &garb);
+
 	return (fix_x);
 }
 
@@ -63,10 +62,14 @@ static void	get_base_info_draw(t_drawdata *dr, t_rcdata dt, t_player player,
 		t_cube *cube)
 {
 	double	fix_x = 0.0;
+	int 	z;
+
+	z = cube->player->z_view;
+	(void)z;
 
 	fix_x = fix_texture_pos(dt, player);
 	(*dr).line_height = (int)( WIN_HEIGHT / dt.perp_wall_dist);
-	(*dr).pitch = 100;
+	(*dr).pitch = 100 + z;
 
 	(*dr).draw_start = WIN_HEIGHT / 2 - dr->line_height / 2 + dr->pitch;
 	if (dr->draw_start < 0)
@@ -95,10 +98,13 @@ static void	get_base_info_draw(t_drawdata *dr, t_rcdata dt, t_player player,
 
 static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 {
-	int				y;
+	int				y, z;
 	unsigned int	col;
 	double			tex_pos;
 
+	z = c->player->z_view;
+	(void)z;
+	
 	tex_pos = (dt->draw_start - dt->pitch - WIN_HEIGHT / 2 + dt->line_height
 			/ 2) * dt->step_f;
 	// background down

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 16:08:53 by lvodak            #+#    #+#             */
-/*   Updated: 2026/09/08 00:09:17 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 15:56:42 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	set_angle(t_cube *cube, int x, int y)
 	(void)y;
 	(void)x;
 	if (play->turn == 1 || play->turn == -1 || cube->s_mouse)
-		play->angle = 45 * play->turn;
+		play->angle = 30 * play->turn;
 	else if (play->turn == 2 || play->turn == -2)
 	{
 		if ((x > 0 && x <= 600) || (x > 600 && x < 1200))

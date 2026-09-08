@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 21:04:25 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/07 20:02:47 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 15:58:40 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ int	fps(t_cube	*cube)
 
 int	key_event(int keycode, t_cube *cube)
 {
+	int *z = &cube->player->z_view;
 	if (cube->pause)
 		return (choose_pause(keycode, cube));
 	if (keycode == ESC)
@@ -76,6 +77,8 @@ int	key_event(int keycode, t_cube *cube)
 		cube->player->run = 1;
 		cube->frame = FRAME / 2;
 	}
+	if (keycode == UP && *z < 200) *z+=5;
+	if (keycode == DW && *z > -200) *z-=5;
 	set_angle(cube, 0, 0);
 	if (keycode > 17 && keycode < 29 && keycode != 24 && keycode != 27)
 		set_use_weapon(keycode, cube);
@@ -117,6 +120,10 @@ int	mouse_event(int x, int y, t_cube *cube)
 		cube->player->turn = 2;
 	if (x > WIN_WIDTH * 0.5)
 		cube->player->turn = -2;
+	if (y > WIN_HEIGHT * 0.5 )
+		cube->player->z_view-=5;
+	if (y < WIN_HEIGHT * 0.5 )
+		cube->player->z_view+=5;
 	set_angle(cube, x, y);
 	mlx_mouse_move(cube->win, WIN_WIDTH / 2, WIN_HEIGHT / 2);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 13:40:34 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/08 15:32:08 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,9 +181,9 @@ typedef struct s_player
 	int		move_h;
 	int		turn;
 	int		use_weap;
+	int		z_view;
 	int		hp;
 	double	angle;
-	double	d_xy[2];
 }	t_player;
 
 typedef struct s_door
@@ -270,15 +270,13 @@ typedef struct s_cube
 	double				focal_length;
 	double				wall_dist;
 	double 				zbuffer[WIN_WIDTH];
-	int 		stop;
-	// volatile int 		stop;
+	int 				stop;
 	int					wall;
 	int					frame;
 	int					mouse;
 	int					pause;
 	int					m_sensi;
 	int					s_mouse;
-	// t_ray_hit	hit_data;
 }	t_cube;
 
 //handle_event.c
