@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 16:08:53 by lvodak            #+#    #+#             */
-/*   Updated: 2026/09/14 18:12:16 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/14 18:36:30 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,34 +15,24 @@
 void jump(t_cube *cube, t_player *play)
 {
 	double nz;
-	// static int old_zview;
-	// static int flag = 0;
 
 	if (play->jump)
 	{
-		// if (!flag)
-		// {
-		// 	old_zview = play->z_view;
-		// 	flag = 1;
-		// }
-		printf("jump %f %f %d\n", play->pos.z, play->vz, play->z_view);
+
+		// printf("jump %f %f %d\n", play->pos.z, play->vz, play->z_view);
 		nz = play->pos.z + play->vz * (1/(double)cube->frame);
 		if (nz < 0)
 			play->pos.z = 0;
 		else
 			play->pos.z = nz;
 
-		// play->z_view += play->vz * (1/(double)cube->frame);
 		play->vz -= 10/(double)cube->frame;
 
 		if (play->pos.z == 0)
 		{
 			play->jump = 0;
-			// play->z_view = old_zview;
 			play->vz = 0;
-			// flag = 0;
 		}
-
 	}
 }
 

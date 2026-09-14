@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/14 18:34:11 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/14 18:35:22 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,7 +303,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
     	return ;
 	cam_z = adv->cam_z;
 	cam_x = adv->cam_x;
-	z_offset = (int)(play->pos.z - adv->pos.z / adv->short_dist);
+	z_offset = (int)(play->pos.z / adv->short_dist);
 	dist = adv->short_dist;
 	screen_x = (int)((WIN_WIDTH / 2) * (1.0 + cam_x / cam_z));
 
