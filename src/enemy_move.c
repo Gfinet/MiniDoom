@@ -6,11 +6,25 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 02:27:41 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/14 17:36:25 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
+
+static int en_impassable(char **map, double x, double y)
+{
+    int map_x = (int)x;
+    int map_y = (int)y;
+
+    // Sécurité pour éviter un Segfault hors-map
+    if (map_y < 0 || map_x < 0 || !map[map_y] || !map[map_y][map_x])
+        return (1);
+
+    if (map[map_y][map_x] == '1' || map[map_y][map_x] == '2')
+        return (1);
+    return (0);
+}
 
 static int wall_between(t_enemy *adv)
 {
@@ -35,7 +49,7 @@ static int wall_between(t_enemy *adv)
 	{
 		visu.x += dx * 0.1;
 		visu.y += dy * 0.1;
-		if (impassable(lvl->c_maps, (int)visu.x, (int)visu.y))
+		if (en_impassable(lvl->c_maps, visu.x, visu.y))
 			return 1;
 
 		traveled += 0.1;
@@ -117,28 +131,61 @@ static int keep_space(t_enemy *adv, t_point n_pos)
 	return !impassable(cube->lvl->c_maps, n_pos.x, n_pos.y);
 }
 
-static void enemy_move(t_enemy *adv)
+static void move_forward(t_enemy *adv)
 {
-	t_cube	*cb;
 	t_point	n_pos, n_pos_x, n_pos_y;
+	t_cube	*cb;
 
 	cb = adv->cube;
-	// adv->prev_pos = adv->pos;
-	adv->play_seen = see_player(adv);
-	if (adv->play_seen)
-		look_to_player(adv);
-	else
-		return ;
-	// adv->prev_pos = (t_point){adv->pos.x, adv->pos.y};
+	
 	n_pos.x = adv->pos.x + adv->speed * (adv->dir.x / ((4 * cb->frame)));
 	n_pos.y = adv->pos.y + adv->speed * (adv->dir.y / ((4 * cb->frame)));
-	n_pos_x = (t_point){n_pos.x, adv->pos.y};
-	n_pos_y = (t_point){adv->pos.x, n_pos.y};
+	n_pos_x = (t_point){n_pos.x, adv->pos.y, adv->pos.z};
+	n_pos_y = (t_point){adv->pos.x, n_pos.y, adv->pos.z};
 	
 	if (keep_space(adv, n_pos_x))
 		adv->pos.x = n_pos.x;
 	if (keep_space(adv, n_pos_y))
 		adv->pos.y = n_pos.y;
+}
+
+static void turn_face(t_enemy *adv, int left_right)
+{
+	double		n_x;
+	double		n_y;
+	double		rad;
+
+	rad = (left_right == 0 ? 1 : -1) * (30.0 * M_PI / 180.0);
+
+	n_x = (adv->dir.x * cos(-rad)) - (adv->dir.y) * sin(-rad);
+	n_y = adv->dir.x * sin(-rad) + (adv->dir.y) * cos(-rad);
+	adv->dir.y = n_y;
+	adv->dir.x = n_x;
+}
+
+static void move_random(t_enemy *adv)
+{
+	if (!adv->random_moves)
+	{
+		adv->random_moves = rand() % 25;
+		adv->random_turn = rand() % 2;
+		if (adv->random_turn != 2)
+			turn_face(adv, adv->random_turn);
+	}
+		// printf("turn %d %d\n", turn, adv->random_moves);
+	move_forward(adv);
+	adv->random_moves--;
+}
+
+static void enemy_move(t_enemy *adv)
+{
+	adv->play_seen = see_player(adv);
+	if (!adv->play_seen)
+		return move_random(adv);
+	else
+		return move_random(adv);
+	look_to_player(adv);
+	move_forward(adv);
 }
 
 void *enemy_thread(void *data)
@@ -155,7 +202,9 @@ void *enemy_thread(void *data)
 	{
 		// printf("pos %f %f - %f %f", adv->pos.x, adv->pos.y, cube->player->pos.x, cube->player->pos.y);
 		if (can_move)
+		{
 			enemy_move(adv);
+		}
 		// printf("Stop: %d\n", cube->stop);
 		usleep(1000000 / 60);
 		stop = cube->stop;

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 10:18:02 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 15:49:20 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/14 18:26:18 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,11 +71,12 @@ static void	get_base_info_draw(t_drawdata *dr, t_rcdata dt, t_player player,
 	(*dr).line_height = (int)( WIN_HEIGHT / dt.perp_wall_dist);
 	(*dr).pitch = 100 + z;
 
-	(*dr).draw_start = WIN_HEIGHT / 2 - dr->line_height / 2 + dr->pitch;
+	cube->z_offset = (int)(cube->player->pos.z / dt.perp_wall_dist);
+	(*dr).draw_start = WIN_HEIGHT / 2 - dr->line_height / 2 + dr->pitch + cube->z_offset;
 	if (dr->draw_start < 0)
 		(*dr).draw_start = 0;
 
-	(*dr).draw_end = dr->line_height / 2 + WIN_HEIGHT / 2 + dr->pitch;
+	(*dr).draw_end = dr->line_height / 2 + WIN_HEIGHT / 2 + dr->pitch + cube->z_offset;
 	if (dr->draw_end >= WIN_HEIGHT)
 		(*dr).draw_end = WIN_HEIGHT - 1;
 	
@@ -105,7 +106,7 @@ static void	draw_xwall(t_data *screen, t_drawdata *dt, t_cube *c, int x)
 	z = c->player->z_view;
 	(void)z;
 	
-	tex_pos = (dt->draw_start - dt->pitch - WIN_HEIGHT / 2 + dt->line_height
+	tex_pos = (dt->draw_start - dt->pitch - c->z_offset - WIN_HEIGHT / 2 + dt->line_height
 			/ 2) * dt->step_f;
 	// background down
 	y = -1;

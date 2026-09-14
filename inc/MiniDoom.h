@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 15:32:08 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/14 18:25:17 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ typedef struct s_point
 {
 	double	x;
 	double	y;
+	double	z;
 }	t_point;
 
 typedef struct s_mirr
@@ -137,6 +138,8 @@ typedef struct s_enemy
 	double			short_dist;
 	double			cam_x;
 	double			cam_z;
+	int				random_moves;
+	int				random_turn;
 	int				nb_draw[4];
 	int				fps;
 	int				draw;
@@ -175,6 +178,7 @@ typedef struct s_player
 	t_point	prev_pos;
 	t_point	pov;
 	t_data	life;
+	int		jump;
 	int		shoot;
 	int		run;
 	int		move_v;
@@ -184,6 +188,7 @@ typedef struct s_player
 	int		z_view;
 	int		hp;
 	double	angle;
+	double	vz;
 }	t_player;
 
 typedef struct s_door
@@ -270,6 +275,7 @@ typedef struct s_cube
 	double				focal_length;
 	double				wall_dist;
 	double 				zbuffer[WIN_WIDTH];
+	int 				z_offset;
 	int 				stop;
 	int					wall;
 	int					frame;
@@ -411,6 +417,7 @@ void	adjust_enemy_visibility(t_cube *cube,t_enemy *adv, t_rcdata *data);
 //enemy_move
 int launch_eneny_thread(t_cube *cube);
 void *enemy_thread(void *data);
+
 
 //math_utils
 double	dist_ab(t_point a, t_point b);

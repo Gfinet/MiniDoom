@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 19:05:21 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 16:10:10 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/14 17:37:08 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,15 +139,15 @@ void	get_player_pos(t_cube *cube)
 			|| m[i[0]][i[1]] == 'E' || m[i[0]][i[1]] == 'W')
 			{
 				c = m[i[0]][i[1]];
-				cube->player->pos = (t_point){i[1] + 0.5, i[0] + 0.5};
+				cube->player->pos = (t_point){i[1] + 0.5, i[0] + 0.5, 0};
 				break ;
 			}
 		}
 	}
 	cube->player->dir = (t_point){(c == 'E') - (c == 'W'),
-		(c == 'S') - (c == 'N')};
+		(c == 'S') - (c == 'N'), 0};
 	cube->player->prev_pos = (t_point){cube->player->pos.x,
-		cube->player->pos.y};
+		cube->player->pos.y, 0};
 }
 
 int	make_mini(t_cube *cube, t_lvl *lvl)

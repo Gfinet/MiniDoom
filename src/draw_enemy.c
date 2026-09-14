@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 15:53:04 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/14 18:29:14 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,48 +153,52 @@ t_enemy *get_enemy(t_cube *cube, int id)
 			adv = &cube->lvl->enemies[i];
 	return (adv);
 }
-
-int get_en_side(t_enemy *adv, t_point play_dir, t_data **text, int *max_text)
+static int	get_en_side(t_enemy *adv, t_point play_pos, t_data **text, int *max_text)
 {
-	//double	cosi, sini;
-	int		side = 0;
-	t_point diff;
+	double	angle_to_player;
+	double	enemy_angle;
+	double	rel_angle;
 
-	diff.x = play_dir.x + adv->dir.x;
-	diff.y = play_dir.y + adv->dir.y;
-	if (diff.x >= 0.707)
+	// 1. Angle du vecteur Joueur -> Ennemi
+	angle_to_player = atan2(play_pos.y - adv->pos.y, play_pos.x - adv->pos.x);
+
+	// 2. Angle absolu où regarde l'ennemi
+	enemy_angle = atan2(adv->dir.y, adv->dir.x);
+
+	// 3. Différence d'angle ramenée entre -PI et PI
+	rel_angle = angle_to_player - enemy_angle;
+	while (rel_angle > M_PI)
+		rel_angle -= 2 * M_PI;
+	while (rel_angle < -M_PI)
+		rel_angle += 2 * M_PI;
+
+	// 4. Découpage en 4 secteurs d'angle (Front, Côté Droit, Dos, Côté Gauche)
+	// rel_angle proche de 0 = L'ennemi regarde le joueur (FACE)
+	// rel_angle proche de PI ou -PI = L'ennemi regarde ailleurs (DOS)
+	if (rel_angle >= -M_PI_4 && rel_angle < M_PI_4)
 	{
-		side = 3;
-		*text = adv->type->spr_sd;
-		*max_text = adv->type->max_text_sd;
-		//printf("side droite\n");
+		*text = adv->type->spr_fr;
+		*max_text = adv->type->max_text_fr;
+		return (0); // Front
 	}
-	else if (diff.x < 0.707 && diff.x > -0.707)
+	else if (rel_angle >= M_PI_4 && rel_angle < 3 * M_PI_4)
 	{
-		if (diff.y < -1)
-		{
-			side = 2;
-			*text = adv->type->spr_bk;
-			*max_text = adv->type->max_text_bk;
-			//printf("front\n");
-		}
-		else 
-		{
-			side = 0;
-			*max_text = adv->type->max_text_fr;
-			*text = adv->type->spr_fr;
-			//printf("back\n");
-		}
+		*text = adv->type->spr_sd; // Profil Droit
+		*max_text = adv->type->max_text_sd;
+		return (1); // Right Side
+	}
+	else if (rel_angle <= -M_PI_4 && rel_angle > -3 * M_PI_4)
+	{
+		*text = adv->type->spr_sd; // Profil Gauche (ou spr_sd_left si tu as un sprite miroir)
+		*max_text = adv->type->max_text_sd;
+		return (3); // Left Side
 	}
 	else
 	{
-		side = 1;
-		*text = adv->type->spr_sd;
-		*max_text = adv->type->max_text_sd;
-		//printf("side gauche\n");
+		*text = adv->type->spr_bk;
+		*max_text = adv->type->max_text_bk;
+		return (2); // Back
 	}
-	
-	return (side);
 }
 
 static void sort_enemies_by_dist(t_enemy *enemies, int nb)
@@ -282,6 +286,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	double		dist, scale = 0.0;
 	double		cam_x, cam_z;
 	int			screen_x;
+	int 		z_offset;
 	t_player	*play;
 	t_point		pos;
 	t_data		*use_text;
@@ -298,10 +303,11 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
     	return ;
 	cam_z = adv->cam_z;
 	cam_x = adv->cam_x;
+	z_offset = (int)(play->pos.z / adv->short_dist);
 	dist = adv->short_dist;
 	screen_x = (int)((WIN_WIDTH / 2) * (1.0 + cam_x / cam_z));
 
-	side = get_en_side(adv, play->dir, &use_text, &max_text);
+	side = get_en_side(adv, play->pos, &use_text, &max_text);
 	adv->fps++;
 	if (adv->fps - 1 == (cube->frame / (1 + play->run) / 2))
 		adv->nb_draw[side]++;
@@ -313,7 +319,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	wid = img->width * scale;
 
 	n_x = screen_x - wid / 2;
-	n_y = WIN_HEIGHT / 2 - hei / 2 + 100 + play->z_view;
+	n_y = WIN_HEIGHT / 2 - hei / 2 + 100 + play->z_view + z_offset;
 	if (adv->text_on.img)
 		mlx_destroy_image(cube->mlx, adv->text_on.img);
 	new_img(cube, &adv->text_on, wid, hei);
@@ -325,6 +331,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 		return ;
 	}
 	put_xpm_to_mlx_img(adv, &use_text[adv->nb_draw[side]], scale, (side == 1));
+	// draw_enemy_direction(cube, adv);
 	mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
 }
 

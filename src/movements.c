@@ -6,11 +6,45 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 16:08:53 by lvodak            #+#    #+#             */
-/*   Updated: 2026/09/08 15:56:42 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/14 18:12:16 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
+
+void jump(t_cube *cube, t_player *play)
+{
+	double nz;
+	// static int old_zview;
+	// static int flag = 0;
+
+	if (play->jump)
+	{
+		// if (!flag)
+		// {
+		// 	old_zview = play->z_view;
+		// 	flag = 1;
+		// }
+		printf("jump %f %f %d\n", play->pos.z, play->vz, play->z_view);
+		nz = play->pos.z + play->vz * (1/(double)cube->frame);
+		if (nz < 0)
+			play->pos.z = 0;
+		else
+			play->pos.z = nz;
+
+		// play->z_view += play->vz * (1/(double)cube->frame);
+		play->vz -= 10/(double)cube->frame;
+
+		if (play->pos.z == 0)
+		{
+			play->jump = 0;
+			// play->z_view = old_zview;
+			play->vz = 0;
+			// flag = 0;
+		}
+
+	}
+}
 
 void	update_player(t_cube *cb, t_player *play)
 {
@@ -20,7 +54,7 @@ void	update_player(t_cube *cb, t_player *play)
 	double	rad;
 
 	rad = (90) * (M_PI / 180.0);
-	cb->player->prev_pos = (t_point){cb->player->pos.x, cb->player->pos.y};
+	cb->player->prev_pos = (t_point){cb->player->pos.x, cb->player->pos.y, cb->player->pos.z};
 	n_x = (cb->player->dir.x * cos(-rad)) - (cb->player->dir.y) * sin(-rad);
 	n_y = cb->player->dir.x * sin(-rad) + (cb->player->dir.y) * cos(-rad);
 	n_pos.x = play->pos.x + play->move_v * (play->dir.x / (4 * cb->frame));
@@ -33,6 +67,7 @@ void	update_player(t_cube *cb, t_player *play)
 		play->pos.x = n_pos.x;
 	if (!impassable(cb->lvl->c_maps, play->pos.x, n_pos.y))
 		play->pos.y = n_pos.y;
+	jump(cb, play);
 }
 
 void	set_angle(t_cube *cube, int x, int y)
