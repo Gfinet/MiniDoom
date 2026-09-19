@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 21:04:25 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/14 18:31:05 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 00:08:33 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 
 int	esc_handle(t_cube *cube)
 {
-	
+	pthread_mutex_lock(&cube->stop_mutex);
 	cube->stop = 1;
+	pthread_mutex_unlock(&cube->stop_mutex);
 	printf("Stop : %d\n", cube->stop);
 	for(int i=0 ;i < cube->lvl->nb_enemy; i++)
 		pthread_join(cube->lvl->enemies[i].thread, 0);
@@ -59,7 +60,11 @@ int	key_event(int keycode, t_cube *cube)
 	if (cube->pause)
 		return (choose_pause(keycode, cube));
 	if (keycode == ESC)
+	{
+		pthread_mutex_lock(&cube->pause_mutex);
 		cube->pause = !cube->pause;
+		pthread_mutex_unlock(&cube->pause_mutex);
+	}
 	if (keycode == W)
 		cube->player->move_v = 1;
 	if (keycode == S)

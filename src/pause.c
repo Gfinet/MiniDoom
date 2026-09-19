@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 12:36:42 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/09/12 12:33:27 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 00:08:05 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,9 @@ int	choose_pause(int keycode, t_cube *cube)
 		esc_handle(cube);
 	if (keycode == ESC || (!cube->pause_sc.choice && keycode == ENTER))
 	{
+		pthread_mutex_lock(&cube->pause_mutex);
 		cube->pause = !cube->pause;
+		pthread_mutex_unlock(&cube->pause_mutex);
 		cube->pause_sc.choice = 0;
 	}
 	if (!cube->pause)

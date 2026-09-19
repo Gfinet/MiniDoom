@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/14 18:25:17 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 00:30:33 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,9 @@ typedef struct s_enemy
 	t_point			dir;
 	t_point			hitbox;
 	t_point 		st_dr_end;
+	pthread_mutex_t	*stop_mutex;
+	pthread_mutex_t	*pause_mutex;
+	pthread_mutex_t	pos_mutex;
 	double			wall_dist;
 	double			tmp_dist;
 	double			short_dist;
@@ -147,6 +150,7 @@ typedef struct s_enemy
 	int				id;
 	int				hp;
 	int				dmg;
+	int				is_moving;
 	double			freq_atk;
 	double			speed;
 }	t_enemy;
@@ -272,6 +276,9 @@ typedef struct s_cube
 	t_data				door_texture[4];
 	t_data				screen;
 	t_door				*doors;
+	pthread_mutex_t		stop_mutex;
+	pthread_mutex_t		pause_mutex;
+	pthread_mutex_t		playpos_mutex;
 	double				focal_length;
 	double				wall_dist;
 	double 				zbuffer[WIN_WIDTH];

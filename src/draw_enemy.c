@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/14 18:35:22 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 00:31:49 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,12 @@ void raycast_enemy(t_cube *cube)
     while (++i < cube->lvl->nb_enemy)
     {
         adv = &cube->lvl->enemies[i];
+		pthread_mutex_lock(&cube->playpos_mutex);
+		pthread_mutex_lock(&adv->pos_mutex);
         dx = adv->pos.x - play->pos.x;
         dy = adv->pos.y - play->pos.y;
+		pthread_mutex_unlock(&adv->pos_mutex);
+		pthread_mutex_unlock(&cube->playpos_mutex);
         inv_det = 1.0 / (play->pov.x * play->dir.y - play->dir.x * play->pov.y);
         cam_z = inv_det * (-play->pov.y * dx + play->pov.x * dy);
         // ennemi devant le joueur et dans le frustum
@@ -289,7 +293,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	int 		z_offset;
 	t_player	*play;
 	t_point		pos;
-	t_data		*use_text;
+	t_data		*use_text, *one_text;
 	t_img_mlx	*img;
 
 	play = cube->player;
@@ -312,7 +316,12 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	if (adv->fps - 1 == (cube->frame / (1 + play->run) / 2))
 		adv->nb_draw[side]++;
 	adv->nb_draw[side] %= max_text;
-	img = use_text[adv->nb_draw[side]].img;
+	if (!adv->nb_draw[side])
+		adv->nb_draw[side] = 1;
+
+	one_text = &use_text[(adv->is_moving) * adv->nb_draw[side]];
+	img = one_text->img;
+	
 	scale = 6 / dist;
 	adv->fps %= cube->frame * 4 + cube->frame * play->run;
 	hei = img->height * scale;
@@ -330,8 +339,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 		adv->text_on.img = NULL;
 		return ;
 	}
-	put_xpm_to_mlx_img(adv, &use_text[adv->nb_draw[side]], scale, (side == 1));
-	// draw_enemy_direction(cube, adv);
+	put_xpm_to_mlx_img(adv, one_text, scale, (side == 1));
 	mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
 }
 

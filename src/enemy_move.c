@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/14 17:36:25 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 00:34:07 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,9 @@ static int see_player(t_enemy *adv)
 	t_point play_pos;
     double  dx, dy, dist, dot;
 
+	pthread_mutex_lock(&adv->cube->playpos_mutex);
     play_pos = adv->cube->player->pos;
+	pthread_mutex_unlock(&adv->cube->playpos_mutex);
     dx = play_pos.x - adv->pos.x;
     dy = play_pos.y - adv->pos.y;
     dist = sqrt(dx * dx + dy * dy);
@@ -119,8 +121,10 @@ static int keep_space(t_enemy *adv, t_point n_pos)
 		other = &lvl->enemies[i];
 		if (adv == other)
 			continue;
+		pthread_mutex_lock(&other->pos_mutex);
 		dx = other->pos.x - n_pos.x;
 		dy = other->pos.y - n_pos.y;
+		pthread_mutex_unlock(&other->pos_mutex);
 		size_x = (other->hitbox.x / 2.0) + (adv->hitbox.x / 2.0);
 		size_y = (other->hitbox.y / 2.0) + (adv->hitbox.y / 2.0);
 		if (fabs(dy) < size_y && fabs(dx) < size_x)
@@ -143,10 +147,12 @@ static void move_forward(t_enemy *adv)
 	n_pos_x = (t_point){n_pos.x, adv->pos.y, adv->pos.z};
 	n_pos_y = (t_point){adv->pos.x, n_pos.y, adv->pos.z};
 	
+	pthread_mutex_lock(&adv->pos_mutex);
 	if (keep_space(adv, n_pos_x))
 		adv->pos.x = n_pos.x;
 	if (keep_space(adv, n_pos_y))
 		adv->pos.y = n_pos.y;
+	pthread_mutex_unlock(&adv->pos_mutex);
 }
 
 static void turn_face(t_enemy *adv, int left_right)
@@ -165,15 +171,18 @@ static void turn_face(t_enemy *adv, int left_right)
 
 static void move_random(t_enemy *adv)
 {
-	if (!adv->random_moves)
+	// printf("mov %d\nrand %d\n", adv->is_moving, adv->random_moves);
+	if (adv->random_moves <= 0)
 	{
 		adv->random_moves = rand() % 25;
-		adv->random_turn = rand() % 2;
+		adv->random_turn = rand() % 3;
+		adv->is_moving = rand() % 2;
 		if (adv->random_turn != 2)
 			turn_face(adv, adv->random_turn);
 	}
 		// printf("turn %d %d\n", turn, adv->random_moves);
-	move_forward(adv);
+	if (adv->is_moving)
+		move_forward(adv);
 	adv->random_moves--;
 }
 
@@ -196,8 +205,12 @@ void *enemy_thread(void *data)
 
 	adv = (t_enemy *)data;
 	cube = adv->cube;
+	pthread_mutex_lock(adv->stop_mutex);
 	stop = cube->stop;
+	pthread_mutex_unlock(adv->stop_mutex);
+	pthread_mutex_lock(adv->pause_mutex);
 	can_move = !cube->pause;
+	pthread_mutex_unlock(adv->pause_mutex);
 	while (!stop)
 	{
 		// printf("pos %f %f - %f %f", adv->pos.x, adv->pos.y, cube->player->pos.x, cube->player->pos.y);
@@ -207,8 +220,12 @@ void *enemy_thread(void *data)
 		}
 		// printf("Stop: %d\n", cube->stop);
 		usleep(1000000 / 60);
+		pthread_mutex_lock(adv->stop_mutex);
 		stop = cube->stop;
+		pthread_mutex_unlock(adv->stop_mutex);
+		pthread_mutex_lock(adv->pause_mutex);
 		can_move = !cube->pause;
+		pthread_mutex_lock(adv->pause_mutex);
 	}
 	printf("Thread %d Stop\n", adv->id);
 	return 0;

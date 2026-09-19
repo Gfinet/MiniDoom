@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/14 17:37:35 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 00:02:13 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,8 @@ int set_enemy_pos(t_lvl *lvl)
 				adv->speed = 0.5;
 				adv->id = ind;
 				adv->cube = lvl->cube;
+				adv->stop_mutex = &lvl->cube->stop_mutex;
+				adv->pause_mutex = &lvl->cube->pause_mutex;
 				ind++;
 				adv = &lvl->enemies[ind];
 				printf("Got %d en %d %d\n", ind, i, j);
