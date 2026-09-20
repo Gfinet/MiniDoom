@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 12:11:14 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 12:31:03 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,6 @@ typedef struct s_enemy
 	pthread_mutex_t	pos_mutex;
 	pthread_mutex_t	mov_mutex;
 	pthread_mutex_t	dir_mutex;
-	// pthread_mutex_t	cam_mutex;
 	double			wall_dist;
 	double			tmp_dist;
 	double			short_dist;
