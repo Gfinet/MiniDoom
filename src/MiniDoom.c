@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 15:26:58 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 00:58:52 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,9 @@ static int	init_cube(t_cube *cube, t_player *play, t_lvl *level)
 	cube->m_sensi = 10;
 	cube->s_mouse = 1;
 	cube->focal_length = (WIN_WIDTH / 2) / tan(FOV / 2);
+	pthread_mutex_init(&cube->playpos_mutex, 0);
+	pthread_mutex_init(&cube->stop_mutex, 0);
+	pthread_mutex_init(&cube->pause_mutex, 0);
 	//mlx_mouse_hide();
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 00:30:33 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 01:47:23 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,9 +133,9 @@ typedef struct s_enemy
 	t_point			dir;
 	t_point			hitbox;
 	t_point 		st_dr_end;
-	pthread_mutex_t	*stop_mutex;
-	pthread_mutex_t	*pause_mutex;
 	pthread_mutex_t	pos_mutex;
+	pthread_mutex_t	mov_mutex;
+	pthread_mutex_t	dir_mutex;
 	double			wall_dist;
 	double			tmp_dist;
 	double			short_dist;

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 00:31:49 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 02:16:52 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,18 @@ void raycast_enemy(t_cube *cube)
 		pthread_mutex_lock(&adv->pos_mutex);
         dx = adv->pos.x - play->pos.x;
         dy = adv->pos.y - play->pos.y;
-		pthread_mutex_unlock(&adv->pos_mutex);
 		pthread_mutex_unlock(&cube->playpos_mutex);
+		pthread_mutex_unlock(&adv->pos_mutex);
         inv_det = 1.0 / (play->pov.x * play->dir.y - play->dir.x * play->pov.y);
         cam_z = inv_det * (-play->pov.y * dx + play->pov.x * dy);
         // ennemi devant le joueur et dans le frustum
         if (cam_z <= 0.0)
             continue ;
+		pthread_mutex_lock(&adv->pos_mutex);
 		adv->cam_z = cam_z;
 		adv->cam_x = inv_det * (play->dir.y * dx - play->dir.x * dy);
         adv->short_dist = dist_ab(play->pos, adv->pos);
+		pthread_mutex_unlock(&adv->pos_mutex);
         adv->draw = 1;
     }
 }
@@ -164,10 +166,14 @@ static int	get_en_side(t_enemy *adv, t_point play_pos, t_data **text, int *max_t
 	double	rel_angle;
 
 	// 1. Angle du vecteur Joueur -> Ennemi
+	pthread_mutex_lock(&adv->pos_mutex);
 	angle_to_player = atan2(play_pos.y - adv->pos.y, play_pos.x - adv->pos.x);
+	pthread_mutex_unlock(&adv->pos_mutex);
 
 	// 2. Angle absolu où regarde l'ennemi
+	pthread_mutex_lock(&adv->dir_mutex);
 	enemy_angle = atan2(adv->dir.y, adv->dir.x);
+	pthread_mutex_unlock(&adv->dir_mutex);
 
 	// 3. Différence d'angle ramenée entre -PI et PI
 	rel_angle = angle_to_player - enemy_angle;
@@ -301,17 +307,22 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	// for (int i = 0; i<4;i++)
 	// 	adv->nb_draw[i] = 0;
 
-
+	pthread_mutex_lock(&adv->pos_mutex);
 	dist = dist_ab(pos, adv->pos);
+	pthread_mutex_unlock(&adv->pos_mutex);
 	if (adv->short_dist <= 0.5)
     	return ;
+	pthread_mutex_lock(&adv->pos_mutex);
 	cam_z = adv->cam_z;
 	cam_x = adv->cam_x;
+	pthread_mutex_unlock(&adv->pos_mutex);
 	z_offset = (int)(play->pos.z / adv->short_dist);
 	dist = adv->short_dist;
 	screen_x = (int)((WIN_WIDTH / 2) * (1.0 + cam_x / cam_z));
 
-	side = get_en_side(adv, play->pos, &use_text, &max_text);
+	// pthread_mutex_lock(&adv->pos_mutex);
+	side = get_en_side(adv, pos, &use_text, &max_text);
+	// pthread_mutex_unlock(&adv->pos_mutex);
 	adv->fps++;
 	if (adv->fps - 1 == (cube->frame / (1 + play->run) / 2))
 		adv->nb_draw[side]++;
@@ -319,7 +330,9 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	if (!adv->nb_draw[side])
 		adv->nb_draw[side] = 1;
 
+	pthread_mutex_lock(&adv->mov_mutex);
 	one_text = &use_text[(adv->is_moving) * adv->nb_draw[side]];
+	pthread_mutex_unlock(&adv->mov_mutex);
 	img = one_text->img;
 	
 	scale = 6 / dist;

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/08 13:29:59 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 01:36:43 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,13 @@ void free_enemy(t_cube *cube, t_enemy_type *adv)
 			mlx_destroy_image(cube->mlx, adv->spr_sd[i].img);
 	i = -1;
 	while(++i < cube->lvl->nb_enemy)
+	{
+		pthread_mutex_destroy(&cube->lvl->enemies[i].pos_mutex);
+		pthread_mutex_destroy(&cube->lvl->enemies[i].mov_mutex);
+		pthread_mutex_destroy(&cube->lvl->enemies[i].dir_mutex);
 		if (cube->lvl->enemies[i].text_on.img)
 			mlx_destroy_image(cube->mlx, cube->lvl->enemies[i].text_on.img);
+	}
 	if (adv->spr_fr)
 	{
 		free(adv->spr_fr);
@@ -124,7 +129,9 @@ void	free_cube(t_cube *cube)
 		free(cube->lvl->enemies);
 		printf("enemies freed\n");
 	}
-		
+	pthread_mutex_destroy(&cube->playpos_mutex);
+	pthread_mutex_destroy(&cube->stop_mutex);
+	pthread_mutex_destroy(&cube->pause_mutex);
 }
 
 int out_of_maps(t_lvl *maps, int x, int y)

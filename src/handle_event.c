@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 21:04:25 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 00:08:33 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 01:48:33 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,9 +61,11 @@ int	key_event(int keycode, t_cube *cube)
 		return (choose_pause(keycode, cube));
 	if (keycode == ESC)
 	{
+		// printf("bug\n");
 		pthread_mutex_lock(&cube->pause_mutex);
 		cube->pause = !cube->pause;
 		pthread_mutex_unlock(&cube->pause_mutex);
+		// printf("bug\n");
 	}
 	if (keycode == W)
 		cube->player->move_v = 1;
