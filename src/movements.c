@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 16:08:53 by lvodak            #+#    #+#             */
-/*   Updated: 2026/09/20 01:30:45 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 11:48:46 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,28 +38,36 @@ void jump(t_cube *cube, t_player *play)
 
 void	update_player(t_cube *cb, t_player *play)
 {
-	t_point	n_pos;
+	t_point	n_pos, play_pos;
 	double	n_x;
 	double	n_y;
 	double	rad;
 
 	rad = (90) * (M_PI / 180.0);
-	cb->player->prev_pos = (t_point){cb->player->pos.x, cb->player->pos.y, cb->player->pos.z};
-	n_x = (cb->player->dir.x * cos(-rad)) - (cb->player->dir.y) * sin(-rad);
-	n_y = cb->player->dir.x * sin(-rad) + (cb->player->dir.y) * cos(-rad);
 	pthread_mutex_lock(&cb->playpos_mutex);
-	n_pos.x = play->pos.x + play->move_v * (play->dir.x / (4 * cb->frame));
-	n_pos.y = play->pos.y + play->move_v * (play->dir.y / (4 * cb->frame));
+	play_pos = play->pos;
+	pthread_mutex_unlock(&cb->playpos_mutex);
+	n_x = (play->dir.x * cos(-rad)) - (play->dir.y) * sin(-rad);
+	n_y = play->dir.x * sin(-rad) + (play->dir.y) * cos(-rad);
+	n_pos.x = play_pos.x + play->move_v * (play->dir.x / (4 * cb->frame));
+	n_pos.y = play_pos.y + play->move_v * (play->dir.y / (4 * cb->frame));
 	n_pos.x += play->move_h * (n_x / (4 * cb->frame));
 	n_pos.y += play->move_h * (n_y / (4 * cb->frame));
 	if (play->turn)
 		turn(cb, 11.25 * play->turn, cb->frame);
 
-	if (!impassable(cb->lvl->c_maps, n_pos.x, play->pos.y))
+	if (!impassable(cb->lvl->c_maps, n_pos.x, play_pos.y))
+	{
+		pthread_mutex_lock(&cb->playpos_mutex);
 		play->pos.x = n_pos.x;
-	if (!impassable(cb->lvl->c_maps, play->pos.x, n_pos.y))
+		pthread_mutex_unlock(&cb->playpos_mutex);
+	}
+	if (!impassable(cb->lvl->c_maps, play_pos.x, n_pos.y))
+	{
+		pthread_mutex_lock(&cb->playpos_mutex);
 		play->pos.y = n_pos.y;
-	pthread_mutex_unlock(&cb->playpos_mutex);
+		pthread_mutex_unlock(&cb->playpos_mutex);
+	}
 	jump(cb, play);
 }
 

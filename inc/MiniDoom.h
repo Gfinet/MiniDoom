@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 01:47:23 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 12:11:14 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,7 @@ typedef struct s_enemy
 	pthread_mutex_t	pos_mutex;
 	pthread_mutex_t	mov_mutex;
 	pthread_mutex_t	dir_mutex;
+	// pthread_mutex_t	cam_mutex;
 	double			wall_dist;
 	double			tmp_dist;
 	double			short_dist;
@@ -182,6 +183,7 @@ typedef struct s_player
 	t_point	prev_pos;
 	t_point	pov;
 	t_data	life;
+	t_enemy en_snap;
 	int		jump;
 	int		shoot;
 	int		run;
@@ -292,6 +294,9 @@ typedef struct s_cube
 	int					s_mouse;
 }	t_cube;
 
+//MiniDoom
+void	draw_doom(t_cube *cube);
+
 //handle_event.c
 int		esc_handle(t_cube *cube);
 int		fps(t_cube	*cube);
@@ -345,7 +350,6 @@ void			get_player_pos(t_cube *cube);
 void			fill_map_char(t_lvl *lvl, char c);
 void			draw_mini_pixel(t_lvl *lvl, int w_h[2], int i[2]);
 void			draw_player(t_cube *cube);
-void			draw_doom(t_cube *cube);
 unsigned int	get_color_from_xpm(t_data *text, int x, int y);
 
 //movements

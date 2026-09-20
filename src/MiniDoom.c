@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 00:58:52 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 12:10:59 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,20 @@ static int	get_textures(t_cube *cube)
 	if (!new_img(cube, &cube->screen, WIN_WIDTH, WIN_HEIGHT))
 		return (0);
 	return (1);
+}
+
+void	draw_doom(t_cube *cube)
+{
+	mlx_clear_window(cube->mlx, cube->win);
+	raycasting(cube);
+	draw_player(cube);
+	raycast_enemy(cube);
+	draw_enemies(cube);
+	if (cube->lvl->weap)
+		draw_weapons(cube);
+	draw_mini_background(cube->lvl);
+	draw_maps(cube);
+	draw_life(cube);
 }
 
 static void	game_loop_init(t_cube *cube)

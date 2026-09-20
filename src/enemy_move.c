@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 02:19:12 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 12:22:48 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,20 +26,13 @@ static int en_impassable(char **map, double x, double y)
     return (0);
 }
 
-static int wall_between(t_enemy *adv)
+static int wall_between(t_enemy *adv, t_point play_pos, t_point visu)
 {
-	t_point visu, play_pos;
 	t_lvl *lvl;
 	double total_dist, traveled = 0;
 	double dx;
     double dy;
 
-	pthread_mutex_lock(&adv->cube->playpos_mutex);
-	play_pos = adv->cube->player->pos;
-	pthread_mutex_unlock(&adv->cube->playpos_mutex);
-	pthread_mutex_lock(&adv->pos_mutex);
-	visu = adv->pos;
-	pthread_mutex_unlock(&adv->pos_mutex);
 	dx = play_pos.x - visu.x;
 	dy= play_pos.y - visu.y;
 	total_dist = sqrt(dx * dx + dy * dy);
@@ -49,7 +42,6 @@ static int wall_between(t_enemy *adv)
     dy /= total_dist;
 
 	lvl = adv->cube->lvl;
-	visu = adv->pos;
 	while (traveled < total_dist - 0.2)
 	{
 		visu.x += dx * 0.1;
@@ -62,40 +54,35 @@ static int wall_between(t_enemy *adv)
 	return 0;
 }
 
-static int see_player(t_enemy *adv)
+static int see_player(t_enemy *adv, t_point play_pos, t_point pos)
 {
-	t_point play_pos, adv_pos;
     double  dx, dy, dist, dot;
 
-	pthread_mutex_lock(&adv->cube->playpos_mutex);
-    play_pos = adv->cube->player->pos;
-	pthread_mutex_unlock(&adv->cube->playpos_mutex);
-	pthread_mutex_lock(&adv->pos_mutex);
-    adv_pos = adv->pos;
-	pthread_mutex_unlock(&adv->pos_mutex);
-    dx = play_pos.x - adv_pos.x;
-    dy = play_pos.y - adv_pos.y;
+    dx = play_pos.x - pos.x;
+    dy = play_pos.y - pos.y;
     dist = sqrt(dx * dx + dy * dy);
-	if (wall_between(adv))
+	if (wall_between(adv, play_pos, pos))
 		return 0;
     // if (dist > 5.0)
     //     return (0);
     if (dist < 0.0001)
-        return (1);
-    dot = adv->dir.x * (dx / dist) + adv->dir.y * (dy / dist);
+		return (1);
+	
+	pthread_mutex_lock(&adv->dir_mutex);
+	dot = adv->dir.x * (dx / dist) + adv->dir.y * (dy / dist);
+	pthread_mutex_unlock(&adv->dir_mutex);
     return (dot >= 0.707);
 }
 
-static void look_to_player(t_enemy *adv)
+static void look_to_player(t_enemy *adv, t_point play_pos)
 {
-	pthread_mutex_lock(&adv->cube->playpos_mutex);
-	t_point play_pos = adv->cube->player->pos;
-	pthread_mutex_unlock(&adv->cube->playpos_mutex);
-
-    double dx = play_pos.x - adv->pos.x;
-    double dy = play_pos.y - adv->pos.y;
-
-    double dist = sqrt(dx * dx + dy * dy);
+    double dx ;
+    double dy ;
+    double dist ;
+	
+    dx = play_pos.x - adv->pos.x;
+    dy = play_pos.y - adv->pos.y;
+    dist = sqrt(dx * dx + dy * dy);
 
     if (dist < 0.0001)
         return;
@@ -104,21 +91,18 @@ static void look_to_player(t_enemy *adv)
 
 }
 
-static int keep_space(t_enemy *adv, t_point n_pos)
+static int keep_space(t_enemy *adv, t_point n_pos, t_point play_pos)
 {
 	t_cube	*cube;
 	t_lvl	*lvl;
 	t_enemy *other;
-	t_point play_pos, hitb;
+	t_point hitb, other_pos;
     double dx, dy;
 	double size_x, size_y;
 
 	cube = adv->cube;
 	lvl = cube->lvl;
 
-	pthread_mutex_lock(&adv->cube->playpos_mutex);
-	play_pos = adv->cube->player->pos;
-	pthread_mutex_unlock(&adv->cube->playpos_mutex);
 	dx = play_pos.x - n_pos.x;
 	dy = play_pos.y - n_pos.y;
 	hitb.x = adv->hitbox.x / 2;
@@ -133,9 +117,10 @@ static int keep_space(t_enemy *adv, t_point n_pos)
 		if (adv == other)
 			continue;
 		pthread_mutex_lock(&other->pos_mutex);
-		dx = other->pos.x - n_pos.x;
-		dy = other->pos.y - n_pos.y;
+		other_pos = other->pos;
 		pthread_mutex_unlock(&other->pos_mutex);
+		dx = other_pos.x - n_pos.x;
+		dy = other_pos.y - n_pos.y;
 		size_x = (other->hitbox.x / 2.0) + (adv->hitbox.x / 2.0);
 		size_y = (other->hitbox.y / 2.0) + (adv->hitbox.y / 2.0);
 		if (fabs(dy) < size_y && fabs(dx) < size_x)
@@ -146,26 +131,25 @@ static int keep_space(t_enemy *adv, t_point n_pos)
 	return !impassable(cube->lvl->c_maps, n_pos.x, n_pos.y);
 }
 
-static void move_forward(t_enemy *adv)
+static void move_forward(t_enemy *adv, t_point play_pos, t_point pos)
 {
 	t_point	n_pos, n_pos_x, n_pos_y;
 	t_cube	*cb;
 
 	cb = adv->cube;
-	
-	n_pos.x = adv->pos.x + adv->speed * (adv->dir.x / ((4 * cb->frame)));
-	n_pos.y = adv->pos.y + adv->speed * (adv->dir.y / ((4 * cb->frame)));
+	n_pos.x = pos.x + adv->speed * (adv->dir.x / ((4 * cb->frame)));
+	n_pos.y = pos.y + adv->speed * (adv->dir.y / ((4 * cb->frame)));
 	n_pos_x = (t_point){n_pos.x, adv->pos.y, adv->pos.z};
 	n_pos_y = (t_point){adv->pos.x, n_pos.y, adv->pos.z};
 	
 	
-	if (keep_space(adv, n_pos_x))
+	if (keep_space(adv, n_pos_x, play_pos))
 	{
 		pthread_mutex_lock(&adv->pos_mutex);
 		adv->pos.x = n_pos.x;
 		pthread_mutex_unlock(&adv->pos_mutex);
 	}
-	if (keep_space(adv, n_pos_y))
+	if (keep_space(adv, n_pos_y, play_pos))
 	{
 		pthread_mutex_lock(&adv->pos_mutex);
 		adv->pos.y = n_pos.y;
@@ -189,7 +173,7 @@ static void turn_face(t_enemy *adv, int left_right)
 	pthread_mutex_unlock(&adv->dir_mutex);
 }
 
-static void move_random(t_enemy *adv)
+static void move_random(t_enemy *adv, t_point play_pos, t_point pos)
 {
 	// printf("mov %d\nrand %d\n", adv->is_moving, adv->random_moves);
 	if (adv->random_moves <= 0)
@@ -204,19 +188,28 @@ static void move_random(t_enemy *adv)
 	}
 		// printf("turn %d %d\n", turn, adv->random_moves);
 	if (adv->is_moving)
-		move_forward(adv);
+		move_forward(adv, play_pos, pos);
 	adv->random_moves--;
 }
 
 static void enemy_move(t_enemy *adv)
 {
-	adv->play_seen = see_player(adv);
+	t_point play_pos, pos;
+
+	pthread_mutex_lock(&adv->cube->playpos_mutex);
+	play_pos = adv->cube->player->pos;
+	pthread_mutex_unlock(&adv->cube->playpos_mutex);
+	pthread_mutex_lock(&adv->pos_mutex);
+	pos = adv->pos;
+	pthread_mutex_unlock(&adv->pos_mutex);
+
+	adv->play_seen = see_player(adv, play_pos, pos);
 	if (!adv->play_seen)
-		return move_random(adv);
+		return move_random(adv, play_pos, pos);
 	else
-		return move_random(adv);
-	look_to_player(adv);
-	move_forward(adv);
+		return move_random(adv, play_pos, pos);
+	look_to_player(adv, play_pos);
+	move_forward(adv, play_pos, pos);
 }
 
 void *enemy_thread(void *data)

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 22:03:11 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/07 20:51:00 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/20 12:08:54 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,20 +31,6 @@ void	draw_mini_pixel(t_lvl *lvl, int w_h[2], int i[2])
 		my_mlx_pixel_put(&lvl->mini.maps, x, y, BLUE + 0x55000000);
 	else
 		my_mlx_pixel_put(&lvl->mini.maps, x, y, GREEN);
-}
-
-void	draw_doom(t_cube *cube)
-{
-	mlx_clear_window(cube->mlx, cube->win);
-	raycasting(cube);
-	draw_player(cube);
-	raycast_enemy(cube);
-	draw_enemies(cube);
-	if (cube->lvl->weap)
-		draw_weapons(cube);
-	draw_mini_background(cube->lvl);
-	draw_maps(cube);
-	draw_life(cube);
 }
 
 int	xpm_to_img(t_cube *cube, t_data *new_img, char *name)
