@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 19:05:21 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/07 20:17:30 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/22 19:32:35 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ void	set_floor_ceiling(int fl_ce[3], char *str)
 	}
 }
 
-void	fill_maps(t_lvl *lvl, char *str, int fd[2])
+void	fill_lvl_info(t_lvl *lvl, char *str, int fd[2])
 {
 	if (!str)
 		return ;
@@ -144,13 +144,13 @@ int	get_maps(t_cube *cube, char *file)
 	str2 = get_next_line(fd[1]);
 	while (str)
 	{
-		fill_maps(cube->lvl, str, fd);
+		fill_lvl_info(cube->lvl, str, fd);
 		free_and_gnl(&str, fd[0]);
 		free_and_gnl(&str2, fd[1]);
 	}
-	if (!check_map(cube))
-		return (0);
 	close(fd[0]);
 	close(fd[1]);
+	if (!check_map(cube))
+		return (0);
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 12:31:03 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/22 23:02:58 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
+# include <dirent.h>
 # define MLX_SYNC_IMAGE_WRITABLE	1
 # define MLX_SYNC_WIN_FLUSH_CMD		1
 # define MLX_SYNC_WIN_CMD_COMPLETED	3
@@ -81,16 +82,6 @@ typedef struct s_mini_maps
 	int		height;
 }	t_mini_maps;
 
-// typedef struct s_part
-// {
-// 	t_data	sprite;
-// 	t_point	prev_pos;
-// 	t_point	pos;
-// 	t_point	dir;
-// 	float	speed;
-// 	int		dmg;
-// }	t_part;
-
 typedef struct s_weapon
 {
 	t_data	*sprites;
@@ -107,15 +98,18 @@ typedef struct s_weapon
 typedef struct s_enemy_type
 {
 	char 	letter;
-	char 	*name;
+	char 	name[10];
 	t_data	*spr_fr;
 	t_data	*spr_bk;
 	t_data	*spr_sd;
-	char	**path;
-	int		path_len;
+	t_data	*spr_at;
+	t_data	*spr_dd;
+	int		count;
 	int		max_text_fr;
 	int		max_text_bk;
 	int		max_text_sd;
+	int		max_text_at;
+	int		max_text_dd;
 	// t_point st_dr_end;
 	// t_point	hitbox;
 } t_enemy_type;
@@ -308,7 +302,7 @@ void	set_use_weapon(int key, t_cube *cube);
 
 //parse_maps.c
 int		get_maps(t_cube *cube, char *file);
-void	fill_maps(t_lvl *lvl, char *str, int fd[2]);
+void	fill_lvl_info(t_lvl *lvl, char *str, int fd[2]);
 void	set_floor_ceiling(int fl_ce[3], char *str);
 void	set_map(t_lvl *lvl, char *str, int fd[2]);
 

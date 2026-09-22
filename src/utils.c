@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 01:36:43 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/22 23:03:57 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,14 @@ void free_enemy(t_cube *cube, t_enemy_type *adv)
 	while (++i < adv->max_text_sd)
 		if (adv->spr_sd[i].img)
 			mlx_destroy_image(cube->mlx, adv->spr_sd[i].img);
+	i = -1;
+	while (++i < adv->max_text_at)
+		if (adv->spr_at[i].img)
+			mlx_destroy_image(cube->mlx, adv->spr_at[i].img);
+	i = -1;
+	while (++i < adv->max_text_dd)
+		if (adv->spr_dd[i].img)
+			mlx_destroy_image(cube->mlx, adv->spr_dd[i].img);
 	i = -1;
 	while(++i < cube->lvl->nb_enemy)
 	{
@@ -122,10 +130,6 @@ void	free_cube(t_cube *cube)
 	{
 		while (++i < cube->lvl->nb_enemy_type)
 			free_enemy(cube, &cube->lvl->enemy_types[i]);
-		for (int j = 0; j < cube->lvl->enemy_types[0].path_len; j++)
-			free(cube->lvl->enemy_types[0].path[j]);
-		free(cube->lvl->enemy_types[0].path);
-		cube->lvl->enemy_types[0].path = 0;
 		free(cube->lvl->enemies);
 		printf("enemies freed\n");
 	}

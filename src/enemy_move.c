@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 12:22:48 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 00:07:40 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,6 +176,7 @@ static void turn_face(t_enemy *adv, int left_right)
 static void move_random(t_enemy *adv, t_point play_pos, t_point pos)
 {
 	// printf("mov %d\nrand %d\n", adv->is_moving, adv->random_moves);
+	printf("r");
 	if (adv->random_moves <= 0)
 	{
 		adv->random_moves = rand() % 25;
@@ -202,7 +203,6 @@ static void enemy_move(t_enemy *adv)
 	pthread_mutex_lock(&adv->pos_mutex);
 	pos = adv->pos;
 	pthread_mutex_unlock(&adv->pos_mutex);
-
 	adv->play_seen = see_player(adv, play_pos, pos);
 	if (!adv->play_seen)
 		return move_random(adv, play_pos, pos);

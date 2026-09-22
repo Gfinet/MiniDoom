@@ -6,13 +6,13 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 12:10:59 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/22 23:21:37 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/MiniDoom.h"
 
-static int	check_format(char *file)
+static int	check_file_format(char *file)
 {
 	size_t	i;
 
@@ -106,7 +106,7 @@ int	main(int argc, char **argv)
 
 	if (argc != 2)
 		return (write(2, ERROR_ARG, 14), 0);
-	if (!check_format(argv[1]))
+	if (!check_file_format(argv[1]))
 		return (write(2, ERROR_FRM, 17), 0);
 	if (!init_cube(&cube, &player, &level))
 		return (write(2, ERROR_MAL, 19), free_cube(&cube), 0);
@@ -120,6 +120,7 @@ int	main(int argc, char **argv)
 		return (write(2, ERROR_HP, 30), free_cube(&cube), 0);
 	if (!init_pause_screen(&cube))
 		return (write(2, ERROR_PSC, 38), free_cube(&cube), 0);
+	printf("yo\n");
 	if (!launch_eneny_thread(&cube))
 		return (write(2, ERROR_TH, 32), free_cube(&cube), 0);
 	game_loop_init(&cube);
