@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 12:14:23 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 01:04:48 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,13 @@ static int	get_en_side(t_enemy *adv, t_point adv_pos, t_point play_pos, t_data *
 	double	enemy_angle;
 	double	rel_angle;
 
+	if (adv->state == ATTACK)
+	{
+		*text = adv->type->spr_at;
+		*max_text = adv->type->max_text_at;
+		return (5);
+	}
+
 	pthread_mutex_lock(&adv->dir_mutex);
 	adv_dir = adv->dir;
 	pthread_mutex_unlock(&adv->dir_mutex);
@@ -293,7 +300,7 @@ void compute_occlusion(t_enemy *adv, t_cube *cube, int sprite_left, int wid, int
 void draw_enemy(t_cube *cube, t_enemy *adv)
 {
 	int			wid, hei, n_x, n_y, side = -1;
-	int			max_text = 1;
+	int			max_text = 1, state;
 	double		dist, scale = 0.0;
 	double		cam_x, cam_z;
 	int			screen_x;
@@ -310,6 +317,9 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	pthread_mutex_lock(&adv->pos_mutex);
 	adv_pos = adv->pos;
 	pthread_mutex_unlock(&adv->pos_mutex);
+	pthread_mutex_lock(&adv->stt_mutex);
+	state = adv->state;
+	pthread_mutex_unlock(&adv->stt_mutex);
 
 	dist = dist_ab(play_pos, adv_pos);
 	if (adv->short_dist <= 0.5)
@@ -328,7 +338,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	if (adv->fps - 1 == (cube->frame / (1 + play->run) / 2))
 		adv->nb_draw[side]++;
 	adv->nb_draw[side] %= max_text;
-	if (!adv->nb_draw[side])
+	if (!adv->nb_draw[side] && state != ATTACK)
 		adv->nb_draw[side] = 1;
 
 	pthread_mutex_lock(&adv->mov_mutex);

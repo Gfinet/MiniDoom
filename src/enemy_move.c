@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 00:07:40 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 01:13:21 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,8 +63,10 @@ static int see_player(t_enemy *adv, t_point play_pos, t_point pos)
     dist = sqrt(dx * dx + dy * dy);
 	if (wall_between(adv, play_pos, pos))
 		return 0;
-    // if (dist > 5.0)
-    //     return (0);
+    if (dist > 5.0)
+		return (0);
+
+	// printf("%f\n",dist);
     if (dist < 0.0001)
 		return (1);
 	
@@ -176,7 +178,6 @@ static void turn_face(t_enemy *adv, int left_right)
 static void move_random(t_enemy *adv, t_point play_pos, t_point pos)
 {
 	// printf("mov %d\nrand %d\n", adv->is_moving, adv->random_moves);
-	printf("r");
 	if (adv->random_moves <= 0)
 	{
 		adv->random_moves = rand() % 25;
@@ -193,9 +194,17 @@ static void move_random(t_enemy *adv, t_point play_pos, t_point pos)
 	adv->random_moves--;
 }
 
-static void enemy_move(t_enemy *adv)
+static void enemy_move(t_enemy *adv, t_point play_pos, t_point pos)
+{
+	look_to_player(adv, play_pos);
+	move_forward(adv, play_pos, pos);
+}
+
+void enemy_act(t_enemy *adv)
 {
 	t_point play_pos, pos;
+	double dx, dy, dist;
+
 
 	pthread_mutex_lock(&adv->cube->playpos_mutex);
 	play_pos = adv->cube->player->pos;
@@ -203,13 +212,36 @@ static void enemy_move(t_enemy *adv)
 	pthread_mutex_lock(&adv->pos_mutex);
 	pos = adv->pos;
 	pthread_mutex_unlock(&adv->pos_mutex);
+
+
+	dx = play_pos.x - pos.x;
+	dy = play_pos.y - pos.y;
+	dist = sqrt(dx * dx + dy * dy);
 	adv->play_seen = see_player(adv, play_pos, pos);
-	if (!adv->play_seen)
-		return move_random(adv, play_pos, pos);
+	pthread_mutex_lock(&adv->stt_mutex);
+	if (dist < 0.75)
+	{
+		adv->state = ATTACK;
+		look_to_player(adv, play_pos);
+	}
+	else if (see_player(adv, play_pos, pos))
+		adv->state = FOLLOW;
 	else
-		return move_random(adv, play_pos, pos);
-	look_to_player(adv, play_pos);
-	move_forward(adv, play_pos, pos);
+		adv->state = SEARCH;
+	pthread_mutex_unlock(&adv->stt_mutex);
+	switch (adv->state)
+	{
+		case SEARCH:
+			move_random(adv, play_pos, pos);
+			break;
+		case FOLLOW:
+			enemy_move(adv, play_pos, pos);
+			break;
+		case ATTACK:
+			break;
+		default:
+			break;
+	}
 }
 
 void *enemy_thread(void *data)
@@ -231,7 +263,7 @@ void *enemy_thread(void *data)
 		// printf("pos %f %f - %f %f", adv->pos.x, adv->pos.y, cube->player->pos.x, cube->player->pos.y);
 		if (can_move)
 		{
-			enemy_move(adv);
+			enemy_act(adv);
 		}
 		// printf("Stop: %d\n", cube->stop);
 		usleep(1000000 / 60);

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/22 23:02:58 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 01:01:40 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,13 @@ typedef struct s_enemy_type
 
 typedef struct s_cube		t_cube;
 
+enum state {
+	ATTACK,
+	SEARCH,
+	FOLLOW,
+	HIT,
+};
+
 typedef struct s_enemy
 {
 	pthread_t		thread;
@@ -130,14 +137,16 @@ typedef struct s_enemy
 	pthread_mutex_t	pos_mutex;
 	pthread_mutex_t	mov_mutex;
 	pthread_mutex_t	dir_mutex;
+	pthread_mutex_t	stt_mutex;
 	double			wall_dist;
 	double			tmp_dist;
 	double			short_dist;
 	double			cam_x;
 	double			cam_z;
+	int 			state;
 	int				random_moves;
 	int				random_turn;
-	int				nb_draw[4];
+	int				nb_draw[6];
 	int				fps;
 	int				draw;
 	int				play_seen;

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 00:03:44 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 01:03:38 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ int set_enemy_pos(t_lvl *lvl)
 				pthread_mutex_init(&adv->pos_mutex, 0);
 				pthread_mutex_init(&adv->mov_mutex, 0);
 				pthread_mutex_init(&adv->dir_mutex, 0);
+				pthread_mutex_init(&adv->stt_mutex, 0);
 				ind++;
 				adv = &lvl->enemies[ind];
 				printf("Got %d en %d %d\n", ind, i, j);
@@ -195,9 +196,7 @@ int get_enemy_part(t_cube *cube, char *path, char *name, int ind)
 	int				*len_text;
 	size_t 			len = 0, nb = 0;
 	char			*dir_path, *slash;
-	// DIR				*dir;
 	struct dirent	**dir;
-	// struct dirent	*entry;
 
 	adv = &cube->lvl->enemy_types[ind];
 
@@ -237,24 +236,6 @@ int get_enemy_part(t_cube *cube, char *path, char *name, int ind)
 		}
 	}
 	free(dir);
-	// entry = readdir(dir);
-	// while ( entry != NULL)
-	// {
-	// 	if (ft_strncmp(entry->d_name, ".", 2) == 0 || ft_strncmp(entry->d_name, "..", 3) == 0)
-	// 	{
-	// 		entry = readdir(dir);
-	// 		continue ;
-	// 	}
-
-	// 	if (entry->d_type == DT_REG)
-	// 	{
-	// 		if (!load_enemy_texture(cube, text, dir_path, entry->d_name, nb))
-	// 			return 0;
-	// 		nb++;
-	// 	}
-	// 	entry = readdir(dir);
-	// }
-	// closedir(dir);
 	free(dir_path);
 	return 1;
 }
