@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/16 21:10:01 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/24 01:00:17 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 01:20:46 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ int get_weapon_inf(t_cube *cube, int ind)
 	len = scandir(dir_path, &dir, NULL, alphasort);
 	if (!dir || len <= 0)
         return (printf("Error while opening %s\n", dir_path), 0);
-	printf("len %zu %s\n", len, name);
+	// printf("len %zu %s\n", len, name);
 	weap->pathLen = len - 2;
 	text = &weap->sprites;
 	*text = calloc(len - 2, sizeof(t_data));

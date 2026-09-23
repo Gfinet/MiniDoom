@@ -59,7 +59,7 @@ $(OBJDIR)/%.o : $(SRCDIR)/%.c
 	@$(CC) $(CFLAGS) -Imlx -c $< -o $@
 
 add:
-	git add src/ inc/ maps/ texture/ enemy_sprites/ Makefile .gitignore
+	git add src/ inc/ maps/ texture/ enemy_sprites/ weapon_sprites/ Makefile .gitignore
 	git status
 	git commit -m "$(MSG)"
 
