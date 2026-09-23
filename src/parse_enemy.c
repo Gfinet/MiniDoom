@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 01:03:38 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 14:30:27 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ int set_enemy_pos(t_lvl *lvl)
 		{
 			if (lvl->c_maps[i][j] == 'A')
 			{
-				// adv->name = ft_strdup("something")
 				adv->type = &lvl->enemy_types[0];
 				adv->pos = (t_point){j + 0.5, i + 0.5, 0};
 				adv->dir = (t_point){0, -1, 0};//to North
@@ -121,6 +120,9 @@ void set_enemy(t_lvl *lvl, char *str)
 	lst[len - 1] = tmp;
 	lst[len] = 0;
 	lvl->enemy_types[lvl->nb_enemy_type].count = ft_atoi(lst[1]);
+	lvl->enemy_types[lvl->nb_enemy_type].freq_atk = ft_atoi(lst[2]);
+	lvl->enemy_types[lvl->nb_enemy_type].max_hp = ft_atoi(lst[3]);
+	lvl->enemy_types[lvl->nb_enemy_type].dmg= ft_atoi(lst[4]);
 	lvl->nb_enemy_type++;
 	free_maps(lst, len);
 	return ;
@@ -183,7 +185,7 @@ int load_enemy_texture(t_cube *cube, t_data **text, char *path, char *name, int 
 	printf("File %s loaded\n", file);
 	free(file);
 	if (!(*text)[ind].img)
-		return (printf("enemy sprites loading error\n"), 0);
+		return (printf("Enemy sprites loading error\n"), 0);
 	
 	return 1;
 }
@@ -207,23 +209,20 @@ int get_enemy_part(t_cube *cube, char *path, char *name, int ind)
 	free(slash);
 	if (!dir_path)
 		return 0;
-	// printf("dir_path : %s\n", dir_path);
-	// dir = opendir(dir_path);
+
 	len = scandir(dir_path, &dir, NULL, alphasort);
 	if (!dir || len <= 0)
         return (printf("Error while opening %s %p\n", path, dir), 0);
-	// entry = readdir(dir);
-	// printf("len %zu\n", len - 2);
 	len_text = get_ptr_len(adv, name);
 	*len_text = len - 2;
 	text = get_ptr_texture(adv, name);
 	*text = calloc(len - 2, sizeof(t_data));
-	// *text[len] = 0;
 	if (!(*text))
 		return 0;
 	nb = 0;
-	for (size_t i = 0; i < len; i++)
+	for (size_t i = 2; i < len; i++)
     {
+		// printf("entry : %s/%s\n", dir_path, dir[i]->d_name);
 		if (dir[i]->d_name[0] != '.')
         {
 			if (dir[i]->d_type == DT_REG)
@@ -250,13 +249,10 @@ int get_enemy_inf(t_cube *cube, int ind)
 	adv = &cube->lvl->enemy_types[ind];
 	name = adv->name;
 	path = ft_strjoin("./enemy_sprites/", name);
-	// printf("path : %s\n", path);
 	dir = opendir(path);
 	if (!dir)
         return (printf("Error while opening %s %p\n", path, dir), 0);
-	// printf("seg\n");
 	entry = readdir(dir);
-	// printf("seg\n");
 	while (entry != NULL)
 	{
 		// printf("entry : %s\n", entry->d_name);
@@ -288,7 +284,7 @@ int check_enemy_inf(t_cube *cube, char *str)
 	lst = ft_split(&str[1], ' ');
 	while (lst[len] != 0)
 		len++;
-	if (len < 2)
-		return (printf("lack Enemy data error\n[A Name Number]\n"), 0);
+	if (len < 5)
+		return (printf("lack Enemy data error\n[A Name Number AtkSpeed Hp dmg]\n"), 0);
 	return (free_maps(lst, len), 1);
 }

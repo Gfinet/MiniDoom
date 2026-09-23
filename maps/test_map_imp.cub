@@ -8,7 +8,7 @@ G ./weapon_sprites/gun.xpm ./weapon_sprites/gun1.xpm ./weapon_sprites/gun5.xpm .
 G ./weapon_sprites/shotgun.xpm ./weapon_sprites/shotgunBoom.xpm ./weapon_sprites/shotgun2.xpm ./weapon_sprites/shotgun3.xpm ./weapon_sprites/shotgun4.xpm ./weapon_sprites/gun5.xpm
 G ./weapon_sprites/machinegun.xpm ./weapon_sprites/machinegun2.xpm ./weapon_sprites/machinegun3.xpm ./weapon_sprites/chaingun.xpm
 
-A imp 1
+A imp 1 1 50 5
 
 
 F 80,10,10

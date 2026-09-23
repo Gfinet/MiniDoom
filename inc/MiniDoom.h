@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 01:01:40 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 14:16:43 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,9 @@ typedef struct s_enemy_type
 	int		max_text_sd;
 	int		max_text_at;
 	int		max_text_dd;
+	int		dmg;
+	int		max_hp;
+	double	freq_atk;
 	// t_point st_dr_end;
 	// t_point	hitbox;
 } t_enemy_type;
@@ -152,9 +155,9 @@ typedef struct s_enemy
 	int				play_seen;
 	int				id;
 	int				hp;
-	int				dmg;
 	int				is_moving;
-	double			freq_atk;
+	double  		atk_timer;
+	double  		last_draw_time;
 	double			speed;
 }	t_enemy;
 
@@ -359,6 +362,7 @@ void	update_player(t_cube *cube, t_player *player);
 void	turn(t_cube *cube, double angle, int frame);
 
 //raycast
+double	get_time(long start);
 int		ray_in_limit(t_cube *cube, int x, int y);
 void	calculate_perp_wall_dist(t_rcdata *data, int mirr);
 double	fix_texture_pos(t_rcdata dt, t_player pl);

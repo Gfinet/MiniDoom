@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 01:04:48 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 14:43:50 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,6 +303,8 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	int			max_text = 1, state;
 	double		dist, scale = 0.0;
 	double		cam_x, cam_z;
+	double		now, delta_atk, frame_duration;
+	int			atk_frame;
 	int			screen_x;
 	int 		z_offset;
 	t_player	*play;
@@ -335,19 +337,37 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	side = get_en_side(adv, adv_pos, play_pos, &use_text, &max_text);
 	
 	adv->fps++;
-	if (adv->fps - 1 == (cube->frame / (1 + play->run) / 2))
+	if (state == ATTACK)
+	{
+		now = get_time(0);
+		delta_atk = now - adv->last_draw_time;
+		adv->last_draw_time = now;
+		adv->atk_timer += delta_atk;
+		frame_duration = 1000.0 / (adv->type->freq_atk * adv->type->max_text_at);
+		atk_frame = (int)(adv->atk_timer / frame_duration) % adv->type->max_text_at;
+		
+		pthread_mutex_lock(&adv->mov_mutex);
+		one_text = &adv->type->spr_at[atk_frame];
+		pthread_mutex_unlock(&adv->mov_mutex);
+	}
+	else
+	{
+		adv->atk_timer = 0.0;
+		adv->last_draw_time = get_time(0);
+		if (adv->fps - 1 == (cube->frame / (1 + play->run) / 2))
 		adv->nb_draw[side]++;
-	adv->nb_draw[side] %= max_text;
-	if (!adv->nb_draw[side] && state != ATTACK)
-		adv->nb_draw[side] = 1;
+		adv->nb_draw[side] %= max_text;
+		if (!adv->nb_draw[side])
+			adv->nb_draw[side] = 1;
+		pthread_mutex_lock(&adv->mov_mutex);
+		one_text = &use_text[(adv->is_moving) * adv->nb_draw[side]];
+		pthread_mutex_unlock(&adv->mov_mutex);
+	}
 
-	pthread_mutex_lock(&adv->mov_mutex);
-	one_text = &use_text[(adv->is_moving) * adv->nb_draw[side]];
-	pthread_mutex_unlock(&adv->mov_mutex);
 	img = one_text->img;
 	
 	scale = 6 / dist;
-	adv->fps %= cube->frame * 4 + cube->frame * play->run;
+	adv->fps %= cube->frame * (4 + play->run);
 	hei = img->height * scale;
 	wid = img->width * scale;
 

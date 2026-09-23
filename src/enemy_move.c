@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 01:13:21 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 13:40:54 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,9 +262,7 @@ void *enemy_thread(void *data)
 	{
 		// printf("pos %f %f - %f %f", adv->pos.x, adv->pos.y, cube->player->pos.x, cube->player->pos.y);
 		if (can_move)
-		{
 			enemy_act(adv);
-		}
 		// printf("Stop: %d\n", cube->stop);
 		usleep(1000000 / 60);
 		pthread_mutex_lock(&cube->stop_mutex);
