@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 19:05:21 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/22 19:32:35 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 00:03:42 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,9 +121,9 @@ void	fill_lvl_info(t_lvl *lvl, char *str, int fd[2])
 	else if (str[0] == '\n')
 		return ;
 	else if (str[0] == 'G')
-		set_weapon(lvl, &str[1]);
+		set_weapon(lvl, &str[2]);
 	else if (str[0] == 'A')
-		set_enemy(lvl, &str[1]);
+		set_enemy(lvl, &str[2]);
 	else
 		set_map(lvl, str, fd);
 }
@@ -139,7 +139,7 @@ int	get_maps(t_cube *cube, char *file)
 	cube->lvl->max_len = 0;
 	fd[0] = open(file, O_RDONLY);
 	fd[1] = open(file, O_RDONLY);
-	cube->lvl->c_text = malloc(sizeof(char *) * 4);
+	cube->lvl->c_text = calloc(4, sizeof(char *));
 	str = get_next_line(fd[0]);
 	str2 = get_next_line(fd[1]);
 	while (str)

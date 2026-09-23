@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 22:31:31 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 00:33:43 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,9 @@ static int	get_textures(t_cube *cube)
 	for (int i = 0; i < 4; i++)
 		if (!xpm_to_img(cube, &txt[i], cube->lvl->c_text[i]))
 			return (-i);
-	if (!get_weapon(cube))
-		return (0);
+	for (int i = 0; i < cube->lvl->nb_weap; i++)
+		if (!get_weapon_inf(cube, i))
+			return (0);
 	for (int i = 0; i < cube->lvl->nb_enemy_type; i++)
 		if (!get_enemy_inf(cube, i))
 			return (0);

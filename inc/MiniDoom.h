@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 22:31:29 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 00:34:03 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,12 +86,12 @@ typedef struct s_weapon
 {
 	t_data	*sprites;
 	double	freq_atk;
-	char	*name;
+	char	name[15];
 	int		dmg;
 	int		end_anim;
 	int		acquire;
-	int 	pathLen;
 	int		use_spr;
+	int 	pathLen;
 	char	**path;
 }	t_weapon;
 
@@ -398,6 +398,7 @@ void	free_weapons(t_cube *cube);
 void	free_enemy(t_cube *cube, t_enemy_type *adv);
 
 //parse_weapon
+int 	get_weapon_inf(t_cube *cube, int ind);
 int		get_weapon(t_cube *cube);
 void	set_weapon(t_lvl *lvl, char *str);
 int		check_weapon(t_cube *cube, char *str);

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 20:07:01 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 00:28:55 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,8 @@ int set_enemy_pos(t_lvl *lvl)
 
 void set_enemy(t_lvl *lvl, char *str)
 {
-	t_enemy_type 	*tmp_en;
+	// t_enemy_type 	*tmp_en;
+	static int		ind = 0;
 	int				len = 0;
 	char			*tmp;
 	char			**lst;
@@ -100,31 +101,25 @@ void set_enemy(t_lvl *lvl, char *str)
 	
 	if (!lvl->enemy_types)
 	{
-		lvl->enemy_types = calloc(lvl->nb_enemy_type + 1, sizeof(t_enemy_type));
+		printf("%d\n", lvl->nb_enemy_type);
+		lvl->enemy_types = calloc(lvl->nb_enemy_type, sizeof(t_enemy_type));
 		if (!lvl->enemy_types)
 			return ;
 	}
-	else
-	{
-		tmp_en = realloc(lvl->enemy_types, (lvl->nb_enemy_type + 1) * sizeof(t_enemy_type));
-		if (!tmp_en)
-			return ;
-		lvl->enemy_types = tmp_en;
-	}
 	lst = ft_split(str, ' ');
-	ft_bzero(lvl->enemy_types[lvl->nb_enemy_type].name, 10);
-	ft_strlcat(lvl->enemy_types[lvl->nb_enemy_type].name, lst[0], ft_strlen(lst[0]) + 1);
+	ft_bzero(lvl->enemy_types[ind].name, 10);
+	ft_strlcat(lvl->enemy_types[ind].name, lst[0], ft_strlen(lst[0]) + 1);
 	while (lst[len])
 		len++;
 	tmp = ft_substr(lst[len - 1], 0, ft_strlen(lst[len - 1]) - 1); //take out \n
 	free(lst[len - 1]);
 	lst[len - 1] = tmp;
 	lst[len] = 0;
-	lvl->enemy_types[lvl->nb_enemy_type].count = ft_atoi(lst[1]);
-	lvl->enemy_types[lvl->nb_enemy_type].freq_atk = ft_atoi(lst[2]);
-	lvl->enemy_types[lvl->nb_enemy_type].max_hp = ft_atoi(lst[3]);
-	lvl->enemy_types[lvl->nb_enemy_type].dmg= ft_atoi(lst[4]);
-	lvl->nb_enemy_type++;
+	lvl->enemy_types[ind].count = ft_atoi(lst[1]);
+	lvl->enemy_types[ind].freq_atk = ft_atoi(lst[2]);
+	lvl->enemy_types[ind].max_hp = ft_atoi(lst[3]);
+	lvl->enemy_types[ind].dmg= ft_atoi(lst[4]);
+	ind++;
 	free_maps(lst, len);
 	return ;
 	
@@ -229,7 +224,7 @@ int get_enemy_part(t_cube *cube, char *path, char *name, int ind)
 			if (dir[i]->d_type == DT_REG)
 			{
 				if (!load_enemy_texture(cube, text, dir_path, dir[i]->d_name, nb))
-					return 0;
+					return free(dir), free(dir_path), 0;
 				nb++;
 			}
 			free(dir[i]);
@@ -252,7 +247,7 @@ int get_enemy_inf(t_cube *cube, int ind)
 	path = ft_strjoin("./enemy_sprites/", name);
 	dir = opendir(path);
 	if (!dir)
-        return (printf("Error while opening %s %p\n", path, dir), 0);
+        return (printf("Error while opening %s\n", path), 0);
 	entry = readdir(dir);
 	while (entry != NULL)
 	{
@@ -265,7 +260,7 @@ int get_enemy_inf(t_cube *cube, int ind)
 		
 		if (entry->d_type == DT_DIR)
 			if (!get_enemy_part(cube, path, entry->d_name, ind))
-				return free(path), 0;
+				return free(path), closedir(dir), 0;
 		entry = readdir(dir);
 	}
 	closedir(dir);
@@ -287,5 +282,5 @@ int check_enemy_inf(t_cube *cube, char *str)
 		len++;
 	if (len < 5)
 		return (printf("lack Enemy data error\n[A Name Number AtkSpeed Hp dmg]\n"), 0);
-	return (free_maps(lst, len), 1);
+	return (free_maps(lst, len), cube->lvl->nb_enemy_type++, 1);
 }
