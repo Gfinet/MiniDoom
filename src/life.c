@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/29 19:01:31 by Gfinet            #+#    #+#             */
-/*   Updated: 2024/09/12 11:50:28 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 19:34:58 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@ void	draw_life(t_cube *cube)
 				my_mlx_pixel_put(&cube->player->life, x, y, 0x00FF0000);
 		}
 	}
-	mlx_put_image_to_window(cube->mlx, cube->win, cube->player->life.img,
-		4 * WIN_WIDTH / 5, WIN_HEIGHT / 5);
+	mlx_image_to_image(&cube->screen, &cube->player->life, 4 * WIN_WIDTH / 5, WIN_HEIGHT / 5);
+	// mlx_put_image_to_window(cube->mlx, cube->win, cube->player->life.img,
+	// 	4 * WIN_WIDTH / 5, WIN_HEIGHT / 5);
 	return ;
 }

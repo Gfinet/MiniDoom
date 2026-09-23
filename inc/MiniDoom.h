@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 14:16:43 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 22:31:29 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,9 @@ enum state {
 	ATTACK,
 	SEARCH,
 	FOLLOW,
+	BACK,
 	HIT,
+	DEAD,
 };
 
 typedef struct s_enemy
@@ -132,7 +134,7 @@ typedef struct s_enemy
 	t_cube			*cube;
 	t_enemy_type 	*type;
 	t_data			text_on;
-	t_point			prev_pos;
+	t_point			orig_pos;
 	t_point			pos;
 	t_point			dir;
 	t_point			hitbox;
@@ -198,6 +200,7 @@ typedef struct s_player
 	int		use_weap;
 	int		z_view;
 	int		hp;
+	int		armor;
 	double	angle;
 	double	vz;
 }	t_player;
@@ -356,6 +359,8 @@ void			fill_map_char(t_lvl *lvl, char c);
 void			draw_mini_pixel(t_lvl *lvl, int w_h[2], int i[2]);
 void			draw_player(t_cube *cube);
 unsigned int	get_color_from_xpm(t_data *text, int x, int y);
+void 			mlx_image_to_image(t_data *dest, t_data *src, int pos_x, int pos_y);
+void 			red_filter(t_data *img, double intensity);
 
 //movements
 void	update_player(t_cube *cube, t_player *player);

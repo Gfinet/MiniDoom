@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 14:43:50 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 22:28:32 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ void put_xpm_to_mlx_img(t_enemy *adv, t_data *use_text, double scale, int side)
 		{
 			col = get_color_from_xpm(use_text, x, y);
 			if (x <= (int)adv->st_dr_end.x || x >= (int)adv->st_dr_end.y)
-				col = 0xFFFFFFFF;
+				col = 0x00000000;
 			if (!side)
 				xx = x;
 			else
@@ -168,7 +168,7 @@ static int	get_en_side(t_enemy *adv, t_point adv_pos, t_point play_pos, t_data *
 	double	enemy_angle;
 	double	rel_angle;
 
-	if (adv->state == ATTACK)
+	if (adv->state == ATTACK && adv->type->spr_at)
 	{
 		*text = adv->type->spr_at;
 		*max_text = adv->type->max_text_at;
@@ -246,6 +246,7 @@ void draw_enemies(t_cube *cube)
 	int		i = -1;
 	t_enemy	*advs, *adv;
 
+	raycast_enemy(cube);
 	advs = cube->lvl->enemies;
 	// printf("nb en : %d", cube->lvl->nb_enemy);
 	sort_enemies_by_dist(advs, cube->lvl->nb_enemy);
@@ -337,7 +338,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 	side = get_en_side(adv, adv_pos, play_pos, &use_text, &max_text);
 	
 	adv->fps++;
-	if (state == ATTACK)
+	if (state == ATTACK && adv->type->spr_at)
 	{
 		now = get_time(0);
 		delta_atk = now - adv->last_draw_time;
@@ -384,6 +385,7 @@ void draw_enemy(t_cube *cube, t_enemy *adv)
 		return ;
 	}
 	put_xpm_to_mlx_img(adv, one_text, scale, (side == 1));
-	mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
+	mlx_image_to_image(&cube->screen, &adv->text_on, n_x, n_y);
+	// mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
 }
 

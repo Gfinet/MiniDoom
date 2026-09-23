@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 13:40:54 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 21:11:24 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ static int en_impassable(char **map, double x, double y)
 
     if (map[map_y][map_x] == '1' || map[map_y][map_x] == '2')
         return (1);
+
+	
     return (0);
 }
 
@@ -34,7 +36,7 @@ static int wall_between(t_enemy *adv, t_point play_pos, t_point visu)
     double dy;
 
 	dx = play_pos.x - visu.x;
-	dy= play_pos.y - visu.y;
+	dy = play_pos.y - visu.y;
 	total_dist = sqrt(dx * dx + dy * dy);
 	if (total_dist < 0.0001)
         return 0;
@@ -56,10 +58,10 @@ static int wall_between(t_enemy *adv, t_point play_pos, t_point visu)
 
 static int see_player(t_enemy *adv, t_point play_pos, t_point pos)
 {
-    double  dx, dy, dist, dot;
+    double	dx, dy, dist, dot;
 
-    dx = play_pos.x - pos.x;
-    dy = play_pos.y - pos.y;
+	dx = play_pos.x - pos.x;
+	dy = play_pos.y - pos.y;
     dist = sqrt(dx * dx + dy * dy);
 	if (wall_between(adv, play_pos, pos))
 		return 0;
@@ -76,16 +78,13 @@ static int see_player(t_enemy *adv, t_point play_pos, t_point pos)
     return (dot >= 0.707);
 }
 
-static void look_to_player(t_enemy *adv, t_point play_pos)
+static void look_to_position(t_enemy *adv, t_point play_pos, t_point pos)
 {
-    double dx ;
-    double dy ;
-    double dist ;
+    double dx, dy, dist;
 	
-    dx = play_pos.x - adv->pos.x;
-    dy = play_pos.y - adv->pos.y;
+    dx = play_pos.x - pos.x;
+	dy = play_pos.y - pos.y;
     dist = sqrt(dx * dx + dy * dy);
-
     if (dist < 0.0001)
         return;
     adv->dir.x = dx / dist;
@@ -177,6 +176,7 @@ static void turn_face(t_enemy *adv, int left_right)
 
 static void move_random(t_enemy *adv, t_point play_pos, t_point pos)
 {
+	double dist;
 	// printf("mov %d\nrand %d\n", adv->is_moving, adv->random_moves);
 	if (adv->random_moves <= 0)
 	{
@@ -188,15 +188,16 @@ static void move_random(t_enemy *adv, t_point play_pos, t_point pos)
 		if (adv->random_turn != 2)
 			turn_face(adv, adv->random_turn);
 	}
-		// printf("turn %d %d\n", turn, adv->random_moves);
-	if (adv->is_moving)
+	// printf("turn %d %d\n", turn, adv->random_moves);
+	dist = dist_ab(adv->orig_pos, pos);
+	if (adv->is_moving && dist < 5.0)
 		move_forward(adv, play_pos, pos);
 	adv->random_moves--;
 }
 
 static void enemy_move(t_enemy *adv, t_point play_pos, t_point pos)
 {
-	look_to_player(adv, play_pos);
+	look_to_position(adv, play_pos, pos);
 	move_forward(adv, play_pos, pos);
 }
 
@@ -222,12 +223,19 @@ void enemy_act(t_enemy *adv)
 	if (dist < 0.75)
 	{
 		adv->state = ATTACK;
-		look_to_player(adv, play_pos);
+		look_to_position(adv, play_pos, pos);
 	}
 	else if (see_player(adv, play_pos, pos))
 		adv->state = FOLLOW;
+	else if (dist_ab(adv->orig_pos, pos) > 5)
+		adv->state = BACK;
 	else
 		adv->state = SEARCH;
+	
+	pthread_mutex_lock(&adv->mov_mutex);
+	if (adv->state != SEARCH)
+		adv->is_moving = 1;
+	pthread_mutex_unlock(&adv->mov_mutex);
 	pthread_mutex_unlock(&adv->stt_mutex);
 	switch (adv->state)
 	{
@@ -238,6 +246,9 @@ void enemy_act(t_enemy *adv)
 			enemy_move(adv, play_pos, pos);
 			break;
 		case ATTACK:
+			break;
+		case BACK:
+			enemy_move(adv, adv->orig_pos, pos);
 			break;
 		default:
 			break;

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 19:05:21 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/22 23:22:33 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 19:34:47 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,8 +117,9 @@ void	draw_maps(t_cube *cube)
 		}
 	}
 	draw_player(cube);
-	mlx_put_image_to_window(cube->mlx, cube->win,
-		cube->lvl->mini.maps.img, 4 * WIN_WIDTH / 5, 0);
+	mlx_image_to_image(&cube->screen, &cube->lvl->mini.maps, 4 * WIN_WIDTH / 5, 0);
+	// mlx_put_image_to_window(cube->mlx, cube->win,
+	// 	cube->lvl->mini.maps.img, 4 * WIN_WIDTH / 5, 0);
 }
 
 void	get_player_pos(t_cube *cube)

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 00:26:20 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/19 23:39:13 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/23 19:36:55 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,17 @@ void	put_weapon(t_cube *cube)
 	{
 		w = (WIN_WIDTH - weap[u_w].sprites[*spr].width) / 2;
 		h = WIN_HEIGHT - weap[u_w].sprites[*spr].height;
-		mlx_put_image_to_window(cube->mlx, cube->win,
-			weap[u_w].sprites[*spr].img, w, h);
+		mlx_image_to_image(&cube->screen, &weap[u_w].sprites[*spr], w, h);
+		// mlx_put_image_to_window(cube->mlx, cube->win,
+		// 	weap[u_w].sprites[*spr].img, w, h);
 	}
 	else
 	{
 		w = (WIN_WIDTH - weap[u_w].sprites[0].width) / 2;
 		h = WIN_HEIGHT - weap[u_w].sprites[0].height;
-		mlx_put_image_to_window(cube->mlx, cube->win,
-			weap[u_w].sprites[0].img, w, h);
+		mlx_image_to_image(&cube->screen, &weap[u_w].sprites[0], w, h);
+		// mlx_put_image_to_window(cube->mlx, cube->win,
+		// 	weap[u_w].sprites[0].img, w, h);
 		*spr = 0;
 	}
 }
