@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 00:26:20 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/24 01:19:20 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 15:35:23 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	put_weapon(t_cube *cube)
 	if (cube->player->shoot == 1 || *spr != 1)
 	{
 		w = (WIN_WIDTH - weap[u_w].sprites[*spr].width) / 2;
-		h = WIN_HEIGHT - weap[u_w].sprites[*spr].height;
+		h = WIN_HEIGHT * 4 / 5 - weap[u_w].sprites[*spr].height;
 		mlx_image_to_image(&cube->screen, &weap[u_w].sprites[*spr], w, h);
 		// mlx_put_image_to_window(cube->mlx, cube->win,
 		// 	weap[u_w].sprites[*spr].img, w, h);
@@ -34,7 +34,7 @@ void	put_weapon(t_cube *cube)
 	else
 	{
 		w = (WIN_WIDTH - weap[u_w].sprites[0].width) / 2;
-		h = WIN_HEIGHT - weap[u_w].sprites[0].height;
+		h = WIN_HEIGHT * 4 / 5 - weap[u_w].sprites[0].height;
 		mlx_image_to_image(&cube->screen, &weap[u_w].sprites[0], w, h);
 		// mlx_put_image_to_window(cube->mlx, cube->win,
 		// 	weap[u_w].sprites[0].img, w, h);

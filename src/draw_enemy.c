@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 22:28:32 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 15:20:09 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,7 @@ void put_xpm_to_mlx_img(t_enemy *adv, t_data *use_text, double scale, int side)
 		x = -1;
 		while (++x < img->width)
 		{
+			
 			col = get_color_from_xpm(use_text, x, y);
 			if (x <= (int)adv->st_dr_end.x || x >= (int)adv->st_dr_end.y)
 				col = 0x00000000;

@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/01 22:03:11 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 20:49:09 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 15:24:57 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ void mlx_image_to_image(t_data *dest, t_data *src, int pos_x, int pos_y)
 
             src_pixel = src->addr + (y * src->line_length + x * (src->bits_per_pixel / 8));
             color = *(unsigned int *)src_pixel;
-            if ((color & 0x00FFFFFF) == 0x000000)
+            if (color == 0xFF000000 || (color & 0x00FFFFFF) == 0x000000)
                 continue ;
             my_mlx_pixel_put(dest, pos_x + x, pos_y + y, color);
         }

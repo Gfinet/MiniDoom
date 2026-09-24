@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/09 16:47:34 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/03 16:18:30 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 14:10:54 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # define ERROR_HP "Error\nAttempt for life failed\n"
 # define ERROR_PSC "Error\nAttempt for pause screen failed\n"
 # define ERROR_TH "Error\nAttempt for thread failed\n"
+# define ERROR_UI "Error\nAttempt for UI failed\n"
 
 # define ESC 53
 # define W 13

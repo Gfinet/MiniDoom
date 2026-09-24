@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/24 00:33:43 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 14:14:02 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,11 @@ static int	check_file_format(char *file)
 	if (!file || ft_strncmp(&file[i], ".cub", 5))
 		return (0);
 	return (1);
+}
+
+static void write_error(char *msg)
+{
+	write(2, msg, ft_strlen(msg));
 }
 
 static int	init_cube(t_cube *cube, t_player *play, t_lvl *level)
@@ -72,15 +77,6 @@ static int	get_textures(t_cube *cube)
 	return (1);
 }
 
-static void draw_ui(t_cube *cube)
-{
-	if (cube->lvl->weap)
-		draw_weapons(cube);
-	// draw_mini_background(cube->lvl);
-	draw_maps(cube);
-	draw_life(cube);
-}
-
 void	draw_doom(t_cube *cube)
 {
 	mlx_clear_window(cube->mlx, cube->win);
@@ -112,23 +108,25 @@ int	main(int argc, char **argv)
 	t_player	player;
 
 	if (argc != 2)
-		return (write(2, ERROR_ARG, 14), 0);
+		return (write_error(ERROR_ARG), 0);
 	if (!check_file_format(argv[1]))
-		return (write(2, ERROR_FRM, 17), 0);
+		return (write_error(ERROR_FRM), 0);
 	if (!init_cube(&cube, &player, &level))
-		return (write(2, ERROR_MAL, 19), free_cube(&cube), 0);
+		return (write_error(ERROR_MAL), free_cube(&cube), 0);
 	if (!get_maps(&cube, argv[1]))
-		return (write(2, ERROR_MAP, 15), free_cube(&cube), 0);
+		return (write_error(ERROR_MAP), free_cube(&cube), 0);
 	if (!get_textures(&cube))
-		return (write(2, ERROR_TXT, 19), free_cube(&cube), 0);
+		return (write_error(ERROR_TXT), free_cube(&cube), 0);
 	if (!make_mini(&cube, &level))
-		return (write(2, ERROR_MMP, 34), free_cube(&cube), 0);
+		return (write_error(ERROR_MMP), free_cube(&cube), 0);
 	if (!set_life(&cube))
-		return (write(2, ERROR_HP, 30), free_cube(&cube), 0);
+		return (write_error(ERROR_HP), free_cube(&cube), 0);
+	if (!make_ui(&cube))
+		return (write_error(ERROR_UI), free_cube(&cube), 0);
 	if (!init_pause_screen(&cube))
-		return (write(2, ERROR_PSC, 38), free_cube(&cube), 0);
+		return (write_error(ERROR_PSC), free_cube(&cube), 0);
 	if (!launch_eneny_thread(&cube))
-		return (write(2, ERROR_TH, 32), free_cube(&cube), 0);
+		return (write_error(ERROR_TH), free_cube(&cube), 0);
 	game_loop_init(&cube);
 	return (0);
 }

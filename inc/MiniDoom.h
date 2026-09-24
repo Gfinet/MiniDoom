@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/24 00:34:03 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/24 14:13:48 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,12 +275,20 @@ typedef struct s_drawdata
 	int				mirr;
 }	t_drawdata;
 
+typedef struct t_ui
+{
+	t_player	*player;
+	t_data		box;
+
+} t_ui;
+
 typedef struct s_cube
 {
 	void				*mlx;
 	void				*win;
 	t_player			*player;
 	t_lvl				*lvl;
+	t_ui				ui;
 	t_pause				pause_sc;
 	t_data				texture[4];
 	t_data				door_texture[4];
@@ -304,6 +312,10 @@ typedef struct s_cube
 
 //MiniDoom
 void	draw_doom(t_cube *cube);
+
+//draw_ui
+void 	draw_ui(t_cube *cube);
+int 	make_ui(t_cube *cube);
 
 //handle_event.c
 int		esc_handle(t_cube *cube);
