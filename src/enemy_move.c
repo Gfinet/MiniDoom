@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/23 21:11:24 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/25 14:02:27 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,7 +257,7 @@ void enemy_act(t_enemy *adv)
 
 void *enemy_thread(void *data)
 {
-	int stop, can_move;
+	int stop, can_move, dead = 1;
 	t_enemy *adv;
 	t_cube	*cube;
 
@@ -269,7 +269,7 @@ void *enemy_thread(void *data)
 	pthread_mutex_lock(&cube->pause_mutex);
 	can_move = !cube->pause;
 	pthread_mutex_unlock(&cube->pause_mutex);
-	while (!stop)
+	while (!stop && !dead)
 	{
 		// printf("pos %f %f - %f %f", adv->pos.x, adv->pos.y, cube->player->pos.x, cube->player->pos.y);
 		if (can_move)
@@ -282,6 +282,9 @@ void *enemy_thread(void *data)
 		pthread_mutex_lock(&cube->pause_mutex);
 		can_move = !cube->pause;
 		pthread_mutex_unlock(&cube->pause_mutex);
+		pthread_mutex_lock(&adv->stt_mutex);
+		dead = (adv->state == DEAD);
+		pthread_mutex_unlock(&adv->stt_mutex);
 	}
 	printf("Thread %d Stop\n", adv->id);
 	return 0;

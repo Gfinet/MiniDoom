@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/24 14:13:48 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/25 13:59:58 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,6 +293,7 @@ typedef struct s_cube
 	t_data				texture[4];
 	t_data				door_texture[4];
 	t_data				screen;
+	t_data				no_sprite;
 	t_door				*doors;
 	pthread_mutex_t		stop_mutex;
 	pthread_mutex_t		pause_mutex;

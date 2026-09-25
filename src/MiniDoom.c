@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/24 14:14:02 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/25 14:01:58 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ static int	init_cube(t_cube *cube, t_player *play, t_lvl *level)
 	*play = (t_player){0};
 	*level = (t_lvl){0};
 	cube->screen = (t_data){0};
+	if (!xpm_to_img(cube, &cube->no_sprite, "./texture/no_sprites.xpm"))
+		return 0;
 	cube->wall_dist = 0;
 	cube->stop = 0;
 	cube->frame = FRAME;
