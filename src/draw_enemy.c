@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/24 15:20:09 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/28 14:12:47 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,13 +121,13 @@ void adjust_enemy_visibility(t_cube *cube, t_enemy *adv, t_rcdata *data)
     if (adv->st_dr_end.y >= WIN_WIDTH) adv->st_dr_end.y = WIN_WIDTH - 1;	
 }
 
-void put_xpm_to_mlx_img(t_enemy *adv, t_data *use_text, double scale, int side)
+void draw_scaled_sprite_on_mlx_img(t_enemy *adv, int side)
 {
 	int 			x, y = -1, xx;
 	unsigned int	col;
 	t_img_mlx		*img, *img2;
 
-	img = use_text->img;
+	img = adv->use_text->img;
 	img2 = adv->text_on.img;
 	while (++y < img->height)
 	{
@@ -135,18 +135,18 @@ void put_xpm_to_mlx_img(t_enemy *adv, t_data *use_text, double scale, int side)
 		while (++x < img->width)
 		{
 			
-			col = get_color_from_xpm(use_text, x, y);
+			col = get_color_from_xpm(adv->use_text, x, y);
 			if (x <= (int)adv->st_dr_end.x || x >= (int)adv->st_dr_end.y)
 				col = 0x00000000;
 			if (!side)
 				xx = x;
 			else
 				xx = img->width - x;
-			if (scale > 1)
-				up_scale(adv, xx - side, y, scale, col);
-			else if (!(xx % (int)(1 / scale)) && !(y % (int)(1 / scale)))
-				if (xx * scale < img2->width && y * scale < img2->height)
-					my_mlx_pixel_put(&adv->text_on, (xx * scale), (y * scale), col);
+			if (adv->scale > 1)
+				up_scale(adv, xx - side, y, adv->scale, col);
+			else if (!(xx % (int)(1 / adv->scale)) && !(y % (int)(1 / adv->scale)))
+				if (xx * adv->scale < img2->width && y * adv->scale < img2->height)
+					my_mlx_pixel_put(&adv->text_on, (xx * adv->scale), (y * adv->scale), col);
 		}
 	}
 }
@@ -162,7 +162,7 @@ t_enemy *get_enemy(t_cube *cube, int id)
 			adv = &cube->lvl->enemies[i];
 	return (adv);
 }
-static int	get_en_side(t_enemy *adv, t_point adv_pos, t_point play_pos, t_data **text, int *max_text)
+static int	get_en_side(t_enemy *adv, t_point adv_pos, t_point play_pos, int *max_text)
 {
 	t_point adv_dir;
 	double	angle_to_player;
@@ -171,7 +171,7 @@ static int	get_en_side(t_enemy *adv, t_point adv_pos, t_point play_pos, t_data *
 
 	if (adv->state == ATTACK && adv->type->spr_at)
 	{
-		*text = adv->type->spr_at;
+		adv->use_text = adv->type->spr_at;
 		*max_text = adv->type->max_text_at;
 		return (5);
 	}
@@ -196,27 +196,151 @@ static int	get_en_side(t_enemy *adv, t_point adv_pos, t_point play_pos, t_data *
 	// rel_angle proche de PI ou -PI = L'ennemi regarde ailleurs (DOS)
 	if (rel_angle >= -M_PI_4 && rel_angle < M_PI_4)
 	{
-		*text = adv->type->spr_fr;
+		adv->use_text = adv->type->spr_fr;
 		*max_text = adv->type->max_text_fr;
 		return (0); // Front
 	}
 	else if (rel_angle >= M_PI_4 && rel_angle < 3 * M_PI_4)
 	{
-		*text = adv->type->spr_sd; // Profil Droit
+		adv->use_text = adv->type->spr_sd; // Profil Droit
 		*max_text = adv->type->max_text_sd;
 		return (1); // Right Side
 	}
 	else if (rel_angle <= -M_PI_4 && rel_angle > -3 * M_PI_4)
 	{
-		*text = adv->type->spr_sd; // Profil Gauche (ou spr_sd_left si tu as un sprite miroir)
+		adv->use_text = adv->type->spr_sd; // Profil Gauche (ou spr_sd_left si tu as un sprite miroir)
 		*max_text = adv->type->max_text_sd;
 		return (3); // Left Side
 	}
 	else
 	{
-		*text = adv->type->spr_bk;
+		adv->use_text = adv->type->spr_bk;
 		*max_text = adv->type->max_text_bk;
 		return (2); // Back
+	}
+}
+
+void compute_occlusion(t_enemy *adv, t_cube *cube, int sprite_left, int wid, int img_w, double cam_z)
+{
+	int     col;
+    int     screen_col;
+    int     vis_start;
+    int     vis_end;
+
+    vis_start = -1;
+    vis_end = -1;
+    col = -1;
+    while (++col < wid)
+    {
+        screen_col = sprite_left + col;
+        if (screen_col < 0 || screen_col >= WIN_WIDTH)
+            continue ;
+        if (cube->zbuffer[screen_col] < cam_z)
+            continue ;
+        if (vis_start == -1)
+            vis_start = col;
+        vis_end = col;
+    }
+    if (vis_start == -1)
+    {
+        adv->st_dr_end.x = 0;
+        adv->st_dr_end.y = 0;
+        return ;
+    }
+    adv->st_dr_end.x = (double)vis_start * img_w / wid;
+    adv->st_dr_end.y = (double)(vis_end + 1) * img_w / wid;
+}
+
+void set_enemy_sprite(t_cube *cube, t_enemy *adv)
+{
+	int			side = -1;
+	int			max_text = 1, state;
+	double		dist;
+	double		cam_x, cam_z;
+	double		now, delta_atk, frame_duration;
+	int			atk_frame;
+	int			screen_x;
+	int 		z_offset;
+	t_player	*play;
+	t_point		play_pos, adv_pos;
+	t_img_mlx	*img;
+
+	play = cube->player;
+	pthread_mutex_lock(&cube->playpos_mutex);
+	play_pos = play->pos;
+	pthread_mutex_unlock(&cube->playpos_mutex);
+	pthread_mutex_lock(&adv->pos_mutex);
+	adv_pos = adv->pos;
+	pthread_mutex_unlock(&adv->pos_mutex);
+	pthread_mutex_lock(&adv->stt_mutex);
+	state = adv->state;
+	pthread_mutex_unlock(&adv->stt_mutex);
+
+	dist = dist_ab(play_pos, adv_pos);
+	if (adv->short_dist <= 0.5)
+    	return ;
+
+	cam_z = adv->cam_z;
+	cam_x = adv->cam_x;
+	z_offset = (int)(play_pos.z / adv->short_dist);
+	dist = adv->short_dist;
+	screen_x = (int)((WIN_WIDTH / 2) * (1.0 + cam_x / cam_z));
+
+	adv->side = get_en_side(adv, adv_pos, play_pos, &max_text);
+	
+	adv->fps++;
+	if (state == ATTACK && adv->type->spr_at)
+	{
+		now = get_time(0);
+		delta_atk = now - adv->last_draw_time;
+		adv->last_draw_time = now;
+		adv->atk_timer += delta_atk;
+		frame_duration = 1000.0 / (adv->type->freq_atk * adv->type->max_text_at);
+		atk_frame = (int)(adv->atk_timer / frame_duration) % adv->type->max_text_at;
+		
+		pthread_mutex_lock(&adv->mov_mutex);
+		adv->use_text = &adv->type->spr_at[atk_frame];
+		pthread_mutex_unlock(&adv->mov_mutex);
+	}
+	else
+	{
+		adv->atk_timer = 0.0;
+		adv->last_draw_time = get_time(0);
+		if (adv->fps - 1 == (cube->frame / (1 + play->run) / 2))
+		adv->nb_draw[side]++;
+		adv->nb_draw[side] %= max_text;
+		if (!adv->nb_draw[side])
+			adv->nb_draw[side] = 1;
+		pthread_mutex_lock(&adv->mov_mutex);
+		adv->use_text = &adv->use_text[(adv->is_moving) * adv->nb_draw[side]];
+		pthread_mutex_unlock(&adv->mov_mutex);
+	}
+
+	img = adv->use_text->img;
+	
+	adv->scale = 6 / dist;
+	adv->fps %= cube->frame * (4 + play->run);
+	adv->height = img->height * adv->scale;
+	adv->width = img->width * adv->scale;
+
+	adv->screen_x = screen_x - adv->width / 2;
+	adv->screen_y = WIN_HEIGHT / 2 - adv->height / 2 + 100 + play->z_view + z_offset;
+	compute_occlusion(adv, cube, adv->screen_x, adv->width, img->width, adv->cam_z);
+}
+
+static void destroy_create_enemy_img(t_cube *cube, t_enemy *adv)
+{
+	
+	if (!(adv->st_dr_end.x == 0 && adv->st_dr_end.y == 0))
+	{
+		new_img(cube, &adv->text_on, adv->width, adv->height);
+		draw_scaled_sprite_on_mlx_img(adv, (adv->side == 1));
+		mlx_image_to_image(&cube->screen, &adv->text_on, adv->screen_x, adv->screen_y);
+	}
+	if (adv->text_on.img)
+	{
+		mlx_destroy_image(cube->mlx, adv->text_on.img);
+		adv->text_on.img = NULL;
 	}
 }
 
@@ -256,137 +380,9 @@ void draw_enemies(t_cube *cube)
 		adv = &advs[i];
 		if (adv->draw)
 		{
-			draw_enemy(cube, adv);
+			destroy_create_enemy_img(cube, adv);
+			// draw_enemy(cube, adv);
 			adv->draw = 0;
 		}
 	}
 }
-
-void compute_occlusion(t_enemy *adv, t_cube *cube, int sprite_left, int wid, int img_w, double cam_z)
-{
-	int     col;
-    int     screen_col;
-    // int     xpm_col;
-    int     vis_start;
-    int     vis_end;
-
-    vis_start = -1;
-    vis_end = -1;
-    col = -1;
-    while (++col < wid)
-    {
-        screen_col = sprite_left + col;
-        // colonne hors écran : masquée
-        if (screen_col < 0 || screen_col >= WIN_WIDTH)
-            continue ;
-        // si le mur est plus proche que l'ennemi : masqué
-        if (cube->zbuffer[screen_col] < cam_z)
-            continue ;
-        // pixel visible : noter la première et dernière colonne
-        if (vis_start == -1)
-            vis_start = col;
-        vis_end = col;
-    }
-    // aucun pixel visible
-    if (vis_start == -1)
-    {
-        adv->st_dr_end.x = 0;
-        adv->st_dr_end.y = 0;
-        return ;
-    }
-    // convertir les bornes pixel écran en coordonnées XPM source
-    adv->st_dr_end.x = (double)vis_start * img_w / wid;
-    adv->st_dr_end.y = (double)(vis_end + 1) * img_w / wid;
-}
-
-void draw_enemy(t_cube *cube, t_enemy *adv)
-{
-	int			wid, hei, n_x, n_y, side = -1;
-	int			max_text = 1, state;
-	double		dist, scale = 0.0;
-	double		cam_x, cam_z;
-	double		now, delta_atk, frame_duration;
-	int			atk_frame;
-	int			screen_x;
-	int 		z_offset;
-	t_player	*play;
-	t_point		play_pos, adv_pos;
-	t_data		*use_text, *one_text;
-	t_img_mlx	*img;
-
-	play = cube->player;
-	pthread_mutex_lock(&cube->playpos_mutex);
-	play_pos = play->pos;
-	pthread_mutex_unlock(&cube->playpos_mutex);
-	pthread_mutex_lock(&adv->pos_mutex);
-	adv_pos = adv->pos;
-	pthread_mutex_unlock(&adv->pos_mutex);
-	pthread_mutex_lock(&adv->stt_mutex);
-	state = adv->state;
-	pthread_mutex_unlock(&adv->stt_mutex);
-
-	dist = dist_ab(play_pos, adv_pos);
-	if (adv->short_dist <= 0.5)
-    	return ;
-
-	cam_z = adv->cam_z;
-	cam_x = adv->cam_x;
-	z_offset = (int)(play_pos.z / adv->short_dist);
-	dist = adv->short_dist;
-	screen_x = (int)((WIN_WIDTH / 2) * (1.0 + cam_x / cam_z));
-
-	
-	side = get_en_side(adv, adv_pos, play_pos, &use_text, &max_text);
-	
-	adv->fps++;
-	if (state == ATTACK && adv->type->spr_at)
-	{
-		now = get_time(0);
-		delta_atk = now - adv->last_draw_time;
-		adv->last_draw_time = now;
-		adv->atk_timer += delta_atk;
-		frame_duration = 1000.0 / (adv->type->freq_atk * adv->type->max_text_at);
-		atk_frame = (int)(adv->atk_timer / frame_duration) % adv->type->max_text_at;
-		
-		pthread_mutex_lock(&adv->mov_mutex);
-		one_text = &adv->type->spr_at[atk_frame];
-		pthread_mutex_unlock(&adv->mov_mutex);
-	}
-	else
-	{
-		adv->atk_timer = 0.0;
-		adv->last_draw_time = get_time(0);
-		if (adv->fps - 1 == (cube->frame / (1 + play->run) / 2))
-		adv->nb_draw[side]++;
-		adv->nb_draw[side] %= max_text;
-		if (!adv->nb_draw[side])
-			adv->nb_draw[side] = 1;
-		pthread_mutex_lock(&adv->mov_mutex);
-		one_text = &use_text[(adv->is_moving) * adv->nb_draw[side]];
-		pthread_mutex_unlock(&adv->mov_mutex);
-	}
-
-	img = one_text->img;
-	
-	scale = 6 / dist;
-	adv->fps %= cube->frame * (4 + play->run);
-	hei = img->height * scale;
-	wid = img->width * scale;
-
-	n_x = screen_x - wid / 2;
-	n_y = WIN_HEIGHT / 2 - hei / 2 + 100 + play->z_view + z_offset;
-	if (adv->text_on.img)
-		mlx_destroy_image(cube->mlx, adv->text_on.img);
-	new_img(cube, &adv->text_on, wid, hei);
-	compute_occlusion(adv, cube, n_x, wid, img->width, cam_z);
-	if (adv->st_dr_end.x == 0 && adv->st_dr_end.y == 0)
-	{
-		mlx_destroy_image(cube->mlx, adv->text_on.img);
-		adv->text_on.img = NULL;
-		return ;
-	}
-	put_xpm_to_mlx_img(adv, one_text, scale, (side == 1));
-	mlx_image_to_image(&cube->screen, &adv->text_on, n_x, n_y);
-	// mlx_put_image_to_window(cube->mlx, cube->win, adv->text_on.img, n_x, n_y);
-}
-

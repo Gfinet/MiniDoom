@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/28 12:34:04 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/28 14:07:42 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,15 +130,16 @@ enum state {
 
 typedef struct s_enemy
 {
-	pthread_t		thread;
 	t_cube			*cube;
 	t_enemy_type 	*type;
 	t_data			text_on;
+	t_data			*use_text;
 	t_point			orig_pos;
 	t_point			pos;
 	t_point			dir;
 	t_point			hitbox;
 	t_point 		st_dr_end;
+	pthread_mutex_t	spr_mutex;
 	pthread_mutex_t	pos_mutex;
 	pthread_mutex_t	mov_mutex;
 	pthread_mutex_t	dir_mutex;
@@ -146,8 +147,14 @@ typedef struct s_enemy
 	double			wall_dist;
 	double			tmp_dist;
 	double			short_dist;
+	double			scale;
 	double			cam_x;
 	double			cam_z;
+	int				side;
+	int				width;
+	int				height;
+	int				screen_x;
+	int				screen_y;
 	int 			state;
 	int				random_moves;
 	int				random_turn;
@@ -181,6 +188,7 @@ typedef struct s_lvl
 	t_weapon		*weap;
 	t_enemy			*enemies;
 	t_enemy_type 	*enemy_types;
+	pthread_t		enemy_thread;
 }	t_lvl;
 
 typedef struct s_player
@@ -227,21 +235,6 @@ typedef struct s_pause
 	t_data	arrow;
 	int		choice;
 }	t_pause;
-
-// typedef struct s_img
-// {
-// 	void	*img;
-// 	char	*path;
-// 	int		witdh;
-// 	int		height;
-// }	t_img;
-
-// typedef struct s_ray_hit {
-//     double	wall_dist;
-//     t_enemy	**enemies_hit;
-//     double	*enemies_dist;
-//     int 	nb_enemies;
-// }	t_ray_hit;
 
 typedef struct s_rcdata
 {
@@ -449,7 +442,7 @@ void	set_enemy(t_lvl *lvl, char *str);
 int		get_enemy_inf(t_cube *cube, int i);
 
 //draw_enemy
-void	draw_enemy(t_cube *cube, t_enemy *adv);
+void 	set_enemy_sprite(t_cube *cube, t_enemy *adv);
 void	set_enemies_seen(t_cube *cube, int x, double wall_dist);
 void	draw_enemies(t_cube *cube);
 void	raycast_enemy(t_cube *cube);
