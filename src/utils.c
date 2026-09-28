@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/04 00:07:51 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/24 01:06:51 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/28 14:41:32 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,6 @@ void free_enemy(t_cube *cube, t_enemy_type *adv)
 	while(++i < cube->lvl->nb_enemy)
 	{
 		pthread_mutex_destroy(&cube->lvl->enemies[i].pos_mutex);
-		pthread_mutex_destroy(&cube->lvl->enemies[i].mov_mutex);
-		pthread_mutex_destroy(&cube->lvl->enemies[i].dir_mutex);
-		pthread_mutex_destroy(&cube->lvl->enemies[i].stt_mutex);
 		if (cube->lvl->enemies[i].text_on.img)
 			mlx_destroy_image(cube->mlx, cube->lvl->enemies[i].text_on.img);
 	}

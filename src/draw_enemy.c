@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 14:29:12 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/28 14:12:47 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/28 14:54:31 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,14 +125,11 @@ void draw_scaled_sprite_on_mlx_img(t_enemy *adv, int side)
 {
 	int 			x, y = -1, xx;
 	unsigned int	col;
-	t_img_mlx		*img, *img2;
 
-	img = adv->use_text->img;
-	img2 = adv->text_on.img;
-	while (++y < img->height)
+	while (++y < adv->use_text->height)
 	{
 		x = -1;
-		while (++x < img->width)
+		while (++x < adv->use_text->width)
 		{
 			
 			col = get_color_from_xpm(adv->use_text, x, y);
@@ -141,11 +138,11 @@ void draw_scaled_sprite_on_mlx_img(t_enemy *adv, int side)
 			if (!side)
 				xx = x;
 			else
-				xx = img->width - x;
+				xx = adv->use_text->width - x;
 			if (adv->scale > 1)
 				up_scale(adv, xx - side, y, adv->scale, col);
 			else if (!(xx % (int)(1 / adv->scale)) && !(y % (int)(1 / adv->scale)))
-				if (xx * adv->scale < img2->width && y * adv->scale < img2->height)
+				if (xx * adv->scale < adv->text_on.width && y * adv->scale < adv->text_on.height)
 					my_mlx_pixel_put(&adv->text_on, (xx * adv->scale), (y * adv->scale), col);
 		}
 	}
@@ -175,10 +172,7 @@ static int	get_en_side(t_enemy *adv, t_point adv_pos, t_point play_pos, int *max
 		*max_text = adv->type->max_text_at;
 		return (5);
 	}
-
-	pthread_mutex_lock(&adv->dir_mutex);
 	adv_dir = adv->dir;
-	pthread_mutex_unlock(&adv->dir_mutex);
 
 	// 1. Angle du vecteur Joueur -> Ennemi
 	angle_to_player = atan2(play_pos.y - adv_pos.y, play_pos.x - adv_pos.x);
@@ -272,10 +266,9 @@ void set_enemy_sprite(t_cube *cube, t_enemy *adv)
 	pthread_mutex_lock(&adv->pos_mutex);
 	adv_pos = adv->pos;
 	pthread_mutex_unlock(&adv->pos_mutex);
-	pthread_mutex_lock(&adv->stt_mutex);
 	state = adv->state;
-	pthread_mutex_unlock(&adv->stt_mutex);
 
+	pthread_mutex_lock(&adv->spr_mutex);
 	dist = dist_ab(play_pos, adv_pos);
 	if (adv->short_dist <= 0.5)
     	return ;
@@ -297,10 +290,7 @@ void set_enemy_sprite(t_cube *cube, t_enemy *adv)
 		adv->atk_timer += delta_atk;
 		frame_duration = 1000.0 / (adv->type->freq_atk * adv->type->max_text_at);
 		atk_frame = (int)(adv->atk_timer / frame_duration) % adv->type->max_text_at;
-		
-		pthread_mutex_lock(&adv->mov_mutex);
 		adv->use_text = &adv->type->spr_at[atk_frame];
-		pthread_mutex_unlock(&adv->mov_mutex);
 	}
 	else
 	{
@@ -311,14 +301,14 @@ void set_enemy_sprite(t_cube *cube, t_enemy *adv)
 		adv->nb_draw[side] %= max_text;
 		if (!adv->nb_draw[side])
 			adv->nb_draw[side] = 1;
-		pthread_mutex_lock(&adv->mov_mutex);
 		adv->use_text = &adv->use_text[(adv->is_moving) * adv->nb_draw[side]];
-		pthread_mutex_unlock(&adv->mov_mutex);
 	}
 
 	img = adv->use_text->img;
 	
 	adv->scale = 6 / dist;
+	if (adv->scale > 20.0)
+    	adv->scale = 20.0;
 	adv->fps %= cube->frame * (4 + play->run);
 	adv->height = img->height * adv->scale;
 	adv->width = img->width * adv->scale;
@@ -326,11 +316,17 @@ void set_enemy_sprite(t_cube *cube, t_enemy *adv)
 	adv->screen_x = screen_x - adv->width / 2;
 	adv->screen_y = WIN_HEIGHT / 2 - adv->height / 2 + 100 + play->z_view + z_offset;
 	compute_occlusion(adv, cube, adv->screen_x, adv->width, img->width, adv->cam_z);
+	pthread_mutex_unlock(&adv->spr_mutex);
 }
 
 static void destroy_create_enemy_img(t_cube *cube, t_enemy *adv)
 {
-	
+	pthread_mutex_lock(&adv->spr_mutex);
+	if (adv->short_dist <= 0.5)
+	{
+		pthread_mutex_unlock(&adv->spr_mutex);
+    	return ;
+	}
 	if (!(adv->st_dr_end.x == 0 && adv->st_dr_end.y == 0))
 	{
 		new_img(cube, &adv->text_on, adv->width, adv->height);
@@ -342,6 +338,7 @@ static void destroy_create_enemy_img(t_cube *cube, t_enemy *adv)
 		mlx_destroy_image(cube->mlx, adv->text_on.img);
 		adv->text_on.img = NULL;
 	}
+	pthread_mutex_unlock(&adv->spr_mutex);
 }
 
 static void sort_enemies_by_dist(t_enemy *enemies, int nb)
