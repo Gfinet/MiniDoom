@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/25 14:02:27 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/28 12:33:48 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,6 +201,12 @@ static void enemy_move(t_enemy *adv, t_point play_pos, t_point pos)
 	move_forward(adv, play_pos, pos);
 }
 
+static void enemy_attack(t_enemy *adv)
+{
+	
+	(void)adv;
+}
+
 void enemy_act(t_enemy *adv)
 {
 	t_point play_pos, pos;
@@ -246,6 +252,7 @@ void enemy_act(t_enemy *adv)
 			enemy_move(adv, play_pos, pos);
 			break;
 		case ATTACK:
+			enemy_attack(adv);
 			break;
 		case BACK:
 			enemy_move(adv, adv->orig_pos, pos);
@@ -257,7 +264,7 @@ void enemy_act(t_enemy *adv)
 
 void *enemy_thread(void *data)
 {
-	int stop, can_move, dead = 1;
+	int stop, can_move, dead = 0;
 	t_enemy *adv;
 	t_cube	*cube;
 
@@ -291,7 +298,7 @@ void *enemy_thread(void *data)
 }
 
 
-int launch_eneny_thread(t_cube *cube)
+int launch_enemy_thread(t_cube *cube)
 {
 	t_lvl *lvl;
 

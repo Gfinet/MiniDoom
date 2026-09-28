@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 12:36:42 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 01:42:10 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/26 20:54:45 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,6 @@ void	free_text(t_cube *cube)
 		mlx_destroy_image(cube->mlx, cube->texture[2].img);
 	if (cube->texture[3].img)
 		mlx_destroy_image(cube->mlx, cube->texture[3].img);
+	if (cube->no_sprite.img)
+		mlx_destroy_image(cube->mlx, cube->no_sprite.img);
 }

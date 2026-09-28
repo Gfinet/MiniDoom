@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/24 13:48:26 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/24 15:33:23 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/26 21:24:55 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,21 @@
 
 void draw_ui(t_cube *cube)
 {
+	t_player	*play;
+
+	play = cube->player;
 	if (cube->lvl->weap)
 		draw_weapons(cube);
 	// draw_mini_background(cube->lvl);
 	draw_maps(cube);
 	draw_life(cube);
 	mlx_image_to_image(&cube->screen, &cube->ui.box, 0, WIN_HEIGHT * 4 / 5);//WIN_HEIGHT * 9 / 10
+	mlx_string_put(cube->mlx, cube->win,
+		WIN_WIDTH / 2, WIN_HEIGHT / 2, 0x000000FF, play->hp_val);
+	mlx_string_put(cube->mlx, cube->win,
+		WIN_WIDTH / 2, WIN_HEIGHT / 2, 0x000000FF, play->ar_val);
+	free(play->ar_val);
+	free(play->hp_val);
 }
 
 void draw_box_frame(t_data *box)

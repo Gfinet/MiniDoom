@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/25 14:01:58 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/28 12:33:57 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,6 @@ static int	init_cube(t_cube *cube, t_player *play, t_lvl *level)
 	*play = (t_player){0};
 	*level = (t_lvl){0};
 	cube->screen = (t_data){0};
-	if (!xpm_to_img(cube, &cube->no_sprite, "./texture/no_sprites.xpm"))
-		return 0;
 	cube->wall_dist = 0;
 	cube->stop = 0;
 	cube->frame = FRAME;
@@ -46,6 +44,8 @@ static int	init_cube(t_cube *cube, t_player *play, t_lvl *level)
 	cube->win = mlx_new_window(cube->mlx, WIN_WIDTH, WIN_HEIGHT, "DOOM3D");
 	if (!cube->win)
 		return (0);
+	if (!xpm_to_img(cube, &cube->no_sprite, "./texture/no_sprite.xpm"))
+		return 0;
 	//load_door_texture(cube);
 	cube->lvl = level;
 	cube->lvl->cube = cube;
@@ -127,7 +127,7 @@ int	main(int argc, char **argv)
 		return (write_error(ERROR_UI), free_cube(&cube), 0);
 	if (!init_pause_screen(&cube))
 		return (write_error(ERROR_PSC), free_cube(&cube), 0);
-	if (!launch_eneny_thread(&cube))
+	if (!launch_enemy_thread(&cube))
 		return (write_error(ERROR_TH), free_cube(&cube), 0);
 	game_loop_init(&cube);
 	return (0);
