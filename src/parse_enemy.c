@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/28 14:41:54 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/28 17:34:46 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,10 @@ void set_draw_enemy(t_cube *cube, int val)
 
 	while (++i < cube->lvl->nb_enemy)
 	{
+		pthread_mutex_lock(&cube->lvl->enemies[i].spr_mutex);
 		cube->lvl->enemies[i].draw = val;
 		cube->lvl->enemies[i].short_dist = 999;
+		pthread_mutex_unlock(&cube->lvl->enemies[i].spr_mutex);
 	}
 	
 }
