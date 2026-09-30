@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 17:02:38 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/25 14:02:27 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/30 14:00:55 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,9 +201,9 @@ static void enemy_move(t_enemy *adv, t_point play_pos, t_point pos)
 	move_forward(adv, play_pos, pos);
 }
 
-void enemy_act(t_enemy *adv)
+void enemy_act(t_enemy *adv, t_point play_pos)
 {
-	t_point play_pos, pos;
+	t_point pos;
 	double dx, dy, dist;
 
 
@@ -257,36 +257,36 @@ void enemy_act(t_enemy *adv)
 
 void *enemy_thread(void *data)
 {
-	int stop, can_move, dead = 1;
-	t_enemy *adv;
-	t_cube	*cube;
+	int 		stop, pause;
+	t_cube		*cube;
+	t_point 	play_pos;
 
-	adv = (t_enemy *)data;
-	cube = adv->cube;
+	cube = (t_cube *)data;
 	pthread_mutex_lock(&cube->stop_mutex);
 	stop = cube->stop;
 	pthread_mutex_unlock(&cube->stop_mutex);
 	pthread_mutex_lock(&cube->pause_mutex);
-	can_move = !cube->pause;
+	pause = cube->pause;
 	pthread_mutex_unlock(&cube->pause_mutex);
-	while (!stop && !dead)
+	while (!stop)
 	{
-		// printf("pos %f %f - %f %f", adv->pos.x, adv->pos.y, cube->player->pos.x, cube->player->pos.y);
-		if (can_move)
-			enemy_act(adv);
-		// printf("Stop: %d\n", cube->stop);
-		usleep(1000000 / 60);
+		pthread_mutex_lock(&cube->pause_mutex);
+		pause = cube->pause;
+		pthread_mutex_unlock(&cube->pause_mutex);
+		if (!pause)
+		{
+			pthread_mutex_lock(&cube->playpos_mutex);
+			play_pos = cube->player->pos;
+			pthread_mutex_unlock(&cube->playpos_mutex);
+			for (int i = 0; i < cube->lvl->nb_enemy; i ++)
+				enemy_act(&cube->lvl->enemies[i], play_pos);
+			usleep(1000000 / 60);
+		}
 		pthread_mutex_lock(&cube->stop_mutex);
 		stop = cube->stop;
 		pthread_mutex_unlock(&cube->stop_mutex);
-		pthread_mutex_lock(&cube->pause_mutex);
-		can_move = !cube->pause;
-		pthread_mutex_unlock(&cube->pause_mutex);
-		pthread_mutex_lock(&adv->stt_mutex);
-		dead = (adv->state == DEAD);
-		pthread_mutex_unlock(&adv->stt_mutex);
 	}
-	printf("Thread %d Stop\n", adv->id);
+	printf("Thread enemy Stop\n");
 	return 0;
 }
 
@@ -296,9 +296,6 @@ int launch_eneny_thread(t_cube *cube)
 	t_lvl *lvl;
 
 	lvl = cube->lvl;
-	for (int i = 0; i< lvl->nb_enemy; i++)
-	{
-		pthread_create(&lvl->enemies[i].thread, 0, enemy_thread, &lvl->enemies[i]);
-	}
+	pthread_create(&lvl->enemy_thread, 0, enemy_thread, cube);
 	return 1;
 }

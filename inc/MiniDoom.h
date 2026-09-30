@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/25 13:59:58 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/30 13:45:42 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,6 @@ enum state {
 
 typedef struct s_enemy
 {
-	pthread_t		thread;
 	t_cube			*cube;
 	t_enemy_type 	*type;
 	t_data			text_on;
@@ -165,6 +164,7 @@ typedef struct s_enemy
 
 typedef struct s_lvl
 {
+	pthread_t		enemy_thread;
 	t_cube			*cube;
 	t_mini_maps		mini;
 	t_mirr			*mirr;
@@ -223,20 +223,6 @@ typedef struct s_pause
 	int		choice;
 }	t_pause;
 
-// typedef struct s_img
-// {
-// 	void	*img;
-// 	char	*path;
-// 	int		witdh;
-// 	int		height;
-// }	t_img;
-
-// typedef struct s_ray_hit {
-//     double	wall_dist;
-//     t_enemy	**enemies_hit;
-//     double	*enemies_dist;
-//     int 	nb_enemies;
-// }	t_ray_hit;
 
 typedef struct s_rcdata
 {
@@ -295,6 +281,7 @@ typedef struct s_cube
 	t_data				screen;
 	t_data				no_sprite;
 	t_door				*doors;
+	pthread_mutex_t		load_mutex;
 	pthread_mutex_t		stop_mutex;
 	pthread_mutex_t		pause_mutex;
 	pthread_mutex_t		playpos_mutex;
@@ -303,6 +290,7 @@ typedef struct s_cube
 	double 				zbuffer[WIN_WIDTH];
 	int 				z_offset;
 	int 				stop;
+	int 				loading;
 	int					wall;
 	int					frame;
 	int					mouse;

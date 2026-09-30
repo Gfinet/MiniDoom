@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:40:12 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/25 14:01:58 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/30 13:55:47 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,7 @@ static int	init_cube(t_cube *cube, t_player *play, t_lvl *level)
 	*play = (t_player){0};
 	*level = (t_lvl){0};
 	cube->screen = (t_data){0};
-	if (!xpm_to_img(cube, &cube->no_sprite, "./texture/no_sprites.xpm"))
-		return 0;
+	
 	cube->wall_dist = 0;
 	cube->stop = 0;
 	cube->frame = FRAME;
@@ -46,13 +45,17 @@ static int	init_cube(t_cube *cube, t_player *play, t_lvl *level)
 	cube->win = mlx_new_window(cube->mlx, WIN_WIDTH, WIN_HEIGHT, "DOOM3D");
 	if (!cube->win)
 		return (0);
+	if (!xpm_to_img(cube, &cube->no_sprite, "./texture/no_sprite.xpm"))
+		return 0;
 	//load_door_texture(cube);
 	cube->lvl = level;
 	cube->lvl->cube = cube;
 	cube->player = play;
 	cube->m_sensi = 10;
 	cube->s_mouse = 1;
+	cube->loading = 1;
 	cube->focal_length = (WIN_WIDTH / 2) / tan(FOV / 2);
+	pthread_mutex_init(&cube->load_mutex, 0);
 	pthread_mutex_init(&cube->playpos_mutex, 0);
 	pthread_mutex_init(&cube->stop_mutex, 0);
 	pthread_mutex_init(&cube->pause_mutex, 0);

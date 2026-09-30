@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 12:36:42 by Gfinet            #+#    #+#             */
-/*   Updated: 2026/09/20 01:42:10 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/30 13:41:03 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,12 +75,12 @@ void	free_text(t_cube *cube)
 		mlx_destroy_image(cube->mlx, cube->screen.img);
 	if (cube->lvl->mini.maps.img)
 		mlx_destroy_image(cube->mlx, cube->lvl->mini.maps.img);
-	if (cube->texture[0].img)
+	if (&cube->texture[0] && cube->texture[0].img)
 		mlx_destroy_image(cube->mlx, cube->texture[0].img);
-	if (cube->texture[1].img)
+	if (&cube->texture[1] && cube->texture[1].img)
 		mlx_destroy_image(cube->mlx, cube->texture[1].img);
-	if (cube->texture[2].img)
+	if (&cube->texture[2] && cube->texture[2].img)
 		mlx_destroy_image(cube->mlx, cube->texture[2].img);
-	if (cube->texture[3].img)
+	if (&cube->texture[3] && cube->texture[3].img)
 		mlx_destroy_image(cube->mlx, cube->texture[3].img);
 }
