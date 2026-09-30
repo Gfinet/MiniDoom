@@ -6,7 +6,7 @@
 /*   By: Gfinet <gfinet@student.s19.be>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/12 18:41:55 by gfinet            #+#    #+#             */
-/*   Updated: 2026/09/30 13:45:42 by Gfinet           ###   ########.fr       */
+/*   Updated: 2026/09/30 14:10:28 by Gfinet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,24 +185,29 @@ typedef struct s_lvl
 
 typedef struct s_player
 {
-	t_point	pos;
-	t_point	dir;
-	t_point	prev_pos;
-	t_point	pov;
-	t_data	life;
-	t_enemy en_snap;
-	int		jump;
-	int		shoot;
-	int		run;
-	int		move_v;
-	int		move_h;
-	int		turn;
-	int		use_weap;
-	int		z_view;
-	int		hp;
-	int		armor;
-	double	angle;
-	double	vz;
+	t_point				pos;
+	t_point				dir;
+	t_point				prev_pos;
+	t_point				pov;
+	t_data				life;
+	t_data				shield;
+	t_enemy 			en_snap;
+	pthread_mutex_t		hp_mut;
+	pthread_mutex_t		sh_mut;
+	char				*hp_val;
+	char				*ar_val;
+	int					jump;
+	int					shoot;
+	int					run;
+	int					move_v;
+	int					move_h;
+	int					turn;
+	int					use_weap;
+	int					z_view;
+	int					hp;
+	int					armor;
+	double				angle;
+	double				vz;
 }	t_player;
 
 typedef struct s_door
